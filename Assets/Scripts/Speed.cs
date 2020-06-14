@@ -10,31 +10,67 @@ public class Speed : MonoBehaviour
 
     public bool overriding = false;
     public float localOverride = 0f;
-    public Vector3 directionalOveride = Vector3.zero;
+    public Vector3 directionalOverride = Vector3.zero;
 
     public List<float> localInfluence;
+    public List<float> localMultiplier;
 
     public List<Vector3> directionalInfluence;
+    public List<float> directionallMultiplier;
 
-    public float CalculatedLocal (Vector3 direction)
+    public float CalculatedLocal ()
     {
-        throw new NotImplementedException();
+        if (!overriding)
+        {
+            float total = 0;
+
+            foreach (float i in localInfluence)
+            {
+                total += i;
+            }
+
+            float totalMultiplier = 1;
+
+            foreach (float i in localMultiplier)
+            {
+                totalMultiplier *= i;
+            }
+
+            return total * totalMultiplier;
+        } else
+        {
+            return localOverride;
+        }
     }
 
-    public Vector3 CalculatedDirectional (Vector3 direction)
+    public Vector3 CalculatedDirectional ()
     {
-        throw new NotImplementedException();
+        if (!overriding)
+        {
+            Vector3 total = Vector3.zero;
+
+            foreach (Vector3 i in directionalInfluence)
+            {
+                total += i;
+            }
+
+            float totalMultiplier = 1;
+
+            foreach (float i in localMultiplier)
+            {
+                totalMultiplier *= i;
+            }
+
+            return total * totalMultiplier;
+        }
+        else
+        {
+            return directionalOverride;
+        }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public Vector3 calculatedMovement (Vector3 direction)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        return CalculatedDirectional() + (direction.normalized * CalculatedLocal());
     }
 }
