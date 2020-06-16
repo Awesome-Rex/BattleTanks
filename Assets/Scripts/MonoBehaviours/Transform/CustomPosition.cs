@@ -16,27 +16,28 @@ public class CustomPosition : MonoBehaviour
 
     //local
     public Transform parent;
+
+    public Link link = Link.Offset;
+
     public Vector3 localOffset;
     public Vector3 globalOffset;
+
+
+    //previous
+    private Vector3 previous;
 
     [ContextMenu("Apply to target")]
     public void ApplyToTarget ()
     {
-        Vector3 target = Vector3.zero;
-
-        if (space == Space.World)
+        if (!(space == Space.Self && link == Link.Match)) {
+            transform.position = GetTarget();
+        } else
         {
-            target = position;
+            Debug.LogWarning("Cannot apply to target position if link is set to \"match!\"", gameObject);
         }
-        else if (space == Space.Self)
-        {
-            target = parent.position + parent.TransformDirection(localOffset) + globalOffset;
-        }
-
-        transform.position = target;
     }
 
-    public void Apply()
+    public Vector3 GetTarget()
     {
         Vector3 target = Vector3.zero;
 
@@ -46,23 +47,43 @@ public class CustomPosition : MonoBehaviour
         }
         else if (space == Space.Self)
         {
-            target = parent.position + parent.TransformDirection(localOffset) + globalOffset;
+            if (link == Link.Offset) {
+                target = parent.position + parent.TransformDirection(localOffset) + globalOffset;
+            } else if (link == Link.Match)
+            {
+                target = parent.position + parent.TransformDirection(previous);
+            }
         }
 
+        return target;
+    }
 
-        if (!follow)
-        {
-            transform.position = target;
-        }
-        else
-        {
-            transform.position = transition.MoveTowards(transform.position, target);
-        }
+    private void Awake()
+    {
+        previous = parent.InverseTransformPoint(transform.position);
     }
 
     // Update is called once per frame
     void Update()
     {
-        Apply();
+        if (!follow || link == Link.Match)
+        {
+            transform.position = GetTarget();
+        }
+        else
+        {
+            if (transition.type == Curve.Interpolate)
+            {
+                transform.position = transition.MoveTowards(transform.position, GetTarget());
+            } else if ()
+            {
+
+            }
+        }
+    }
+
+    private void LateUpdate()
+    {
+        previous = parent.InverseTransformPoint(transform.position);
     }
 }

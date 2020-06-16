@@ -15,34 +15,22 @@ public class CustomRotation : MonoBehaviour
 
     //local
     public Transform parent;
+
+    public Link link = Link.Offset;
+
     public Vector3 localOffset;
     public Vector3 globalOffset;
+
+    //previous
+    private Quaternion previous;
 
     [ContextMenu("Apply to target")]
     public void ApplyToTarget()
     {
-        Quaternion target = Quaternion.Euler(Vector3.zero);
-
-        if (space == Space.World)
-        {
-            target = rotation;
-        }
-        else if (space == Space.Self)
-        {
-            Quaternion temp = transform.rotation;
-
-            transform.rotation = parent.rotation;
-            transform.Rotate(localOffset, Space.Self);
-            transform.Rotate(globalOffset, Space.World);
-
-            target = transform.rotation;
-            transform.rotation = temp;
-        }
-
-        transform.rotation = target;
+        transform.rotation = GetTarget();
     }
 
-    public void Apply()
+    public Quaternion GetTarget()
     {
         Quaternion target = Quaternion.Euler(Vector3.zero);
 
@@ -52,29 +40,43 @@ public class CustomRotation : MonoBehaviour
         }
         else if (space == Space.Self)
         {
-            Quaternion temp = transform.rotation;
+            if (link == Link.Offset)
+            {
+                Quaternion temp = transform.rotation;
 
-            transform.rotation = parent.rotation;
-            transform.Rotate(localOffset, Space.Self);
-            transform.Rotate(globalOffset, Space.World);
+                transform.rotation = parent.rotation;
+                transform.Rotate(localOffset, Space.Self);
+                transform.Rotate(globalOffset, Space.World);
 
-            target = transform.rotation;
-            transform.rotation = temp;
+                target = transform.rotation;
+                transform.rotation = temp;
+            } else if (link == Link.Match)
+            {
+
+            }
         }
 
-        if (!follow)
-        {
-            transform.rotation = target;
-        }
-        else
-        {
-            transform.rotation = transition.MoveTowards(transform.rotation, target);
-        }
+        return target;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Apply();
+        if (!follow)
+        {
+            transform.rotation = GetTarget();
+        }
+        else
+        {
+            if (transition.type == Curve.Interpolate)
+            {
+                transform.rotation = transition.MoveTowards(transform.rotation, GetTarget());
+            }
+        }
+    }
+
+    private void LateUpdate()
+    {
+        //previous = 
     }
 }

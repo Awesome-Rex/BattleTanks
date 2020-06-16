@@ -242,7 +242,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1278675272}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 17f5561371ad1c84190b7e7adce75d5d, type: 3}
   m_Name: 
@@ -251,11 +251,12 @@ MonoBehaviour:
   follow: 1
   transition:
     type: 0
-    speed: 5
+    speed: 10
     degrees: 0
     percent: 5
   position: {x: 0, y: 0, z: 0}
   parent: {fileID: 867021773}
+  link: 1
   localOffset: {x: 0, y: 1, z: 5}
   globalOffset: {x: 0, y: 0, z: 0}
 --- !u!65 &1278675274
@@ -339,13 +340,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1278675272}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27a5e7d81fd7b1b41b7c770f7120b2c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   space: 1
-  follow: 1
+  follow: 0
   transition:
     type: 1
     speed: 0
@@ -353,6 +354,7 @@ MonoBehaviour:
     percent: 10
   rotation: {x: 0, y: 0, z: 0, w: 0}
   parent: {fileID: 867021773}
+  link: 1
   localOffset: {x: 0, y: 0, z: 0}
   globalOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &2035055599
@@ -455,7 +457,6 @@ MonoBehaviour:
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
-  m_CameraOutput: 0
   m_Cameras: []
   m_RendererIndex: -1
   m_VolumeLayerMask:
@@ -467,6 +468,7 @@ MonoBehaviour:
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0
+  m_ClearDepth: 1
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
