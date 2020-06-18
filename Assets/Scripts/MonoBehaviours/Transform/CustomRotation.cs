@@ -59,29 +59,39 @@ public class CustomRotation : MonoBehaviour
         return target;
     }
 
+    public void SetPrevious ()
+    {
+        Quaternion.Inverse(parent.rotation) * transform.rotation;
+    }
+
     private void Awake()
     {
-        previous = Quaternion.Inverse(parent.rotation) * transform.rotation;
+        SetPrevious();
 
-        _ETERNAL.r.lateRecorder.callback += () => previous = Quaternion.Inverse(parent.rotation) * transform.rotation;
+        _ETERNAL.r.lateRecorder.callback += SetPrevious;
+        _ETERNAL.r.earlyRecorder.callback += () =>
+        {
+            if (!follow || link == Link.Match)
+            {
+                transform.rotation = GetTarget();
+            }
+            else
+            {
+                if (transition.type == Curve.Interpolate)
+                {
+                    transform.rotation = transition.MoveTowards(transform.rotation, GetTarget());
+                }
+                else if (transition.type == Curve.Custom)
+                {
+
+                }
+            }
+        };
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!follow || link == Link.Match)
-        {
-            transform.rotation = GetTarget();
-        }
-        else
-        {
-            if (transition.type == Curve.Interpolate)
-            {
-                transform.rotation = transition.MoveTowards(transform.rotation, GetTarget());
-            } else if (transition.type == Curve.Custom)
-            {
-
-            }
-        }
+        
     }
 }

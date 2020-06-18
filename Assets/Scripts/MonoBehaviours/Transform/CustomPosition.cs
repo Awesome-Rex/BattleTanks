@@ -58,29 +58,39 @@ public class CustomPosition : MonoBehaviour
         return target;
     }
 
-    private void Awake()
+
+    public void SetPrevious ()
     {
         previous = parent.InverseTransformPoint(transform.position);
+    }
 
-        _ETERNAL.r.lateRecorder.callback += () => previous = parent.InverseTransformPoint(transform.position);
+    private void Awake()
+    {
+        SetPrevious();
+
+        _ETERNAL.r.lateRecorder.callback += SetPrevious;
+        _ETERNAL.r.earlyRecorder.callback += () => {
+            if (!follow || link == Link.Match)
+            {
+                transform.position = GetTarget();
+            }
+            else
+            {
+                if (transition.type == Curve.Interpolate)
+                {
+                    transform.position = transition.MoveTowards(transform.position, GetTarget());
+                }
+                else if (transition.type == Curve.Custom)
+                {
+
+                }
+            }
+        };
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!follow || link == Link.Match)
-        {
-            transform.position = GetTarget();
-        }
-        else
-        {
-            if (transition.type == Curve.Interpolate)
-            {
-                transform.position = transition.MoveTowards(transform.position, GetTarget());
-            } else if (transition.type == Curve.Custom)
-            {
-
-            }
-        }
+        
     }
 }
