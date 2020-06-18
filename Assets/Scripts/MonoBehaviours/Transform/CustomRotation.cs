@@ -27,6 +27,12 @@ public class CustomRotation : MonoBehaviour
     [ContextMenu("Apply to target")]
     public void ApplyToTarget()
     {
+        if (space == Space.Self && link == Link.Match)
+        {
+            Debug.LogWarning("Cannot apply to target position if link is set to \"match!\"", gameObject);
+            return;
+        }
+
         transform.rotation = GetTarget();
     }
 
@@ -91,21 +97,6 @@ public class CustomRotation : MonoBehaviour
 
         _ETERNAL.r.lateRecorder.callback += SetPrevious;
         _ETERNAL.r.earlyRecorder.callback += SetTarget;
-    }
-
-    /*private void OnEnable()
-    {
-        _ETERNAL.r.earlyRecorder.callback += SetTarget;
-    }
-
-    private void OnDisable()
-    {
-        _ETERNAL.r.earlyRecorder.callback -= SetTarget;
-    }*/
-
-    void Update()
-    {
-        transform.Rotate(new Vector3(90f, 0f, 0f) * Time.deltaTime);
     }
 
     private void OnDestroy()

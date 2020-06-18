@@ -29,12 +29,13 @@ public class CustomPosition : MonoBehaviour
     [ContextMenu("Apply to target")]
     public void ApplyToTarget ()
     {
-        if (!(space == Space.Self && link == Link.Match)) {
-            transform.position = GetTarget();
-        } else
+        if (space == Space.Self && link == Link.Match)
         {
             Debug.LogWarning("Cannot apply to target position if link is set to \"match!\"", gameObject);
+            return;
         }
+
+        transform.position = GetTarget();
     }
 
     public void SetTarget ()
@@ -91,12 +92,6 @@ public class CustomPosition : MonoBehaviour
 
         _ETERNAL.r.lateRecorder.callback += SetPrevious;
         _ETERNAL.r.earlyRecorder.callback += SetTarget;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //transform.Translate(Vector3.forward * 1 * Time.deltaTime);
     }
 
     private void OnDestroy()
