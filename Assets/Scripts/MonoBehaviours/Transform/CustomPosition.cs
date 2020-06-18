@@ -61,6 +61,8 @@ public class CustomPosition : MonoBehaviour
     private void Awake()
     {
         previous = parent.InverseTransformPoint(transform.position);
+
+        _ETERNAL.r.lateRecorder.callback += () => previous = parent.InverseTransformPoint(transform.position);
     }
 
     // Update is called once per frame
@@ -75,15 +77,10 @@ public class CustomPosition : MonoBehaviour
             if (transition.type == Curve.Interpolate)
             {
                 transform.position = transition.MoveTowards(transform.position, GetTarget());
-            } else if ()
+            } else if (transition.type == Curve.Custom)
             {
 
             }
         }
-    }
-
-    private void LateUpdate()
-    {
-        previous = parent.InverseTransformPoint(transform.position);
     }
 }
