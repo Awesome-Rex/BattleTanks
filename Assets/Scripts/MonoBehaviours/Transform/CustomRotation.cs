@@ -61,7 +61,7 @@ public class CustomRotation : MonoBehaviour
 
     public void SetPrevious ()
     {
-        Quaternion.Inverse(parent.rotation) * transform.rotation;
+        previous = Quaternion.Inverse(parent.rotation) * transform.rotation;
     }
 
     private void Awake()
