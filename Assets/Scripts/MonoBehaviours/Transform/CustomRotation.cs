@@ -30,6 +30,27 @@ public class CustomRotation : MonoBehaviour
         transform.rotation = GetTarget();
     }
 
+    public void SetTarget ()
+    {
+        if (enabled) {
+            if (!follow || link == Link.Match)
+            {
+                transform.rotation = GetTarget();
+            }
+            else
+            {
+                if (transition.type == Curve.Interpolate)
+                {
+                    transform.rotation = transition.MoveTowards(transform.rotation, GetTarget());
+                }
+                else if (transition.type == Curve.Custom)
+                {
+
+                }
+            }
+        }
+    }
+
     public Quaternion GetTarget()
     {
         Quaternion target = Quaternion.Euler(Vector3.zero);
@@ -69,29 +90,27 @@ public class CustomRotation : MonoBehaviour
         SetPrevious();
 
         _ETERNAL.r.lateRecorder.callback += SetPrevious;
-        _ETERNAL.r.earlyRecorder.callback += () =>
-        {
-            if (!follow || link == Link.Match)
-            {
-                transform.rotation = GetTarget();
-            }
-            else
-            {
-                if (transition.type == Curve.Interpolate)
-                {
-                    transform.rotation = transition.MoveTowards(transform.rotation, GetTarget());
-                }
-                else if (transition.type == Curve.Custom)
-                {
-
-                }
-            }
-        };
+        _ETERNAL.r.earlyRecorder.callback += SetTarget;
     }
 
-    // Update is called once per frame
+    /*private void OnEnable()
+    {
+        _ETERNAL.r.earlyRecorder.callback += SetTarget;
+    }
+
+    private void OnDisable()
+    {
+        _ETERNAL.r.earlyRecorder.callback -= SetTarget;
+    }*/
+
     void Update()
     {
-        
+        transform.Rotate(new Vector3(90f, 0f, 0f) * Time.deltaTime);
+    }
+
+    private void OnDestroy()
+    {
+        _ETERNAL.r.lateRecorder.callback -= SetPrevious;
+        _ETERNAL.r.earlyRecorder.callback -= SetTarget;
     }
 }

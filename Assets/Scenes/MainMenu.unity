@@ -248,7 +248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   space: 1
-  follow: 1
+  follow: 0
   transition:
     type: 0
     speed: 10

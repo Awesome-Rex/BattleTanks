@@ -37,6 +37,27 @@ public class CustomPosition : MonoBehaviour
         }
     }
 
+    public void SetTarget ()
+    {
+        if (enabled) {
+            if (!follow || link == Link.Match)
+            {
+                transform.position = GetTarget();
+            }
+            else
+            {
+                if (transition.type == Curve.Interpolate)
+                {
+                    transform.position = transition.MoveTowards(transform.position, GetTarget());
+                }
+                else if (transition.type == Curve.Custom)
+                {
+
+                }
+            }
+        }
+    }
+
     public Vector3 GetTarget()
     {
         Vector3 target = Vector3.zero;
@@ -69,28 +90,18 @@ public class CustomPosition : MonoBehaviour
         SetPrevious();
 
         _ETERNAL.r.lateRecorder.callback += SetPrevious;
-        _ETERNAL.r.earlyRecorder.callback += () => {
-            if (!follow || link == Link.Match)
-            {
-                transform.position = GetTarget();
-            }
-            else
-            {
-                if (transition.type == Curve.Interpolate)
-                {
-                    transform.position = transition.MoveTowards(transform.position, GetTarget());
-                }
-                else if (transition.type == Curve.Custom)
-                {
-
-                }
-            }
-        };
+        _ETERNAL.r.earlyRecorder.callback += SetTarget;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        //transform.Translate(Vector3.forward * 1 * Time.deltaTime);
+    }
+
+    private void OnDestroy()
+    {
+        _ETERNAL.r.lateRecorder.callback -= SetPrevious;
+        _ETERNAL.r.earlyRecorder.callback -= SetTarget;
     }
 }
