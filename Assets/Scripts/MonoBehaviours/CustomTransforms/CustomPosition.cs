@@ -4,30 +4,11 @@ using UnityEngine;
 using UnityEngine.Experimental.AI;
 using UnityEngine.UIElements;
 
-public class CustomPosition : MonoBehaviour
+public class CustomPosition : CustomTransformLinks<Vector3>
 {
-    public Space space = Space.Self;
-
-    public bool follow = false;
-    public Transition transition;
-
-    //global
-    public Vector3 position;
-
-    //local
-    public Transform parent;
-
-    public Link link = Link.Offset;
-
-    public Vector3 localOffset;
-    public Vector3 globalOffset;
-
-
-    //previous
-    private Vector3 previous;
 
     [ContextMenu("Apply to target")]
-    public void ApplyToTarget ()
+    public override void ApplyToTarget ()
     {
         if (space == Space.Self && link == Link.Match)
         {
@@ -38,7 +19,7 @@ public class CustomPosition : MonoBehaviour
         transform.position = GetTarget();
     }
 
-    public void SetTarget ()
+    public override void SetTarget ()
     {
         if (enabled) {
             if (!follow || link == Link.Match)
@@ -59,18 +40,18 @@ public class CustomPosition : MonoBehaviour
         }
     }
 
-    public Vector3 GetTarget()
+    public override Vector3 GetTarget()
     {
         Vector3 target = Vector3.zero;
 
         if (space == Space.World)
         {
-            target = position;
+            target = value;
         }
         else if (space == Space.Self)
         {
             if (link == Link.Offset) {
-                target = parent.position + parent.TransformDirection(localOffset) + globalOffset;
+                target = parent.position + parent.TransformDirection(value) + globalOffset;
             } else if (link == Link.Match)
             {
                 target = parent.position + parent.TransformDirection(previous);
@@ -81,22 +62,13 @@ public class CustomPosition : MonoBehaviour
     }
 
 
-    public void SetPrevious ()
+    public override void SetPrevious ()
     {
         previous = parent.InverseTransformPoint(transform.position);
     }
 
-    private void Awake()
+    private void Start()
     {
-        SetPrevious();
-
-        _ETERNAL.r.lateRecorder.callback += SetPrevious;
-        _ETERNAL.r.earlyRecorder.callback += SetTarget;
-    }
-
-    private void OnDestroy()
-    {
-        _ETERNAL.r.lateRecorder.callback -= SetPrevious;
-        _ETERNAL.r.earlyRecorder.callback -= SetTarget;
+        
     }
 }

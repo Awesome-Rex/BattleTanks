@@ -3,29 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CustomRotation : MonoBehaviour
+public class CustomRotation : CustomTransformLinks<Quaternion>
 {
-    public Space space = Space.Self;
-
-    public bool follow = false;
-    public Transition transition;
-
-    //global
-    public Quaternion rotation;
-
-    //local
-    public Transform parent;
-
-    public Link link = Link.Offset;
-
-    public Vector3 localOffset;
-    public Vector3 globalOffset;
-
-    //previous
-    private Quaternion previous;
-
     [ContextMenu("Apply to target")]
-    public void ApplyToTarget()
+    public override void ApplyToTarget()
     {
         if (space == Space.Self && link == Link.Match)
         {
@@ -36,7 +17,7 @@ public class CustomRotation : MonoBehaviour
         transform.rotation = GetTarget();
     }
 
-    public void SetTarget ()
+    public override void SetTarget ()
     {
         if (enabled) {
             if (!follow || link == Link.Match)
@@ -57,13 +38,13 @@ public class CustomRotation : MonoBehaviour
         }
     }
 
-    public Quaternion GetTarget()
+    public override Quaternion GetTarget()
     {
         Quaternion target = Quaternion.Euler(Vector3.zero);
 
         if (space == Space.World)
         {
-            target = rotation;
+            target = value;
         }
         else if (space == Space.Self)
         {
@@ -72,8 +53,8 @@ public class CustomRotation : MonoBehaviour
                 Quaternion temp = transform.rotation;
 
                 transform.rotation = parent.rotation;
-                transform.Rotate(localOffset, Space.Self);
-                transform.Rotate(globalOffset, Space.World);
+                transform.Rotate(value.eulerAngles, Space.Self);
+                transform.Rotate(globalOffset.eulerAngles, Space.World);
 
                 target = transform.rotation;
                 transform.rotation = temp;
@@ -86,12 +67,12 @@ public class CustomRotation : MonoBehaviour
         return target;
     }
 
-    public void SetPrevious ()
+    public override void SetPrevious ()
     {
         previous = Quaternion.Inverse(parent.rotation) * transform.rotation;
     }
 
-    private void Awake()
+    protected override void Awake()
     {
         SetPrevious();
 
@@ -99,9 +80,14 @@ public class CustomRotation : MonoBehaviour
         _ETERNAL.r.earlyRecorder.callback += SetTarget;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         _ETERNAL.r.lateRecorder.callback -= SetPrevious;
         _ETERNAL.r.earlyRecorder.callback -= SetTarget;
+    }
+
+    private void Start()
+    {
+        
     }
 }

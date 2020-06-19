@@ -7,10 +7,10 @@ public abstract class CustomTransform<T> : MonoBehaviour
     //properties
     public Space space = Space.Self;
     
-    protected T value;
     public Transform parent;
+    public T value;
     
-    private T previous;
+    protected T previous;
 
     //methods
     public abstract T GetTarget();

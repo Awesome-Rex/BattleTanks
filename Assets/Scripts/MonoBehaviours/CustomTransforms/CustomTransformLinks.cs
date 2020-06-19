@@ -6,14 +6,12 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
 {
     public bool follow = false;
     public Transition transition;
-
-
+    
     public Link link = Link.Offset;
     
 
     public T globalOffset;  //local
-
-    [ContextMenu("Apply to target")]
+    
     public abstract void ApplyToTarget();
 
     public abstract void SetTarget();

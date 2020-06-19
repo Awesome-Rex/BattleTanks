@@ -242,23 +242,22 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1278675272}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 17f5561371ad1c84190b7e7adce75d5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   space: 1
+  parent: {fileID: 867021773}
+  value: {x: 5, y: 0, z: 0}
   follow: 0
   transition:
     type: 0
     speed: 10
     degrees: 0
     percent: 5
-  position: {x: 0, y: 0, z: 0}
-  parent: {fileID: 867021773}
-  link: 1
-  localOffset: {x: 0, y: 1, z: 5}
-  globalOffset: {x: 0, y: 0, z: 0}
+  link: 0
+  globalOffset: {x: 2, y: 3, z: 0}
 --- !u!65 &1278675274
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -326,8 +325,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1278675272}
-  m_LocalRotation: {x: 0, y: 0.38268343, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: -0.96789074, y: 0.10782766, z: 6.9371123}
+  m_LocalRotation: {x: 0.96605676, y: 0.025665084, z: -0.105844006, w: 0.2342493}
+  m_LocalPosition: {x: 6.0321093, y: 2.1078277, z: 1.9371123}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -346,17 +345,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   space: 1
+  parent: {fileID: 867021773}
+  value: {x: 0.75608194, y: -0.000000004441297, z: -0.000000004441297, w: 0.65447694}
   follow: 0
   transition:
     type: 1
     speed: 0
     degrees: 1000
     percent: 10
-  rotation: {x: 0, y: 0, z: 0, w: 0}
-  parent: {fileID: 867021773}
-  link: 1
-  localOffset: {x: 0, y: 0, z: 0}
-  globalOffset: {x: 0, y: 0, z: 0}
+  link: 0
+  globalOffset: {x: 0.45515022, y: 0.096823946, z: -0.049867555, w: 0.8837288}
 --- !u!1 &2035055599
 GameObject:
   m_ObjectHideFlags: 0
