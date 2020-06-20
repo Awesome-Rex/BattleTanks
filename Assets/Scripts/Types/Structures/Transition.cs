@@ -8,9 +8,6 @@ using UnityEngine.UIElements;
 using UnityEditor;
 #endif
 
-public enum Curve { Linear, Interpolate, Custom}
-public enum Link { Offset, Match }
-
 [Serializable]
 public struct Transition
 {

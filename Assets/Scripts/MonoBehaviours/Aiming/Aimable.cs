@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Aimable : MonoBehaviour
 {
-    public enum Curve { Linear, Interpolate, }
+    //public enum Curve { Linear, Interpolate, }
 
     public float speed;
     //degrees per second

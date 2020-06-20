@@ -8,10 +8,7 @@ using UnityEditor;
 using UnityEditorInternal;
 #endif
 
-public enum Axis
-{
-    X, Y, Z
-}
+
 
 public class AxisOrder
 {
@@ -27,6 +24,13 @@ public class AxisOrder
         { Axis.Z, "Z" }
     };
 
+    public static Dictionary<Axis, Vector3> axisDirections = new Dictionary<Axis, Vector3>
+    {
+        { Axis.X, new Vector3(1f, 0f, 0f) },
+        { Axis.Y, new Vector3(0f, 1f, 0f) },
+        { Axis.Z, new Vector3(0f, 0f, 1f) }
+    };
+
     public static Dictionary<Axis, Color> axisColours = new Dictionary<Axis, Color>
     {
         { Axis.X, new Color(219f / 255f, 62f / 255f, 29f / 255f) },
@@ -34,51 +38,56 @@ public class AxisOrder
         { Axis.Z, new Color(58f / 255f, 122f / 255f, 237f / 255f) }
     };
 
-    public List<Axis> axes = new List<Axis> { Axis.Z, Axis.Y, Axis.X };
+    public List<AxisApplied> axes = new List<AxisApplied>();
 
-    public bool only3 = true;
-
-    public AxisOrder (List<Axis> axes = null, bool only3 = true)
+    public AxisOrder(List<AxisApplied> axes = null)
     {
         if (axes == null)
         {
-            this.axes = new List<Axis> { Axis.Z, Axis.Y, Axis.X };
+            this.axes = new List<AxisApplied>();
         }
         else
         {
             this.axes = axes;
         }
-
-        if (only3)
-        {
-            Fix();
-        }
     }
 
-    public void Fix ()
+    public Quaternion apply (Quaternion current, Space space = Space.World)
     {
-        if (only3) {
-            axes.Distinct();
-            if (axes.Count > 3)
+        if (space == Space.World) {
+            Quaternion newRot = new Quaternion();
+
+            _ETERNAL.r.UseTransformable((t) =>
             {
-                //axes = axes.GetRange(0, 3);
-            }
-            else if (axes.Count < 3)
+                t.rotation = current;
+
+                foreach (AxisApplied i in axes)
+                {
+                    t.Rotate(axisDirections[i.axis] * i.units, space);
+                }
+
+                newRot = t.rotation;
+            });
+
+            return newRot;
+        } else if (space == Space.Self)
+        {
+            Vector3 total = current.eulerAngles;
+
+            foreach (AxisApplied i in axes)
             {
-                if (!axes.Contains(Axis.X))
-                {
-                    axes.Add(Axis.X);
-                }
-                if (!axes.Contains(Axis.Y))
-                {
-                    axes.Add(Axis.Y);
-                }
-                if (!axes.Contains(Axis.Z))
-                {
-                    axes.Add(Axis.Z);
-                }
+                total += axisDirections[i.axis] * i.units;
             }
+
+            return Quaternion.Euler(total);
         }
+
+        return new Quaternion();
+    }
+
+    public Quaternion applyMixed (Quaternion current)
+    {
+
     }
 
 #if UNITY_EDITOR
