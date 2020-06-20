@@ -6,6 +6,7 @@ TagManager:
   tags:
   - _ETERNAL
   - SceneControl
+  - Transformable
   layers:
   - Default
   - TransparentFX

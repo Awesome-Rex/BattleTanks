@@ -8,8 +8,7 @@ using UnityEditor;
 using UnityEditorInternal;
 #endif
 
-
-
+[System.Serializable]
 public class AxisOrder
 {
     public static Axis[] axisIterate = new Axis[]
@@ -39,8 +38,9 @@ public class AxisOrder
     };
 
     public List<AxisApplied> axes = new List<AxisApplied>();
+    public SpaceVariety variety = SpaceVariety.OneSided;
 
-    public AxisOrder(List<AxisApplied> axes = null)
+    public AxisOrder(List<AxisApplied> axes = null, SpaceVariety variety = SpaceVariety.OneSided)
     {
         if (axes == null)
         {
@@ -50,11 +50,42 @@ public class AxisOrder
         {
             this.axes = axes;
         }
+
+        this.variety = variety;
     }
 
     public Quaternion apply (Quaternion current, Space space = Space.World)
     {
-        if (space == Space.World) {
+        if (variety == SpaceVariety.OneSided) {
+            if (space == Space.World) {
+                Quaternion newRot = new Quaternion();
+
+                _ETERNAL.r.UseTransformable((t) =>
+                {
+                    t.rotation = current;
+
+                    foreach (AxisApplied i in axes)
+                    {
+                        t.Rotate(axisDirections[i.axis] * i.units, space);
+                    }
+
+                    newRot = t.rotation;
+                });
+
+                return newRot;
+            } else if (space == Space.Self)
+            {
+                Vector3 total = current.eulerAngles;
+
+                foreach (AxisApplied i in axes)
+                {
+                    total += axisDirections[i.axis] * i.units;
+                }
+
+                return Quaternion.Euler(total);
+            }
+        } else if (variety == SpaceVariety.Mixed)
+        {
             Quaternion newRot = new Quaternion();
 
             _ETERNAL.r.UseTransformable((t) =>
@@ -63,31 +94,15 @@ public class AxisOrder
 
                 foreach (AxisApplied i in axes)
                 {
-                    t.Rotate(axisDirections[i.axis] * i.units, space);
+                    t.Rotate(axisDirections[i.axis] * i.units, i.space);
                 }
 
                 newRot = t.rotation;
             });
 
             return newRot;
-        } else if (space == Space.Self)
-        {
-            Vector3 total = current.eulerAngles;
-
-            foreach (AxisApplied i in axes)
-            {
-                total += axisDirections[i.axis] * i.units;
-            }
-
-            return Quaternion.Euler(total);
         }
-
         return new Quaternion();
-    }
-
-    public Quaternion applyMixed (Quaternion current)
-    {
-
     }
 
 #if UNITY_EDITOR

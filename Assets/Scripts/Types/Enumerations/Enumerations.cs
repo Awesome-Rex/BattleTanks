@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//axis
 public enum Axis { X, Y, Z }
+public enum SpaceVariety { OneSided, Mixed }
 
-//path
 public enum Curve { Linear, Interpolate, Custom }
-//relativity
 public enum Link { Offset, Match }
+

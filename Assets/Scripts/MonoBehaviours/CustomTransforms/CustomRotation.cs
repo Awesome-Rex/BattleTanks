@@ -12,7 +12,7 @@ using UnityEditorInternal;
 [System.Serializable]
 public class CustomRotation : CustomTransformLinks<Quaternion>
 {
-    public AxisOrder axisOrder = new AxisOrder();
+    public new AxisOrder globalOffset = new AxisOrder();
 
     [ContextMenu("Apply to target")]
     public override void ApplyToTarget()
@@ -63,17 +63,8 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
                 transform.rotation = parent.rotation;
                 transform.Rotate(value.eulerAngles, Space.Self);
-                foreach (Axis i in axisOrder.axes) {
-                    if (i == Axis.X) {
-                        transform.Rotate(new Vector3 (globalOffset.eulerAngles.x, 0f, 0f), Space.World);
-                    } else if (i == Axis.Y)
-                    {
-                        transform.Rotate(new Vector3(0f ,globalOffset.eulerAngles.y, 0f), Space.World);
-                    } else if (i == Axis.Z)
-                    {
-                        transform.Rotate(new Vector3(0f, 0f, globalOffset.eulerAngles.z), Space.World);
-                    }
-                }
+                
+                //transform
 
                 target = transform.rotation;
                 transform.rotation = temp;
@@ -115,12 +106,12 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 #if UNITY_EDITOR
     [CustomEditor(typeof(CustomRotation))]
     public class E : Editor {
-        private SerializedProperty transition;
+        private SerializedProperty transitionP;
         //private SerializedProperty axisOrder;
 
         private void OnEnable()
         {
-            transition = serializedObject.FindProperty("transition");
+            transitionP = serializedObject.FindProperty("transition");
             //axisOrder = serializedObject.FindProperty("axisOrder");
         }
 
@@ -148,7 +139,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
                 if (t.link == Link.Offset)
                 {
-                    t.globalOffset = Quaternion.Euler(EditorGUILayout.Vector3Field("Global Offset", t.globalOffset.eulerAngles));
+                    //t.globalOffset = Quaternion.Euler(EditorGUILayout.Vector3Field("Global Offset", t.globalOffset.eulerAngles));
                     //EditorGUILayout.PropertyField(axisOrder);
 
                     //EditorGUILayout.BeginHorizontal();
@@ -166,7 +157,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             if (t.follow)
             {
                 //t.transition = (Transition)EditorGUILayout.ObjectField("Transition", t.transition, typeof(Transition), true);
-                EditorGUILayout.PropertyField(transition);
+                EditorGUILayout.PropertyField(transitionP);
             }
         }
     }

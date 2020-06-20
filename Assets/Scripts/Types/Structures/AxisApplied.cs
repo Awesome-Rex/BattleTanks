@@ -2,18 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+[System.Serializable]
 public struct AxisApplied
 {
     public Axis axis;
     public float units;
-
+    
     public Space space;
 
-    public AxisApplied(Axis axis, float units, Space space = Space.Self)
+    [HideInInspector]
+    public SpaceVariety variety;
+
+    public AxisApplied(Axis axis, float units, SpaceVariety variety = SpaceVariety.OneSided, Space space = Space.Self)
     {
         this.axis = axis;
         this.units = units;
 
         this.space = space;
+        this.variety = variety;
     }
 }

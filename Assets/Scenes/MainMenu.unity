@@ -228,6 +228,7 @@ GameObject:
   - component: {fileID: 1278675274}
   - component: {fileID: 1278675273}
   - component: {fileID: 1278675278}
+  - component: {fileID: 1278675279}
   m_Layer: 0
   m_Name: Cube (1)
   m_TagString: Untagged
@@ -254,8 +255,13 @@ MonoBehaviour:
   transition:
     type: 0
     speed: 10
-    degrees: 0
     percent: 5
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   link: 0
   globalOffset: {x: 2, y: 3, z: 0}
 --- !u!65 &1278675274
@@ -351,10 +357,31 @@ MonoBehaviour:
   transition:
     type: 1
     speed: 0
-    degrees: 1000
     percent: 10
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   link: 0
-  globalOffset: {x: 0.45515022, y: 0.096823946, z: -0.049867555, w: 0.8837288}
+  globalOffset: {x: 0.4551502, y: 0.09682395, z: -0.04986756, w: 0.8837288}
+  globalOffset:
+    axes: []
+    variety: 0
+--- !u!114 &1278675279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1278675272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cac407ef72d3aba48a2e89985b13ada6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  T: {fileID: 0}
 --- !u!1 &2035055599
 GameObject:
   m_ObjectHideFlags: 0
