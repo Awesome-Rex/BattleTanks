@@ -2,9 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditorInternal;
+#endif
+
+[System.Serializable]
 public class CustomRotation : CustomTransformLinks<Quaternion>
 {
+    public AxisOrder axisOrder = new AxisOrder();
+
     [ContextMenu("Apply to target")]
     public override void ApplyToTarget()
     {
@@ -54,7 +63,17 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
                 transform.rotation = parent.rotation;
                 transform.Rotate(value.eulerAngles, Space.Self);
-                transform.Rotate(globalOffset.eulerAngles, Space.World);
+                foreach (Axis i in axisOrder.axes) {
+                    if (i == Axis.X) {
+                        transform.Rotate(new Vector3 (globalOffset.eulerAngles.x, 0f, 0f), Space.World);
+                    } else if (i == Axis.Y)
+                    {
+                        transform.Rotate(new Vector3(0f ,globalOffset.eulerAngles.y, 0f), Space.World);
+                    } else if (i == Axis.Z)
+                    {
+                        transform.Rotate(new Vector3(0f, 0f, globalOffset.eulerAngles.z), Space.World);
+                    }
+                }
 
                 target = transform.rotation;
                 transform.rotation = temp;
@@ -90,4 +109,66 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         
     }
+
+
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(CustomRotation))]
+    public class E : Editor {
+        private SerializedProperty transition;
+        //private SerializedProperty axisOrder;
+
+        private void OnEnable()
+        {
+            transition = serializedObject.FindProperty("transition");
+            //axisOrder = serializedObject.FindProperty("axisOrder");
+        }
+
+        public override void OnInspectorGUI()
+        {
+            var t = (CustomRotation)target;
+
+
+            EditorGUILayout.LabelField("Space", EditorStyles.boldLabel);
+            t.space = (Space)EditorGUILayout.EnumPopup(t.space);
+
+            EditorGUILayout.Space();
+            
+            if (t.space == Space.Self) t.parent = (Transform)EditorGUILayout.ObjectField("Parent", t.parent, typeof(Transform), true);
+
+            t.value = Quaternion.Euler(EditorGUILayout.Vector3Field("Rotation", t.value.eulerAngles));
+
+            EditorGUILayout.Space();
+
+            if (t.space == Space.Self)
+            {
+                EditorGUILayout.LabelField("Local Space", EditorStyles.boldLabel);
+
+                t.link = (Link)EditorGUILayout.EnumPopup("Link", t.link);
+
+                if (t.link == Link.Offset)
+                {
+                    t.globalOffset = Quaternion.Euler(EditorGUILayout.Vector3Field("Global Offset", t.globalOffset.eulerAngles));
+                    //EditorGUILayout.PropertyField(axisOrder);
+
+                    //EditorGUILayout.BeginHorizontal();
+
+                    
+                    /*foreach (Axis i in t.axisOrder)
+                    {
+                    }*/
+                }
+            }
+
+            EditorGUILayout.Space();
+            
+            t.follow = EditorGUILayout.Toggle("Transitioning", t.follow);
+            if (t.follow)
+            {
+                //t.transition = (Transition)EditorGUILayout.ObjectField("Transition", t.transition, typeof(Transition), true);
+                EditorGUILayout.PropertyField(transition);
+            }
+        }
+    }
+#endif
 }
