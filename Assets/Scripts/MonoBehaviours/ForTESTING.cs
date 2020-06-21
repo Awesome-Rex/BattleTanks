@@ -13,12 +13,16 @@ public class ForTESTING : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        //transform.rotation = SR.Get<CustomRotation>().SetRotation(new Vector3(45f, 45f, 0f), Space.Self);
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            //stuff
 
-        transform.position = SR.Get<CustomPosition>().Translate(new Vector3(5f, 2f, 0f) * Time.deltaTime, Space.Self);
-
-        //Debug.Log(SR.Get<CustomRotation>().GetRotation(Space.World).eulerAngles);
+            SR.Get<CustomPosition>().factorScale = false;
+        }
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            SR.Get<CustomPosition>().factorScale = true;
+        }
     }
 }

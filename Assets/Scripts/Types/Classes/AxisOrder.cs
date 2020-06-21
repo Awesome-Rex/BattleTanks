@@ -59,6 +59,15 @@ public class AxisOrder
 
         return 0f;
     }
+
+    public static Vector3 MultiplyVector3 (Vector3 a, Vector3 b)
+    {
+        return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
+    }
+    public static Vector3 DivideVector3(Vector3 a, Vector3 b)
+    {
+        return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
+    }
     //END
 
 
@@ -94,34 +103,48 @@ public class AxisOrder
         Quaternion newRot = relative.rotation;
 
         if (variety == SpaceVariety.OneSided) {
-            if (space == Space.World) {
-                foreach (AxisApplied i in axes)
-                {
-                    //newRot = Quaternion.Euler(axisDirections[i.axis] * i.units) * newRot;
-                    relative.Rotate((axisDirections[i.axis] * i.units), Space.Self);
-                }
-            } else if (space == Space.Self)
+            foreach (AxisApplied i in axes)
             {
-                foreach (AxisApplied i in axes)
-                {
-                    //newRot = newRot * Quaternion.Euler(axisDirections[i.axis] * i.units);
-                    relative.Rotate((axisDirections[i.axis] * i.units), Space.World);
-                }
+                newRot = relative.Rotate((axisDirections[i.axis] * i.units), space);
             }
         } else if (variety == SpaceVariety.Mixed)
         {
             foreach (AxisApplied i in axes)
             {
-                /*if (i.space == Space.Self)
+                newRot = relative.Rotate((axisDirections[i.axis] * i.units), i.space);
+            }
+        }
+        return newRot;
+    }
+
+    public Quaternion ApplyRotation(Transform relative, Space space = Space.World)
+    {
+        Quaternion newRot = relative.rotation;
+
+        if (variety == SpaceVariety.OneSided)
+        {
+            foreach (AxisApplied i in axes)
+            {
+                if (space == Space.Self) {
+                    newRot = newRot * Quaternion.Euler(axisDirections[i.axis] * i.units);
+                } else
+                {
+                    newRot = Quaternion.Euler(axisDirections[i.axis] * i.units) * newRot;
+                }
+            }
+        }
+        else if (variety == SpaceVariety.Mixed)
+        {
+            foreach (AxisApplied i in axes)
+            {
+                if (space == Space.Self)
                 {
                     newRot = newRot * Quaternion.Euler(axisDirections[i.axis] * i.units);
                 }
                 else
                 {
                     newRot = Quaternion.Euler(axisDirections[i.axis] * i.units) * newRot;
-                }*/
-
-                relative.Rotate((axisDirections[i.axis] * i.units), i.space);
+                }
             }
         }
         return newRot;
@@ -133,19 +156,9 @@ public class AxisOrder
 
         if (variety == SpaceVariety.OneSided)
         {
-            if (space == Space.World)
+            foreach (AxisApplied i in axes)
             {
-                foreach (AxisApplied i in axes)
-                {
-                    newPos = relative.Translate((axisDirections[i.axis] * i.units), Space.World);
-                }
-            }
-            else if (space == Space.Self)
-            {
-                foreach (AxisApplied i in axes)
-                {
-                    newPos = relative.Translate((axisDirections[i.axis] * i.units), Space.Self);
-                }
+                newPos = relative.Translate((axisDirections[i.axis] * i.units), space);
             }
         }
         else if (variety == SpaceVariety.Mixed)
@@ -153,6 +166,41 @@ public class AxisOrder
             foreach (AxisApplied i in axes)
             {
                 newPos = relative.Translate((axisDirections[i.axis] * i.units), i.space);
+            }
+        }
+        return newPos;
+    }
+
+    public Vector3 ApplyPosition(Transform relative, Space space = Space.World)
+    {
+        Vector3 newPos = relative.position;
+
+        if (variety == SpaceVariety.OneSided)
+        {
+            foreach (AxisApplied i in axes)
+            {
+                if (space == Space.Self)
+                {
+                    newPos += relative.parent.TransformPoint(axisDirections[i.axis] * i.units);
+                }
+                else
+                {
+                    newPos += (axisDirections[i.axis] * i.units);
+                }
+            }
+        }
+        else if (variety == SpaceVariety.Mixed)
+        {
+            foreach (AxisApplied i in axes)
+            {
+                if (i.space == Space.Self)
+                {
+                    newPos += relative.parent.TransformPoint(axisDirections[i.axis] * i.units);
+                }
+                else
+                {
+                    newPos += (axisDirections[i.axis] * i.units);
+                }
             }
         }
         return newPos;
