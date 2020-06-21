@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Xml.Schema;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -88,111 +89,74 @@ public class AxisOrder
         }
     }
 
-    public Quaternion ApplyRotation (Transform relative, Quaternion current, Space space = Space.World)
+    public Quaternion ApplyRotation (CustomRotation relative, Space space = Space.World)
     {
+        Quaternion newRot = relative.rotation;
+
         if (variety == SpaceVariety.OneSided) {
             if (space == Space.World) {
-                Quaternion newRot = new Quaternion();
-
-                _ETERNAL.r.UseTransformable((t) =>
-                {
-                    t.rotation = current;
-
-                    foreach (AxisApplied i in axes)
-                    {
-                        t.Rotate(axisDirections[i.axis] * i.units, space);
-                    }
-
-                    newRot = t.rotation;
-                });
-
-                return newRot;
-            } else if (space == Space.Self)
-            {
-                Vector3 total = current.eulerAngles;
-
                 foreach (AxisApplied i in axes)
                 {
-                    total += axisDirections[i.axis] * i.units;
+                    //newRot = Quaternion.Euler(axisDirections[i.axis] * i.units) * newRot;
+                    relative.Rotate((axisDirections[i.axis] * i.units), Space.Self);
                 }
-
-                return Quaternion.Euler(total);
+            } else if (space == Space.Self)
+            {
+                foreach (AxisApplied i in axes)
+                {
+                    //newRot = newRot * Quaternion.Euler(axisDirections[i.axis] * i.units);
+                    relative.Rotate((axisDirections[i.axis] * i.units), Space.World);
+                }
             }
         } else if (variety == SpaceVariety.Mixed)
         {
-            Quaternion newRot = new Quaternion();
-
-            _ETERNAL.r.UseTransformable((t) =>
+            foreach (AxisApplied i in axes)
             {
-                t.rotation = current;
-
-                foreach (AxisApplied i in axes)
+                /*if (i.space == Space.Self)
                 {
-                    t.Rotate(axisDirections[i.axis] * i.units, i.space);
+                    newRot = newRot * Quaternion.Euler(axisDirections[i.axis] * i.units);
                 }
+                else
+                {
+                    newRot = Quaternion.Euler(axisDirections[i.axis] * i.units) * newRot;
+                }*/
 
-                newRot = t.rotation;
-            });
-
-            return newRot;
+                relative.Rotate((axisDirections[i.axis] * i.units), i.space);
+            }
         }
-        return new Quaternion();
+        return newRot;
     }
 
-    //public Vector3 ApplyPosition (Transform relative, Vector3 current, Space space = Space.World)
-    //{
-    //    if (variety == SpaceVariety.OneSided)
-    //    {
-    //        if (space == Space.World)
-    //        {
-    //            Quaternion newRot = new Quaternion();
+    public Vector3 ApplyPosition(CustomPosition relative, Space space = Space.World)
+    {
+        Vector3 newPos = relative.position;
 
-    //            _ETERNAL.r.UseTransformable((t) =>
-    //            {
-    //                t.rotation = current;
-
-    //                foreach (AxisApplied i in axes)
-    //                {
-    //                    t.Rotate(axisDirections[i.axis] * i.units, space);
-    //                }
-
-    //                newRot = t.rotation;
-    //            });
-
-    //            return newRot;
-    //        }
-    //        else if (space == Space.Self)
-    //        {
-    //            Vector3 total = current.eulerAngles;
-
-    //            foreach (AxisApplied i in axes)
-    //            {
-    //                total += axisDirections[i.axis] * i.units;
-    //            }
-
-    //            return Quaternion.Euler(total);
-    //        }
-    //    }
-    //    else if (variety == SpaceVariety.Mixed)
-    //    {
-    //        Quaternion newRot = new Quaternion();
-
-    //        _ETERNAL.r.UseTransformable((t) =>
-    //        {
-    //            t.rotation = current;
-
-    //            foreach (AxisApplied i in axes)
-    //            {
-    //                t.Rotate(axisDirections[i.axis] * i.units, i.space);
-    //            }
-
-    //            newRot = t.rotation;
-    //        });
-
-    //        return newRot;
-    //    }
-    //    return Vector3.zero;
-    //}
+        if (variety == SpaceVariety.OneSided)
+        {
+            if (space == Space.World)
+            {
+                foreach (AxisApplied i in axes)
+                {
+                    newPos = relative.Translate((axisDirections[i.axis] * i.units), Space.World);
+                }
+            }
+            else if (space == Space.Self)
+            {
+                foreach (AxisApplied i in axes)
+                {
+                    newPos = relative.Translate((axisDirections[i.axis] * i.units), Space.Self);
+                }
+            }
+        }
+        else if (variety == SpaceVariety.Mixed)
+        {
+            foreach (AxisApplied i in axes)
+            {
+                newPos = relative.Translate((axisDirections[i.axis] * i.units), i.space);
+            }
+        }
+        return newPos;
+    }
 
 #if UNITY_EDITOR
 

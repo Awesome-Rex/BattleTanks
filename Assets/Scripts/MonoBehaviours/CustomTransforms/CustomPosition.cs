@@ -102,7 +102,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             return parent.position + parent.TransformPoint(position); //WORKS!
         } else
         {
-            return position; //WORKS!
+            return transform.position; //WORKS!
         }
     }
 
