@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Xml.Schema;
+using System.Xml.Serialization;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -74,7 +75,9 @@ public class AxisOrder
     public List<AxisApplied> axes = new List<AxisApplied>();
     public SpaceVariety variety = SpaceVariety.OneSided;
 
-    public AxisOrder(List<AxisApplied> axes = null, SpaceVariety variety = SpaceVariety.OneSided)
+    public Space space = Space.World;
+
+    public AxisOrder(List<AxisApplied> axes = null, SpaceVariety variety = SpaceVariety.OneSided, Space space = Space.World)
     {
         if (axes == null)
         {
@@ -86,6 +89,7 @@ public class AxisOrder
         }
 
         this.variety = variety;
+        this.space = space;
     }
 
     public AxisOrder (Vector3 axes, Space space = Space.Self) //set simple (only 3 axes)
@@ -96,18 +100,23 @@ public class AxisOrder
         {
             this.axes.Add(new AxisApplied(i, GetAxis(i, axes), SpaceVariety.OneSided, space));
         }
+
+        this.space = space;
     }
 
-    public Quaternion ApplyRotation (CustomRotation relative, Space space = Space.World)
+
+    public Quaternion ApplyRotation(CustomRotation relative)
     {
         Quaternion newRot = relative.rotation;
 
-        if (variety == SpaceVariety.OneSided) {
+        if (variety == SpaceVariety.OneSided)
+        {
             foreach (AxisApplied i in axes)
             {
                 newRot = relative.Rotate((axisDirections[i.axis] * i.units), space);
             }
-        } else if (variety == SpaceVariety.Mixed)
+        }
+        else if (variety == SpaceVariety.Mixed)
         {
             foreach (AxisApplied i in axes)
             {
@@ -116,8 +125,41 @@ public class AxisOrder
         }
         return newRot;
     }
+    public Quaternion ApplyRotation (Quaternion relative)
+    {
+        Quaternion newRot = relative;
 
-    public Quaternion ApplyRotation(Transform relative, Space space = Space.World)
+        if (variety == SpaceVariety.OneSided)
+        {
+            foreach (AxisApplied i in axes)
+            {
+                if (space == Space.Self)
+                {
+                    newRot = newRot * Quaternion.Euler(axisDirections[i.axis] * i.units);
+                }
+                else
+                {
+                    newRot = Quaternion.Euler(axisDirections[i.axis] * i.units) * newRot;
+                }
+            }
+        }
+        else if (variety == SpaceVariety.Mixed)
+        {
+            foreach (AxisApplied i in axes)
+            {
+                if (space == Space.Self)
+                {
+                    newRot = newRot * Quaternion.Euler(axisDirections[i.axis] * i.units);
+                }
+                else
+                {
+                    newRot = Quaternion.Euler(axisDirections[i.axis] * i.units) * newRot;
+                }
+            }
+        }
+        return newRot;
+    }
+    public Quaternion ApplyRotation(Transform relative)
     {
         Quaternion newRot = relative.rotation;
 
@@ -150,28 +192,32 @@ public class AxisOrder
         return newRot;
     }
 
-    public Vector3 ApplyPosition(CustomPosition relative, Space space = Space.World)
+    public Vector3 ApplyPosition(CustomPosition relative, Vector3? current = null)
     {
-        Vector3 newPos = relative.position;
+        Vector3 originalPos = relative.position;
+        if (current != null) {
+            relative.position = (Vector3)current;
+        } // else use relative.position
 
         if (variety == SpaceVariety.OneSided)
         {
             foreach (AxisApplied i in axes)
             {
-                newPos = relative.Translate((axisDirections[i.axis] * i.units), space);
+                relative.position = relative.Translate((axisDirections[i.axis] * i.units), space);
             }
         }
         else if (variety == SpaceVariety.Mixed)
         {
             foreach (AxisApplied i in axes)
             {
-                newPos = relative.Translate((axisDirections[i.axis] * i.units), i.space);
+                relative.position = relative.Translate((axisDirections[i.axis] * i.units), i.space);
             }
         }
+        Vector3 newPos = relative.position;
+        relative.position = originalPos;
         return newPos;
     }
-
-    public Vector3 ApplyPosition(Transform relative, Space space = Space.World)
+    public Vector3 ApplyPosition(Transform relative)
     {
         Vector3 newPos = relative.position;
 

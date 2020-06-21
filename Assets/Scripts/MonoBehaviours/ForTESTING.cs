@@ -18,11 +18,12 @@ public class ForTESTING : MonoBehaviour
         {
             //stuff
 
-            SR.Get<CustomPosition>().factorScale = false;
+            //SR.Get<CustomPosition>().factorScale = false;
+            //SR.Get<CustomPosition>().position = SR.Get<CustomPosition>().Translate(Vector3.right, Space.World);
         }
         if (Input.GetKeyDown(KeyCode.M))
         {
-            SR.Get<CustomPosition>().factorScale = true;
+            //SR.Get<CustomPosition>().factorScale = true;
         }
     }
 }

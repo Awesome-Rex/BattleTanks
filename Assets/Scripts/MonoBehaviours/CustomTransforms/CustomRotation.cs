@@ -21,7 +21,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
         set
         {
-            SetRotation(value.eulerAngles, Space.World);
+            transform.rotation = SetRotation(value.eulerAngles, Space.World);
         }
     }
     public Quaternion localRotation
@@ -32,7 +32,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
         set
         {
-            SetRotation(value.eulerAngles, Space.Self);
+            transform.rotation = SetRotation(value.eulerAngles, Space.Self);
         }
     }
 
@@ -106,6 +106,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             if (link == Link.Offset)
             {
                 target = parent.rotation * value; //++++++++offset
+                target = offset.ApplyRotation(target);
             } else if (link == Link.Match)
             {
                 target = parent.rotation * previous; //WORKS!

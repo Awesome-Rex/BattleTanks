@@ -16,7 +16,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         set
         {
-            SetPosition(value, Space.World);
+            transform.position = SetPosition(value, Space.World);
         }
     }
     public Vector3 localPosition
@@ -27,7 +27,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         set
         {
-            SetPosition(value, Space.Self);
+            transform.position = SetPosition(value, Space.Self);
         }
     }
 
@@ -82,12 +82,12 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             if (link == Link.Offset) {
                 if (factorScale) {
                     target = parent.TransformPoint(value * offsetScale); //WORKS!
-
-                    //STILL HAVE TO FIX +++++++++++OFFSET
                 } else
                 {
                     target = parent.position + parent.TransformDirection(value); //WORKS!
                 }
+
+                target = offset.ApplyPosition(this, target);
             } else if (link == Link.Match)
             {
                 if (factorScale) {
@@ -131,7 +131,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             }
         } else
         {
-            return transform.position; //WORKS!
+            return position; //WORKS!
         }
     }
 

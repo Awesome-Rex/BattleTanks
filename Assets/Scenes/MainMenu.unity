@@ -147,13 +147,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867021772}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.038060226, y: 0.1913417, z: 0.1913417, w: 0.9619398}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 22.5, z: 22.5}
 --- !u!65 &867021774
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -251,7 +251,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   space: 1
   parent: {fileID: 867021773}
-  value: {x: 5, y: 5, z: 0}
+  value: {x: 5, y: 1, z: 0}
   follow: 0
   transition:
     type: 0
@@ -263,12 +263,21 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  link: 1
+  link: 0
   offset:
-    axes: []
-    variety: 0
-  factorScale: 1
-  offsetScale: 2
+    axes:
+    - axis: 2
+      units: 2
+      space: 0
+      variety: 0
+    - axis: 1
+      units: 2
+      space: 0
+      variety: 0
+    variety: 1
+    space: 1
+  factorScale: 0
+  offsetScale: 1
 --- !u!65 &1278675274
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -373,6 +382,7 @@ MonoBehaviour:
   offset:
     axes: []
     variety: 0
+    space: 0
 --- !u!114 &1278675279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -450,7 +460,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 26.991467
   orthographic: 1
   orthographic size: 5
   m_Depth: -1
