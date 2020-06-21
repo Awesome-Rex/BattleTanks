@@ -12,10 +12,56 @@ using UnityEditorInternal;
 [System.Serializable]
 public class CustomRotation : CustomTransformLinks<Quaternion>
 {
-    public new AxisOrder globalOffset = new AxisOrder();
+    public Quaternion rotation
+    {
+        get
+        {
+            return GetRotation(Space.World);
+        }
 
-    [ContextMenu("Apply to target")]
-    public override void ApplyToTarget()
+        set
+        {
+            SetRotation(value.eulerAngles, Space.World);
+        }
+    }
+    public Quaternion localRotation
+    {
+        get
+        {
+            return GetRotation(Space.Self);
+        }
+        set
+        {
+            SetRotation(value.eulerAngles, Space.Self);
+        }
+    }
+
+    public Vector3 eulerAngles
+    {
+        get
+        {
+            return rotation.eulerAngles;
+        }
+        set
+        {
+            rotation = Quaternion.Euler(value);
+        }
+    }
+
+    public Vector3 localEulerAngles
+    {
+        get
+        {
+            return localRotation.eulerAngles;
+        }
+        set
+        {
+            localRotation = Quaternion.Euler(value);
+        }
+    }
+
+    [ContextMenu("Set to target")]
+    public override void SetToTarget()
     {
         if (space == Space.Self && link == Link.Match)
         {
@@ -26,7 +72,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         transform.rotation = GetTarget();
     }
 
-    public override void SetTarget ()
+    public override void MoveToTarget ()
     {
         if (enabled) {
             if (!follow || link == Link.Match)
@@ -41,7 +87,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 }
                 else if (transition.type == Curve.Custom)
                 {
-
+                    //++++++CURVES
                 }
             }
         }
@@ -49,7 +95,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
     public override Quaternion GetTarget()
     {
-        Quaternion target = Quaternion.Euler(Vector3.zero);
+        Quaternion target = new Quaternion();
 
         if (space == Space.World)
         {
@@ -59,22 +105,47 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         {
             if (link == Link.Offset)
             {
-                Quaternion temp = transform.rotation;
-
-                transform.rotation = parent.rotation;
-                transform.Rotate(value.eulerAngles, Space.Self);
-                
-                //transform
-
-                target = transform.rotation;
-                transform.rotation = temp;
+                target = parent.rotation * value; //++++++++offset
             } else if (link == Link.Match)
             {
-                target = parent.rotation * previous;
+                target = parent.rotation * previous; //WORKS!
             }
         }
 
         return target;
+    }
+
+    public Quaternion Rotate (Vector3 eulers, Space relativeTo = Space.Self)
+    {
+        if (relativeTo == Space.Self)
+        {
+            return transform.rotation * Quaternion.Euler(eulers); //WORKS!
+        } else
+        {
+            return Quaternion.Euler(eulers) * transform.rotation; //WORKS!
+        }
+    }
+
+    public Quaternion SetRotation (Vector3 rotation, Space relativeTo = Space.Self)
+    {
+        if (relativeTo == Space.Self)
+        {
+            return parent.rotation * Quaternion.Euler(rotation); //WORKS!
+        }
+        else 
+        {
+            return Quaternion.Euler(rotation); //WORKS!
+        }
+    }
+
+    public Quaternion GetRotation (Space relativeTo = Space.Self)
+    {
+        if (relativeTo == Space.Self) {
+            return Quaternion.Inverse(parent.rotation) * transform.rotation; //WORKS!
+        } else
+        {
+            return transform.rotation; //WORKS!
+        }
     }
 
     public override void SetPrevious ()
@@ -87,13 +158,13 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         SetPrevious();
 
         _ETERNAL.r.lateRecorder.callback += SetPrevious;
-        _ETERNAL.r.earlyRecorder.callback += SetTarget;
+        _ETERNAL.r.earlyRecorder.callback += MoveToTarget;
     }
 
     protected override void OnDestroy()
     {
         _ETERNAL.r.lateRecorder.callback -= SetPrevious;
-        _ETERNAL.r.earlyRecorder.callback -= SetTarget;
+        _ETERNAL.r.earlyRecorder.callback -= MoveToTarget;
     }
 
     private void Start()
@@ -101,65 +172,63 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         
     }
 
-
-
 #if UNITY_EDITOR
-    [CustomEditor(typeof(CustomRotation))]
-    public class E : Editor {
-        private SerializedProperty transitionP;
-        //private SerializedProperty axisOrder;
+    //[CustomEditor(typeof(CustomRotation))]
+    //public class E : Editor {
+    //    private SerializedProperty transitionP;
+    //    //private SerializedProperty axisOrder;
 
-        private void OnEnable()
-        {
-            transitionP = serializedObject.FindProperty("transition");
-            //axisOrder = serializedObject.FindProperty("axisOrder");
-        }
+    //    private void OnEnable()
+    //    {
+    //        transitionP = serializedObject.FindProperty("transition");
+    //        //axisOrder = serializedObject.FindProperty("axisOrder");
+    //    }
 
-        public override void OnInspectorGUI()
-        {
-            var t = (CustomRotation)target;
+    //    public override void OnInspectorGUI()
+    //    {
+    //        var t = (CustomRotation)target;
 
 
-            EditorGUILayout.LabelField("Space", EditorStyles.boldLabel);
-            t.space = (Space)EditorGUILayout.EnumPopup(t.space);
+    //        EditorGUILayout.LabelField("Space", EditorStyles.boldLabel);
+    //        t.space = (Space)EditorGUILayout.EnumPopup(t.space);
 
-            EditorGUILayout.Space();
+    //        EditorGUILayout.Space();
             
-            if (t.space == Space.Self) t.parent = (Transform)EditorGUILayout.ObjectField("Parent", t.parent, typeof(Transform), true);
+    //        if (t.space == Space.Self) t.parent = (Transform)EditorGUILayout.ObjectField("Parent", t.parent, typeof(Transform), true);
 
-            t.value = Quaternion.Euler(EditorGUILayout.Vector3Field("Rotation", t.value.eulerAngles));
+    //        t.value = Quaternion.Euler(EditorGUILayout.Vector3Field("Rotation", t.value.eulerAngles));
 
-            EditorGUILayout.Space();
+    //        EditorGUILayout.Space();
 
-            if (t.space == Space.Self)
-            {
-                EditorGUILayout.LabelField("Local Space", EditorStyles.boldLabel);
+    //        if (t.space == Space.Self)
+    //        {
+    //            EditorGUILayout.LabelField("Local Space", EditorStyles.boldLabel);
 
-                t.link = (Link)EditorGUILayout.EnumPopup("Link", t.link);
+    //            t.link = (Link)EditorGUILayout.EnumPopup("Link", t.link);
 
-                if (t.link == Link.Offset)
-                {
-                    //t.globalOffset = Quaternion.Euler(EditorGUILayout.Vector3Field("Global Offset", t.globalOffset.eulerAngles));
-                    //EditorGUILayout.PropertyField(axisOrder);
+    //            if (t.link == Link.Offset)
+    //            {
+    //                //t.globalOffset = Quaternion.Euler(EditorGUILayout.Vector3Field("Global Offset", t.globalOffset.eulerAngles));
+    //                //EditorGUILayout.PropertyField(axisOrder);
 
-                    //EditorGUILayout.BeginHorizontal();
+    //                //EditorGUILayout.BeginHorizontal();
 
                     
-                    /*foreach (Axis i in t.axisOrder)
-                    {
-                    }*/
-                }
-            }
+    //                /*foreach (Axis i in t.axisOrder)
+    //                {
+    //                }*/
+    //            }
+    //        }
 
-            EditorGUILayout.Space();
+    //        EditorGUILayout.Space();
             
-            t.follow = EditorGUILayout.Toggle("Transitioning", t.follow);
-            if (t.follow)
-            {
-                //t.transition = (Transition)EditorGUILayout.ObjectField("Transition", t.transition, typeof(Transition), true);
-                EditorGUILayout.PropertyField(transitionP);
-            }
-        }
-    }
+    //        t.follow = EditorGUILayout.Toggle("Transitioning", t.follow);
+    //        if (t.follow)
+    //        {
+    //            //t.transition = (Transition)EditorGUILayout.ObjectField("Transition", t.transition, typeof(Transition), true);
+    //            EditorGUILayout.PropertyField(transitionP);
+    //        }
+    //    }
+    //}
 #endif
 }

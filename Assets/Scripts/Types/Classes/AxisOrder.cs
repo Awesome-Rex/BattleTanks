@@ -11,7 +11,13 @@ using UnityEditorInternal;
 [System.Serializable]
 public class AxisOrder
 {
+    // THE AXIS BIBLE
     public static Axis[] axisIterate = new Axis[]
+    {
+        Axis.X, Axis.Y, Axis.Z
+    };
+
+    public static Axis[] axisDefaultOrder = new Axis[]
     {
         Axis.X, Axis.Y, Axis.Z
     };
@@ -37,6 +43,24 @@ public class AxisOrder
         { Axis.Z, new Color(58f / 255f, 122f / 255f, 237f / 255f) }
     };
 
+    public static float GetAxis (Axis axis, Vector3 from)
+    {
+        if (axis == Axis.X)
+        {
+            return from.x;
+        } else if (axis == Axis.Y)
+        {
+            return from.y;
+        } else if (axis == Axis.Z)
+        {
+            return from.z;
+        }
+
+        return 0f;
+    }
+    //END
+
+
     public List<AxisApplied> axes = new List<AxisApplied>();
     public SpaceVariety variety = SpaceVariety.OneSided;
 
@@ -54,7 +78,17 @@ public class AxisOrder
         this.variety = variety;
     }
 
-    public Quaternion apply (Quaternion current, Space space = Space.World)
+    public AxisOrder (Vector3 axes, Space space = Space.Self) //set simple (only 3 axes)
+    {
+        this.axes = new List<AxisApplied>();
+
+        foreach (Axis i in axisDefaultOrder)
+        {
+            this.axes.Add(new AxisApplied(i, GetAxis(i, axes), SpaceVariety.OneSided, space));
+        }
+    }
+
+    public Quaternion ApplyRotation (Transform relative, Quaternion current, Space space = Space.World)
     {
         if (variety == SpaceVariety.OneSided) {
             if (space == Space.World) {
@@ -104,6 +138,61 @@ public class AxisOrder
         }
         return new Quaternion();
     }
+
+    //public Vector3 ApplyPosition (Transform relative, Vector3 current, Space space = Space.World)
+    //{
+    //    if (variety == SpaceVariety.OneSided)
+    //    {
+    //        if (space == Space.World)
+    //        {
+    //            Quaternion newRot = new Quaternion();
+
+    //            _ETERNAL.r.UseTransformable((t) =>
+    //            {
+    //                t.rotation = current;
+
+    //                foreach (AxisApplied i in axes)
+    //                {
+    //                    t.Rotate(axisDirections[i.axis] * i.units, space);
+    //                }
+
+    //                newRot = t.rotation;
+    //            });
+
+    //            return newRot;
+    //        }
+    //        else if (space == Space.Self)
+    //        {
+    //            Vector3 total = current.eulerAngles;
+
+    //            foreach (AxisApplied i in axes)
+    //            {
+    //                total += axisDirections[i.axis] * i.units;
+    //            }
+
+    //            return Quaternion.Euler(total);
+    //        }
+    //    }
+    //    else if (variety == SpaceVariety.Mixed)
+    //    {
+    //        Quaternion newRot = new Quaternion();
+
+    //        _ETERNAL.r.UseTransformable((t) =>
+    //        {
+    //            t.rotation = current;
+
+    //            foreach (AxisApplied i in axes)
+    //            {
+    //                t.Rotate(axisDirections[i.axis] * i.units, i.space);
+    //            }
+
+    //            newRot = t.rotation;
+    //        });
+
+    //        return newRot;
+    //    }
+    //    return Vector3.zero;
+    //}
 
 #if UNITY_EDITOR
 

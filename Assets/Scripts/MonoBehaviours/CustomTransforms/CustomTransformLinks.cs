@@ -10,22 +10,22 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
     public Link link = Link.Offset;
     
 
-    public T globalOffset;  //local
+    public AxisOrder offset;  //local
     
-    public abstract void ApplyToTarget();
+    public abstract void SetToTarget();
 
-    public abstract void SetTarget();
+    public abstract void MoveToTarget();
 
 
     protected override void Awake ()
     {
         base.Awake();
-        _ETERNAL.r.earlyRecorder.callback += SetTarget;
+        _ETERNAL.r.earlyRecorder.callback += MoveToTarget;
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        _ETERNAL.r.earlyRecorder.callback -= SetTarget;
+        _ETERNAL.r.earlyRecorder.callback -= MoveToTarget;
     }
 }

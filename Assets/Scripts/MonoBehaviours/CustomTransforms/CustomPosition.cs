@@ -6,9 +6,31 @@ using UnityEngine.UIElements;
 
 public class CustomPosition : CustomTransformLinks<Vector3>
 {
+    public Vector3 position
+    {
+        get 
+        {
+            return GetPosition(Space.World);
+        }
+        set
+        {
+            SetPosition(value, Space.World);
+        }
+    }
+    public Vector3 localPosition
+    {
+        get
+        {
+            return GetPosition(Space.Self);
+        }
+        set
+        {
+            SetPosition(value, Space.Self);
+        }
+    }
 
-    [ContextMenu("Apply to target")]
-    public override void ApplyToTarget ()
+    [ContextMenu("Set to target")]
+    public override void SetToTarget ()
     {
         if (space == Space.Self && link == Link.Match)
         {
@@ -19,7 +41,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         transform.position = GetTarget();
     }
 
-    public override void SetTarget ()
+    public override void MoveToTarget ()
     {
         if (enabled) {
             if (!follow || link == Link.Match)
@@ -34,7 +56,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 }
                 else if (transition.type == Curve.Custom)
                 {
-
+                    //+++++still have to add curves!
                 }
             }
         }
@@ -51,7 +73,9 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         else if (space == Space.Self)
         {
             if (link == Link.Offset) {
-                target = parent.position + parent.TransformDirection(value) + globalOffset;
+                //target = parent.position + parent.TransformDirection(value) + offset;
+
+                //STILL HAVE TO FIX +++++++++++OFFSET
             } else if (link == Link.Match)
             {
                 target = parent.position + parent.TransformDirection(previous);
@@ -61,6 +85,38 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         return target;
     }
 
+    public Vector3 Translate(Vector3 translation, Space relativeTo = Space.Self)
+    {
+        if (relativeTo == Space.Self) {
+            return transform.position + parent.TransformPoint(translation); //WORKS!
+        } else
+        {
+            return transform.position + translation; //WORKS!
+        }
+    }
+
+    public Vector3 SetPosition (Vector3 position, Space relativeTo = Space.Self)
+    {
+        if (relativeTo == Space.Self)
+        {
+            return parent.position + parent.TransformPoint(position); //WORKS!
+        } else
+        {
+            return position; //WORKS!
+        }
+    }
+
+    public Vector3 GetPosition (Space relativeTo = Space.Self)
+    {
+        if (relativeTo == Space.Self)
+        {
+            return parent.InverseTransformPoint(transform.position); //WORKS!
+        }
+        else
+        {
+            return transform.position; //WORKS!
+        }
+    }
 
     public override void SetPrevious ()
     {
