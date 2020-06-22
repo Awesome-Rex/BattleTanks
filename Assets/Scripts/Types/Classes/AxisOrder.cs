@@ -18,7 +18,6 @@ public class AxisOrder
     {
         Axis.X, Axis.Y, Axis.Z
     };
-
     public static Axis[] axisDefaultOrder = new Axis[]
     {
         Axis.X, Axis.Y, Axis.Z
@@ -30,14 +29,12 @@ public class AxisOrder
         { Axis.Y, "Y" },
         { Axis.Z, "Z" }
     };
-
     public static Dictionary<Axis, Vector3> axisDirections = new Dictionary<Axis, Vector3>
     {
         { Axis.X, new Vector3(1f, 0f, 0f) },
         { Axis.Y, new Vector3(0f, 1f, 0f) },
         { Axis.Z, new Vector3(0f, 0f, 1f) }
     };
-
     public static Dictionary<Axis, Color> axisColours = new Dictionary<Axis, Color>
     {
         { Axis.X, new Color(219f / 255f, 62f / 255f, 29f / 255f) },
@@ -71,7 +68,6 @@ public class AxisOrder
     }
     //END
 
-
     public List<AxisApplied> axes = new List<AxisApplied>();
     public SpaceVariety variety = SpaceVariety.OneSided;
 
@@ -91,7 +87,6 @@ public class AxisOrder
         this.variety = variety;
         this.space = space;
     }
-
     public AxisOrder (Vector3 axes, Space space = Space.Self) //set simple (only 3 axes)
     {
         this.axes = new List<AxisApplied>();
@@ -105,31 +100,33 @@ public class AxisOrder
     }
 
 
-    public Quaternion ApplyRotation(CustomRotation relative, Quaternion? current = null)
+    public Quaternion ApplyRotation(CustomRotation relative, Quaternion? current = null) //WORKS!
     {
-        Quaternion originalRot = relative.rotation;
+        Quaternion newRot;
 
         if (current != null)
         {
-            relative.rotation = (Quaternion)current;
+            newRot = (Quaternion)current;
+        } else
+        {
+            newRot = relative.rotation;
         }
 
         if (variety == SpaceVariety.OneSided)
         {
             foreach (AxisApplied i in axes)
             {
-                relative.rotation = relative.Rotate((axisDirections[i.axis] * i.units), space);
+                newRot = relative.Rotate(newRot, (axisDirections[i.axis] * i.units), space);
             }
         }
         else if (variety == SpaceVariety.Mixed)
         {
             foreach (AxisApplied i in axes)
             {
-                relative.rotation = relative.Rotate((axisDirections[i.axis] * i.units), i.space);
+                newRot = relative.Rotate(newRot, (axisDirections[i.axis] * i.units), i.space);
             }
         }
-        Quaternion newRot = relative.rotation;
-        relative.rotation = originalRot;
+
         return newRot;
     }
     public Quaternion ApplyRotation (Quaternion relative)
@@ -199,31 +196,32 @@ public class AxisOrder
         return newRot;
     } //works probably
 
-    public Vector3 ApplyPosition(CustomPosition relative, Vector3? current = null)
+    public Vector3 ApplyPosition(CustomPosition relative, Vector3? current = null) 
     {
-        Vector3 originalPos = relative.position;
+        Vector3 newPos;
         if (current != null) {
-            relative.position = (Vector3)current;
-        } // else use relative.position
+            newPos = (Vector3)current;
+        } else
+        {
+            newPos = relative.position;
+        }
 
         if (variety == SpaceVariety.OneSided)
         {
             foreach (AxisApplied i in axes)
             {
-                relative.position = relative.Translate((axisDirections[i.axis] * i.units), space);
+                newPos = relative.Translate(newPos, (axisDirections[i.axis] * i.units), space);
             }
         }
         else if (variety == SpaceVariety.Mixed)
         {
             foreach (AxisApplied i in axes)
             {
-                relative.position = relative.Translate((axisDirections[i.axis] * i.units), i.space);
+                newPos = relative.Translate(newPos, (axisDirections[i.axis] * i.units), i.space);
             }
-        }
-        Vector3 newPos = relative.position;
-        relative.position = originalPos;
+        }/
         return newPos;
-    }
+    } //WORKS!
     public Vector3 ApplyPosition(Transform relative)
     {
         Vector3 newPos = relative.position;
