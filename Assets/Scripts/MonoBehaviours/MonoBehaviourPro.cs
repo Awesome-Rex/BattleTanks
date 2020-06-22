@@ -7,6 +7,22 @@ using UnityEngine;
 public class MonoBehaviourPRO : MonoBehaviour
 {
     [HideInInspector]
+    public Tag T
+    {
+        get
+        {
+            if (_T == null)
+            {
+                _T = GetComponent<Tag>();
+            }
+
+            return _T;
+        }
+    }
+    private Tag _T;
+
+
+    [HideInInspector]
     public ScriptReference SR
     {
         get
@@ -30,5 +46,6 @@ public class MonoBehaviourPRO : MonoBehaviour
     protected void Awake()
     {
         _SR = base.GetComponent<ScriptReference>();
+        _T = base.GetComponent<Tag>();
     }
 }
