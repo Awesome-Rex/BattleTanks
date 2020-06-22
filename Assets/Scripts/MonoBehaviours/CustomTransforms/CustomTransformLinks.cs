@@ -4,6 +4,8 @@ using UnityEngine;
 
 public abstract class CustomTransformLinks<T> : CustomTransform<T>
 {
+    public T target;
+
     public bool follow = false;
     public Transition transition;
     

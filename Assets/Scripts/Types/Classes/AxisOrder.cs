@@ -219,7 +219,7 @@ public class AxisOrder
             {
                 newPos = relative.Translate(newPos, (axisDirections[i.axis] * i.units), i.space);
             }
-        }/
+        }
         return newPos;
     } //WORKS!
     public Vector3 ApplyPosition(Transform relative)

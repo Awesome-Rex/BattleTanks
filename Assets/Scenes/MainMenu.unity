@@ -252,7 +252,8 @@ MonoBehaviour:
   space: 1
   parent: {fileID: 867021773}
   value: {x: 5, y: 1, z: 0}
-  follow: 0
+  target: {x: 0, y: 0, z: 0}
+  follow: 1
   transition:
     type: 0
     speed: 10
@@ -359,7 +360,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1278675272}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27a5e7d81fd7b1b41b7c770f7120b2c6, type: 3}
   m_Name: 
@@ -367,10 +368,11 @@ MonoBehaviour:
   space: 1
   parent: {fileID: 867021773}
   value: {x: 0, y: 0, z: 0, w: 1}
-  follow: 0
+  target: {x: 0, y: 0, z: 0, w: 0}
+  follow: 1
   transition:
     type: 1
-    speed: 0
+    speed: 5
     percent: 10
     curve:
       serializedVersion: 2

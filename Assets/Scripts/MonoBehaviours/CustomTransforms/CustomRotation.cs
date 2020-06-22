@@ -74,16 +74,22 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
     public override void MoveToTarget ()
     {
+        target = GetTarget();
+
         if (enabled) {
             if (!follow || link == Link.Match)
             {
-                transform.rotation = GetTarget();
+                transform.rotation = target;
             }
             else
             {
-                if (transition.type == Curve.Interpolate)
+                if (transition.type == Curve.Linear)
                 {
-                    transform.rotation = transition.MoveTowards(transform.rotation, GetTarget());
+                    transform.rotation = transition.MoveTowards(transform.rotation, target);
+                }
+                else if (transition.type == Curve.Interpolate)
+                {
+                    transform.rotation = transition.MoveTowards(transform.rotation, target);
                 }
                 else if (transition.type == Curve.Custom)
                 {
@@ -163,7 +169,8 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
     public override void SetPrevious ()
     {
-        previous = Quaternion.Inverse(parent.rotation) * transform.rotation;
+        //previous = Quaternion.Inverse(parent.rotation) * transform.rotation;
+        previous = Quaternion.Inverse(parent.rotation) * target;
     }
 
     protected override void Awake()

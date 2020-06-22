@@ -18,7 +18,7 @@ public struct Transition
     public float percent;
 
     public AnimationCurve curve;
-    
+
     public float MoveTowards (float a, float b)
     {
         if (type == Curve.Linear)

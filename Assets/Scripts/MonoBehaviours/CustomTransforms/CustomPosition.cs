@@ -50,16 +50,21 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 
     public override void MoveToTarget ()
     {
+        target = GetTarget();
+
         if (enabled) {
             if (!follow || link == Link.Match)
             {
-                transform.position = GetTarget();
+                transform.position = target;
             }
             else
             {
-                if (transition.type == Curve.Interpolate)
+                if (transition.type == Curve.Linear)
                 {
-                    transform.position = transition.MoveTowards(transform.position, GetTarget());
+                    transform.position = transition.MoveTowards(transform.position, target);
+                } else if (transition.type == Curve.Interpolate)
+                {
+                    transform.position = transition.MoveTowards(transform.position, target);
                 }
                 else if (transition.type == Curve.Custom)
                 {
@@ -185,8 +190,8 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         {
             if (offsetScale != 0f)
             {
-                previous = parent.InverseTransformPoint(transform.position) / offsetScale;
-                previousDirection = AxisOrder.MultiplyVector3(parent.InverseTransformPoint(transform.position), parent.localScale / offsetScale); //for no scale
+                previous = parent.InverseTransformPoint(target) / offsetScale;
+                previousDirection = AxisOrder.MultiplyVector3(parent.InverseTransformPoint(target), parent.localScale / offsetScale); //for no scale
             }
             else
             {
@@ -195,8 +200,8 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         else
         {
-            previous = parent.InverseTransformPoint(transform.position);
-            previousDirection = AxisOrder.MultiplyVector3(parent.InverseTransformPoint(transform.position), parent.localScale);
+            previous = parent.InverseTransformPoint(target);
+            previousDirection = AxisOrder.MultiplyVector3(parent.InverseTransformPoint(target), parent.localScale);
         }
     }
 
