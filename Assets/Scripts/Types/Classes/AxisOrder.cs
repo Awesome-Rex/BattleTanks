@@ -105,24 +105,34 @@ public class AxisOrder
     }
 
 
-    public Quaternion ApplyRotation(CustomRotation relative)
+    public Quaternion ApplyRotation(CustomRotation relative, Quaternion? current = null)
     {
-        Quaternion newRot = relative.rotation;
+        Quaternion originalRot = relative.rotation;
+
+        if (current != null)
+        {
+            relative.rotation = (Quaternion)current;
+        }
 
         if (variety == SpaceVariety.OneSided)
         {
             foreach (AxisApplied i in axes)
             {
-                newRot = relative.Rotate((axisDirections[i.axis] * i.units), space);
+                relative.rotation = relative.Rotate((axisDirections[i.axis] * i.units), space);
             }
         }
         else if (variety == SpaceVariety.Mixed)
         {
             foreach (AxisApplied i in axes)
             {
-                newRot = relative.Rotate((axisDirections[i.axis] * i.units), i.space);
+                relative.rotation = relative.Rotate((axisDirections[i.axis] * i.units), i.space);
             }
         }
+        Quaternion newRot = relative.rotation;
+        relative.rotation = originalRot;
+
+        Debug.Log("OG - " + originalRot.ToString());
+        Debug.Log("NEW - " + newRot.eulerAngles.ToString());
         return newRot;
     }
     public Quaternion ApplyRotation (Quaternion relative)

@@ -106,7 +106,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             if (link == Link.Offset)
             {
                 target = parent.rotation * value; //++++++++offset
-                target = offset.ApplyRotation(target);
+                target = offset.ApplyRotation(this, target);
             } else if (link == Link.Match)
             {
                 target = parent.rotation * previous; //WORKS!

@@ -147,13 +147,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867021772}
-  m_LocalRotation: {x: 0.038060226, y: 0.1913417, z: 0.1913417, w: 0.9619398}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 22.5, z: 22.5}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &867021774
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -244,7 +244,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1278675272}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 17f5561371ad1c84190b7e7adce75d5d, type: 3}
   m_Name: 
@@ -359,14 +359,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1278675272}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27a5e7d81fd7b1b41b7c770f7120b2c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   space: 1
   parent: {fileID: 867021773}
-  value: {x: 0.75608194, y: -0.000000004441297, z: -0.000000004441297, w: 0.65447694}
+  value: {x: 0, y: 0, z: 0, w: 1}
   follow: 0
   transition:
     type: 1
@@ -380,8 +380,16 @@ MonoBehaviour:
       m_RotationOrder: 4
   link: 0
   offset:
-    axes: []
-    variety: 0
+    axes:
+    - axis: 0
+      units: 0
+      space: 0
+      variety: 0
+    - axis: 0
+      units: 0
+      space: 0
+      variety: 0
+    variety: 1
     space: 0
 --- !u!114 &1278675279
 MonoBehaviour:
