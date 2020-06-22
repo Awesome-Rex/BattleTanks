@@ -35,12 +35,6 @@ public class AxisOrder
         { Axis.Y, new Vector3(0f, 1f, 0f) },
         { Axis.Z, new Vector3(0f, 0f, 1f) }
     };
-    public static Dictionary<Axis, Color> axisColours = new Dictionary<Axis, Color>
-    {
-        { Axis.X, new Color(219f / 255f, 62f / 255f, 29f / 255f) },
-        { Axis.Y, new Color(154 / 255f, 243 / 255f, 72f / 255f) },
-        { Axis.Z, new Color(58f / 255f, 122f / 255f, 237f / 255f) }
-    };
 
     public static float GetAxis (Axis axis, Vector3 from)
     {

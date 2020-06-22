@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ScriptReference : MonoBehaviour
 {
-    public Tag T;
+    public Tagged T;
 
     public Dictionary<System.Type, dynamic> components;
 
@@ -51,7 +51,7 @@ public class ScriptReference : MonoBehaviour
 
     private void Awake()
     {
-        T = GetComponent<Tag>();
+        T = GetComponent<Tagged>();
 
         components = new Dictionary<System.Type, dynamic>();
     }

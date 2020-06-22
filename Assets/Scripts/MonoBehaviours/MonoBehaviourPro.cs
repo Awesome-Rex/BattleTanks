@@ -7,19 +7,19 @@ using UnityEngine;
 public class MonoBehaviourPRO : MonoBehaviour
 {
     [HideInInspector]
-    public Tag T
+    public Tagged T
     {
         get
         {
             if (_T == null)
             {
-                _T = GetComponent<Tag>();
+                _T = GetComponent<Tagged>();
             }
 
             return _T;
         }
     }
-    private Tag _T;
+    private Tagged _T;
 
 
     [HideInInspector]
@@ -46,6 +46,6 @@ public class MonoBehaviourPRO : MonoBehaviour
     protected void Awake()
     {
         _SR = base.GetComponent<ScriptReference>();
-        _T = base.GetComponent<Tag>();
+        _T = base.GetComponent<Tagged>();
     }
 }
