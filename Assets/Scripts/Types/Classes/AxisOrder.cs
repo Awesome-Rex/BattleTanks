@@ -130,9 +130,6 @@ public class AxisOrder
         }
         Quaternion newRot = relative.rotation;
         relative.rotation = originalRot;
-
-        Debug.Log("OG - " + originalRot.ToString());
-        Debug.Log("NEW - " + newRot.eulerAngles.ToString());
         return newRot;
     }
     public Quaternion ApplyRotation (Quaternion relative)
@@ -168,7 +165,7 @@ public class AxisOrder
             }
         }
         return newRot;
-    }
+    } //works
     public Quaternion ApplyRotation(Transform relative)
     {
         Quaternion newRot = relative.rotation;
@@ -200,7 +197,7 @@ public class AxisOrder
             }
         }
         return newRot;
-    }
+    } //works probably
 
     public Vector3 ApplyPosition(CustomPosition relative, Vector3? current = null)
     {
@@ -260,7 +257,7 @@ public class AxisOrder
             }
         }
         return newPos;
-    }
+    } //works probably
 
 #if UNITY_EDITOR
 

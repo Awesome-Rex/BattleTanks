@@ -119,6 +119,25 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
     }
 
+    public Vector3 Translate(Vector3 from, Vector3 translation, Space relativeTo = Space.Self)
+    {
+        if (relativeTo == Space.Self)
+        {
+            if (factorScale)
+            {
+                return from + (parent.TransformPoint(translation * offsetScale) - parent.position); //WORKS!
+            }
+            else
+            {
+                return AxisOrder.DivideVector3(parent.TransformPoint(from + translation), parent.localScale); //WORKS!
+            }
+        }
+        else
+        {
+            return from + translation; //WORKS!
+        }
+    }
+
     public Vector3 SetPosition (Vector3 position, Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self)

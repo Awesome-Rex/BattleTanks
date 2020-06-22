@@ -127,6 +127,18 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
     }
 
+    public Quaternion Rotate(Quaternion from, Vector3 eulers, Space relativeTo = Space.Self)
+    {
+        if (relativeTo == Space.Self)
+        {
+            return from * Quaternion.Euler(eulers); //WORKS!
+        }
+        else
+        {
+            return Quaternion.Euler(eulers) * from; //WORKS!
+        }
+    }
+
     public Quaternion SetRotation (Vector3 rotation, Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self)
