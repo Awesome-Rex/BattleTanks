@@ -16,14 +16,11 @@ public class ForTESTING : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
-
-        Debug.Log(SR.Get<DirectionRecorder>().positionHistory.ToArray().Length);
         if (boolean) {
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(SR.Get<DirectionRecorder>().estimatedDirection, -Vector3.right), 180f * Time.deltaTime);
         } else
         {
             transform.forward = SR.Get<DirectionRecorder>().estimatedDirection;
-
         }
 
         if (Input.GetKeyDown(KeyCode.Space))

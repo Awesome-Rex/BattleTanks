@@ -10,12 +10,19 @@ public class DirectionRecorder : MonoBehaviour
     {
         get
         {
-            //find closest recording (round to recording) and use current position
+            Vector3 temp = (GetCurrentPosition() - RetrieveRecording(recordGap)).normalized;
 
-            return (GetCurrentPosition() - RetrieveRecording(recordGap)).normalized;
+            if (temp == Vector3.zero)
+            {
+                return previous; //return previous
+            } else
+            {
+
+                previous = temp;
+                return temp;
+            }
         }
     }
-    private Vector3 previousDirection;
     
     private Queue<KeyValuePair<float, Vector3>> positionHistory;
     private float historyDistance;
@@ -29,13 +36,16 @@ public class DirectionRecorder : MonoBehaviour
     public float minRecordedDistance = 0.02f;
 
     public float recordGap;
-
-    //public int minRecords = 5;
-    //public int maxRecords = 20;
+    
     public float minDistance = 5;
     public float maxDistance = 20;
 
+    private Vector3 previous;
 
+
+    private Coroutine loop;
+
+    //methods
     public Vector3 GetCurrentPosition (){
         if (space == Space.World)
         {
@@ -61,79 +71,54 @@ public class DirectionRecorder : MonoBehaviour
         }
         positionHistory.Enqueue(new KeyValuePair<float, Vector3>(Time.time, GetCurrentPosition()));
     }
-
     private void DequeueRecord ()
     {
-        if (positionHistory.Count >= 2) {
+        //if (positionHistory.Count >= 2) {
             historyDistance -= Vector3.Distance(positionHistory.First().Value, positionHistory.ToArray()[1].Value);
-        }
+        //}
         positionHistory.Dequeue();
     }
 
-    private void RecordPosition()
+    private IEnumerator RecordPosition()
     {
-        //    if (positionHistory.Count == maxRecords)
-        //    {
-        //        DequeueRecord();
-        //    }
-
-        //    if (Vector3.Distance(positionHistory.Last().Value, GetCurrentPosition()) > minRecordedDistance && positionHistory.Count < maxRecords)
-        //    {
-        //        EnqueueRecord();
-        //    }/* else if (Vector3.Distance(positionHistory.Last().Value, GetCurrentPosition()) > currentPositionRoundTo)
-        //{
-        //    //positionHistory.Enqueue(new KeyValuePair<float, Vector3>(Time.time, GetCurrentPosition()));
-        //}*/
-
-
-        //    if (positionHistory.Count > maxRecords)
-        //    {
-        //        while (positionHistory.Count > maxRecords)
-        //        {
-        //            DequeueRecord();
-        //        }
-        //    }
-
-
-
-        if (historyDistance < minDistance || (Vector3.Distance(positionHistory.Last().Value, GetCurrentPosition()) > minRecordedDistance && historyDistance < maxDistance))
+        while (true)
         {
-            EnqueueRecord();
-        }
-
-        if (historyDistance > maxDistance)
-        {
-            while (historyDistance > maxDistance)
+            if (historyDistance < minDistance || (Vector3.Distance(positionHistory.Last().Value, GetCurrentPosition()) > minRecordedDistance && historyDistance < maxDistance))
             {
-                DequeueRecord();
+                EnqueueRecord();
             }
+
+            if (historyDistance > maxDistance)
+            {
+                while (historyDistance > maxDistance)
+                {
+                    DequeueRecord();
+                }
+            }
+
+            yield return new WaitForSeconds(intervalLength);
         }
     }
 
     public Vector3 RetrieveRecording(float seconds)
     {
+        Vector3 currentPos = GetCurrentPosition();
+
+
         KeyValuePair<float, Vector3>[] historyAnalyse = positionHistory.ToArray();
 
         KeyValuePair<float, Vector3> greater = default;
         KeyValuePair<float, Vector3> lesser = default;
 
+
+        float totalDistance = 0f;
         for (int i = historyAnalyse.Length - 1; i > -1; i--)
         {
-            /*if (historyAnalyse[i].Key < (Time.time - seconds))
-            {
-                lesser = historyAnalyse[i];
-                if (historyAnalyse.Length > i + 1)
-                {
-                    greater = historyAnalyse[i + 1];
-                } else
-                {
-                    greater = new KeyValuePair<float, Vector3>(Time.time, GetCurrentPosition());
-                }
+            if (historyAnalyse.Length > i + 1) {
+                totalDistance += Vector3.Distance(historyAnalyse[i].Value, historyAnalyse[i + 1].Value);
+            }
 
-                break;
-            }*/
-
-            if (Vector3.Distance(historyAnalyse[i].Value, GetCurrentPosition()) >= recordGap)
+            if (/*Vector3.Distance(historyAnalyse[i].Value, currentPos) >= recordGap*/ totalDistance >= recordGap)
             {
                 lesser = historyAnalyse[i];
                 if (historyAnalyse.Length > i + 1)
@@ -142,7 +127,7 @@ public class DirectionRecorder : MonoBehaviour
                 }
                 else
                 {
-                    greater = new KeyValuePair<float, Vector3>(Time.time, GetCurrentPosition());
+                    greater = new KeyValuePair<float, Vector3>(Time.time, currentPos);
                 }
 
                 break;
@@ -151,16 +136,11 @@ public class DirectionRecorder : MonoBehaviour
         
         if (lesser.Equals(default(KeyValuePair<float, Vector3>)))
         {
-            lesser = new KeyValuePair<float, Vector3>(Time.time, GetCurrentPosition());
-            greater = new KeyValuePair<float, Vector3>(Time.time, GetCurrentPosition());
+            lesser = new KeyValuePair<float, Vector3>(Time.time, currentPos);
+            greater = new KeyValuePair<float, Vector3>(Time.time, currentPos);
         }
 
-        /*return Vector3.Lerp(
-            lesser.Value,
-            greater.Value,
-            ((Time.time - seconds) - lesser.Key) / (greater.Key - lesser.Key)
-        );*/
-
+        //Debug.Log(gameObject.name + positionHistory.Count);
 
         //FIND point between points that equals recordgap distance to current
         return Vector3.Lerp(
@@ -168,20 +148,17 @@ public class DirectionRecorder : MonoBehaviour
             greater.Value,
             0.5f
         );
-
-
-    }
-
-    public void RestartLoop ()
-    {
-        CancelInvoke("RecordPosition");
-        InvokeRepeating("RecordPosition", 0f, intervalLength);
     }
     
     void Start()
     {
         positionHistory = new Queue<KeyValuePair<float, Vector3>>();
 
-        RestartLoop();
+        loop = _ETERNAL.r.StartCoroutine(RecordPosition());
+    }
+
+    private void OnDestroy()
+    {
+        StopCoroutine(loop);
     }
 }
