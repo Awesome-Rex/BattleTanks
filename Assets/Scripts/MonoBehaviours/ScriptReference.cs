@@ -24,7 +24,9 @@ public class ScriptReference : MonoBehaviour
     {
         dynamic instance = null;
 
-        if (components.TryGetValue(typeof(TYPE), out instance))
+        components.TryGetValue(typeof(TYPE), out instance);
+
+        if (instance != null)
         { // does exist -> check value -> return value
             if (((Component)instance).gameObject != gameObject)
             {
