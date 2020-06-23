@@ -7,5 +7,6 @@ public enum SpaceVariety { OneSided, Mixed }
 
 public enum Curve { Linear, Interpolate, Custom }
 public enum Link { Offset, Match }
+public enum LocalRelativity { Natural, Custom}
 
 public enum SnapDetectionMethod { Any, Staight, Custom }
