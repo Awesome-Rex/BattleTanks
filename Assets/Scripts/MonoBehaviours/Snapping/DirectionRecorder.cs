@@ -10,7 +10,7 @@ public class DirectionRecorder : MonoBehaviour
     {
         get
         {
-            Vector3 temp = (GetCurrentPosition() - RetrieveRecording(recordGap)).normalized;
+            Vector3 temp = (GetCurrentPosition() - RetrieveRecording(recordGap * speedFactor)).normalized;
 
             if (temp == Vector3.zero)
             {
@@ -27,7 +27,7 @@ public class DirectionRecorder : MonoBehaviour
     private Queue<KeyValuePair<float, Vector3>> positionHistory;
     private float historyDistance;
 
-    public float speedFactor;
+    private float speedFactor = 1f;
 
     public Space space = Space.Self;
     public LocalRelativity relativity = LocalRelativity.Custom; //if space == space.self
@@ -83,20 +83,31 @@ public class DirectionRecorder : MonoBehaviour
     {
         while (true)
         {
-            if (historyDistance < minDistance || (Vector3.Distance(positionHistory.Last().Value, GetCurrentPosition()) > minRecordedDistance && historyDistance < maxDistance))
+            if (historyDistance < minDistance * speedFactor || (Vector3.Distance(positionHistory.Last().Value, GetCurrentPosition()) > minRecordedDistance && historyDistance < maxDistance * speedFactor))
             {
                 EnqueueRecord();
             }
 
-            if (historyDistance > maxDistance)
+            if (historyDistance > maxDistance * speedFactor)
             {
-                while (historyDistance > maxDistance)
+                while (historyDistance > maxDistance * speedFactor)
                 {
                     DequeueRecord();
                 }
             }
 
-            yield return new WaitForSeconds(intervalLength);
+            if (speedFactor < 1f)
+            {
+                yield return new WaitForSeconds(intervalLength * (1f - ((1f - speedFactor) / 4f)));
+            }
+            else if (speedFactor > 1f)
+            {
+                yield return new WaitForSeconds(intervalLength * (1f + ((speedFactor - 1f) / 4f)));
+            }
+            else if (speedFactor == 1f)
+            {
+                yield return new WaitForSeconds(intervalLength);
+            }
         }
     }
 
@@ -111,15 +122,18 @@ public class DirectionRecorder : MonoBehaviour
         KeyValuePair<float, Vector3> lesser = default;
 
 
-        float totalDistance = 0f;
+        float greaterDistance = 0f;
+        float lesserDistance = 0f;
         for (int i = historyAnalyse.Length - 1; i > -1; i--)
         {
             if (historyAnalyse.Length > i + 1) {
-                totalDistance += Vector3.Distance(historyAnalyse[i].Value, historyAnalyse[i + 1].Value);
+                greaterDistance += Vector3.Distance(historyAnalyse[i].Value, historyAnalyse[i + 1].Value);
             }
 
-            if (/*Vector3.Distance(historyAnalyse[i].Value, currentPos) >= recordGap*/ totalDistance >= recordGap)
+            if (greaterDistance >= recordGap * speedFactor)
             {
+                speedFactor = greaterDistance / (Time.time - historyAnalyse[i].Key);
+
                 lesser = historyAnalyse[i];
                 if (historyAnalyse.Length > i + 1)
                 {
@@ -140,19 +154,22 @@ public class DirectionRecorder : MonoBehaviour
             greater = new KeyValuePair<float, Vector3>(Time.time, currentPos);
         }
 
+        lesserDistance = greaterDistance - Vector3.Distance(lesser.Value, greater.Value);
+
         //Debug.Log(gameObject.name + positionHistory.Count);
 
         //FIND point between points that equals recordgap distance to current
         return Vector3.Lerp(
             lesser.Value,
             greater.Value,
-            0.5f
+            ((recordGap * speedFactor) - lesserDistance) / (greaterDistance - lesserDistance)
         );
     }
     
     void Start()
     {
         positionHistory = new Queue<KeyValuePair<float, Vector3>>();
+        speedFactor = 1f;
 
         loop = _ETERNAL.r.StartCoroutine(RecordPosition());
     }

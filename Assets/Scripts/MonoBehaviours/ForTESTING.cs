@@ -16,6 +16,8 @@ public class ForTESTING : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
+        transform.Translate(new Vector3(1f, 3f, 0f) * Time.deltaTime, Space.World);
+
         if (boolean) {
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(SR.Get<DirectionRecorder>().estimatedDirection, -Vector3.right), 180f * Time.deltaTime);
         } else

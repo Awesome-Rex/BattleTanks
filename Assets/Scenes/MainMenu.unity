@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &171177633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,7 +154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6a60b66c5f98bf48abd0b2e50c2bf15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedFactor: 0
   space: 0
   relativity: 1
   intervalLength: 0.02
@@ -831,14 +830,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6a60b66c5f98bf48abd0b2e50c2bf15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedFactor: 0
   space: 0
   relativity: 1
   intervalLength: 0.02
   minRecordedDistance: 0.01
   recordGap: 0.2
-  minDistance: 5
-  maxDistance: 10
+  minDistance: 0.5
+  maxDistance: 2.5
 --- !u!114 &1397524064
 MonoBehaviour:
   m_ObjectHideFlags: 0
