@@ -16,7 +16,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         set
         {
-            transform.position = SetPosition(value, Space.World);
+            operationalPosition = SetPosition(value, Space.World);
         }
     }
     public Vector3 localPosition
@@ -27,7 +27,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         set
         {
-            transform.position = SetPosition(value, Space.Self);
+            operationalPosition = SetPosition(value, Space.Self);
         }
     }
 
@@ -35,6 +35,39 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     public float offsetScale = 1f;
 
     private Vector3 previousDirection;
+
+
+    private Vector3 operationalPosition
+    {
+        get
+        {
+            if (rigidbody != null)
+            {
+                return rigidbody.position;
+            }
+            else
+            {
+                return transform.position;
+            }
+        }
+        set
+        {
+            if (rigidbody != null)
+            {
+                rigidbody.position = value;
+            }
+            else
+            {
+                transform.position = value;
+            }
+        }
+    }
+    //
+    private new Rigidbody rigidbody;
+
+
+    //check if even or odd
+    //private int counter = 0;
 
     [ContextMenu("Set to target")]
     public override void SetToTarget ()
@@ -45,7 +78,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             return;
         }
 
-        transform.position = GetTarget();
+        operationalPosition = GetTarget();
     }
 
     public override void MoveToTarget ()
@@ -53,24 +86,28 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         target = GetTarget();
 
         if (enabled) {
-            if (!follow || link == Link.Match)
-            {
-                transform.position = target;
-            }
-            else
-            {
-                if (transition.type == Curve.Linear)
+            //if (counter % 8 == 0) {
+                if (!follow || link == Link.Match)
                 {
-                    transform.position = transition.MoveTowards(transform.position, target);
-                } else if (transition.type == Curve.Interpolate)
-                {
-                    transform.position = transition.MoveTowards(transform.position, target);
+                    operationalPosition = target;
                 }
-                else if (transition.type == Curve.Custom)
+                else
                 {
-                    //+++++still have to add curves!
+                    if (transition.type == Curve.Linear)
+                    {
+                        operationalPosition = transition.MoveTowards(operationalPosition, target);
+                    } else if (transition.type == Curve.Interpolate)
+                    {
+                        operationalPosition = transition.MoveTowards(operationalPosition, target);
+                    }
+                    else if (transition.type == Curve.Custom)
+                    {
+                        //+++++still have to add curves!
+                    }
                 }
-            }
+            //}
+
+            //counter += 1;
         }
     }
 
@@ -112,15 +149,15 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         if (relativeTo == Space.Self) {
             if (factorScale)
             {
-                return transform.position + (parent.TransformPoint(translation * offsetScale) - parent.position); //WORKS!
+                return operationalPosition + (parent.TransformPoint(translation * offsetScale) - parent.position); //WORKS!
             }
             else
             {
-                return AxisOrder.DivideVector3(parent.TransformPoint(transform.position + translation), parent.localScale); //WORKS!
+                return AxisOrder.DivideVector3(parent.TransformPoint(operationalPosition + translation), parent.localScale); //WORKS!
             }
         } else
         {
-            return transform.position + translation; //WORKS!
+            return operationalPosition + translation; //WORKS!
         }
     }
 
@@ -167,7 +204,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             {
                 if (offsetScale != 0f) //ALL WORKS!
                 {
-                    return parent.InverseTransformPoint(transform.position) / offsetScale;
+                    return parent.InverseTransformPoint(operationalPosition) / offsetScale;
                 } else
                 {
                     return Vector3.zero;
@@ -175,12 +212,12 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             }
             else
             {
-                return AxisOrder.MultiplyVector3(parent.InverseTransformPoint(transform.position), parent.localScale); //WORKS
+                return AxisOrder.MultiplyVector3(parent.InverseTransformPoint(operationalPosition), parent.localScale); //WORKS
             }
         }
         else
         {
-            return transform.position; //WORKS!
+            return operationalPosition; //WORKS!
         }
     }
 
@@ -190,8 +227,8 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         {
             if (offsetScale != 0f)
             {
-                previous = parent.InverseTransformPoint(target) / offsetScale;
-                previousDirection = AxisOrder.MultiplyVector3(parent.InverseTransformPoint(target), parent.localScale / offsetScale); //for no scale
+                previous = parent.InverseTransformPoint(operationalPosition) / offsetScale;
+                previousDirection = AxisOrder.MultiplyVector3(parent.InverseTransformPoint(operationalPosition), parent.localScale / offsetScale); //for no scale
             }
             else
             {
@@ -200,9 +237,16 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         else
         {
-            previous = parent.InverseTransformPoint(target);
-            previousDirection = AxisOrder.MultiplyVector3(parent.InverseTransformPoint(target), parent.localScale);
+            previous = parent.InverseTransformPoint(operationalPosition);
+            previousDirection = AxisOrder.MultiplyVector3(parent.InverseTransformPoint(operationalPosition), parent.localScale);
         }
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        rigidbody = GetComponent<Rigidbody>();
     }
 
     private void Start()

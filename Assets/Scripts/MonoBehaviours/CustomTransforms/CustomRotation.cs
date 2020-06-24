@@ -47,7 +47,6 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             rotation = Quaternion.Euler(value);
         }
     }
-
     public Vector3 localEulerAngles
     {
         get
@@ -59,6 +58,35 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             localRotation = Quaternion.Euler(value);
         }
     }
+
+    private Quaternion operationalRotation
+    {
+        get
+        {
+            if (rigidbody != null)
+            {
+                return rigidbody.rotation;
+            }
+            else
+            {
+                return transform.rotation;
+            }
+        }
+        set
+        {
+            if (rigidbody != null)
+            {
+                rigidbody.rotation = value;
+            }
+            else
+            {
+                transform.rotation = value;
+            }
+        }
+    }
+
+    //
+    private new Rigidbody rigidbody;
 
     [ContextMenu("Set to target")]
     public override void SetToTarget()
@@ -176,6 +204,8 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     protected override void Awake()
     {
         SetPrevious();
+
+        rigidbody = GetComponent<Rigidbody>();
 
         _ETERNAL.r.lateRecorder.callback += SetPrevious;
         _ETERNAL.r.earlyRecorder.callback += MoveToTarget;

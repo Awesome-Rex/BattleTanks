@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class CustomTransformLinks<T> : CustomTransform<T>
 {
-    public T target;
+    protected T target;
 
     public bool follow = false;
     public Transition transition;
@@ -22,12 +22,12 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
     protected override void Awake ()
     {
         base.Awake();
-        _ETERNAL.r.earlyRecorder.callback += MoveToTarget;
+        _ETERNAL.r.earlyRecorder.callbackF += MoveToTarget;
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        _ETERNAL.r.earlyRecorder.callback -= MoveToTarget;
+        _ETERNAL.r.earlyRecorder.callbackF -= MoveToTarget;
     }
 }

@@ -21,11 +21,11 @@ public abstract class CustomTransform<T> : MonoBehaviour
     {
         SetPrevious();
 
-        _ETERNAL.r.lateRecorder.callback += SetPrevious;
+        _ETERNAL.r.lateRecorder.callbackF += SetPrevious;
     }
 
     protected virtual void OnDestroy()
     {
-        _ETERNAL.r.lateRecorder.callback -= SetPrevious;
+        _ETERNAL.r.lateRecorder.callbackF -= SetPrevious;
     }
 }
