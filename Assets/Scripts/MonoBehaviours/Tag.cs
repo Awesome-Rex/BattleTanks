@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tag : MonoBehaviour
+public class Tagged : MonoBehaviour
 {
     public List<string> tags = new List<string>();
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if false
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -17,3 +18,4 @@ public class GameSettingsEditorWindow : ExtendedEditorWindow
         DrawProperties(currentProperty, true);
     }
 }
+#endif

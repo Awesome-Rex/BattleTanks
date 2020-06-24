@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public enum Curve { Linear, Interpolate, Custom}
-public enum Link { Offset, Match }
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [Serializable]
 public struct Transition
@@ -13,16 +14,11 @@ public struct Transition
     public Curve type;
 
     public float speed;
-    //linear, units per second
-
-    public float degrees;
 
     public float percent;
-    //percent per second
 
+    public AnimationCurve curve;
 
-    //  public curve curve
-    
     public float MoveTowards (float a, float b)
     {
         if (type == Curve.Linear)
@@ -61,7 +57,7 @@ public struct Transition
     {
         if (type == Curve.Linear)
         {
-            return Quaternion.RotateTowards(a, b, degrees * Time.deltaTime);
+            return Quaternion.RotateTowards(a, b, speed * Time.deltaTime);
         }
         else if (type == Curve.Interpolate)
         {
@@ -75,4 +71,26 @@ public struct Transition
         return a;
     }
 
+#if UNITY_EDITOR
+
+    //[CustomPropertyDrawer(typeof(Transition))]
+    //public class E : PropertyDrawer
+    //{
+    //    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    //    {
+    //        //base.OnGUI(position, property, label);
+
+    //        EditorGUI.BeginProperty(position, label, property);
+    //        position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Keyboard), label);
+    //        EditorGUI.PropertyField(position, property, GUIContent.none);
+
+    //        EditorGUI.EndProperty();
+    //    }
+
+    //    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    //    {
+    //        return base.GetPropertyHeight(property, label);
+    //    }
+    //}
+#endif
 }
