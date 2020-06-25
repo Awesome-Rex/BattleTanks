@@ -10,6 +10,8 @@ public class CustomGravity : CustomTransform<Vector3>
 
     public AxisOrder offset;  //local
 
+    private Quaternion previousParentRot;
+
     //script reference
     private new Rigidbody rigidbody;
 
@@ -18,9 +20,18 @@ public class CustomGravity : CustomTransform<Vector3>
     {
         if (enabled)
         {
-            if (counter) {
-                rigidbody.velocity = GetTarget().normalized * rigidbody.velocity.magnitude;
+            if (counter)
+            {
+                /*if (space == Space.Self)
+                {
+                    rigidbody.velocity = ((parent.rotation * Quaternion.Inverse(previousParentRot)) * (GetTarget().normalized)) * rigidbody.velocity.magnitude;
+                    //rigidbody.velocity = ((parent.rotation * Quaternion.Inverse(previousParentRot)) * ((parent.TransformPoint(rigidbody.velocity) - parent.position).normalized)) * rigidbody.velocity.magnitude;
+                }*/
+
+                rigidbody.velocity = GetTarget();
             }
+
+            Debug.Log((parent.rotation * Quaternion.Inverse(previousParentRot)).eulerAngles);
             counter = !counter;
 
             if (space == Space.World)
@@ -32,9 +43,12 @@ public class CustomGravity : CustomTransform<Vector3>
             {
                 //rigidbody.AddForce(offset.ApplyRotation(parent.rotation) * Vector3.down * gravity * gravityScale, ForceMode.Acceleration);
                 rigidbody.AddForce((parent.TransformPoint(value.normalized) - parent.position) * gravity * gravityScale, ForceMode.Acceleration);
+                //Debug.Log((parent.TransformPoint(value.normalized) - parent.position));
             }
 
-            SetPrevious();
+            //if (counter) {
+                SetPrevious();
+            //}
         }
     }
 
@@ -44,11 +58,14 @@ public class CustomGravity : CustomTransform<Vector3>
 
         if (space == Space.World)
         {
-            target = previous;
+            //target = previous;
+            target = rigidbody.velocity;
         }
         else if (space == Space.Self)
         {
-            target = parent.TransformPoint(previous) - parent.position;
+            //target = parent.TransformPoint(previous) - parent.position;
+            //target = parent.TransformPoint(rigidbody.velocity) - parent.position;
+            target = ((transform.rotation * (parent.rotation * Quaternion.Inverse(previousParentRot))) * (GetTarget().normalized)) * rigidbody.velocity.magnitude;
         }
 
         return target;
@@ -56,7 +73,8 @@ public class CustomGravity : CustomTransform<Vector3>
 
     public override void SetPrevious()
     {
-        previous = parent.TransformPoint(rigidbody.velocity) - parent.position;
+        previous = parent.TransformDirection(rigidbody.velocity) - parent.position;
+        previousParentRot = parent.rotation;
     }
 
     public void EnableGravity(bool enabled)
@@ -65,7 +83,7 @@ public class CustomGravity : CustomTransform<Vector3>
         {
             //disable rigidhodies, add custom behaviour
             _ETERNAL.r.earlyRecorder.lateCallbackF += ApplyGravity;
-            //_ETERNAL.r.lateRecorder.earlyCallbackF += SetPrevious;
+            //_ETERNAL.r.lateRecorder.callbackF += SetPrevious;
 
             this.enabled = true;
         }
@@ -74,7 +92,7 @@ public class CustomGravity : CustomTransform<Vector3>
             //enable rigidbodies, disable this scirpt
 
             _ETERNAL.r.earlyRecorder.lateCallbackF -= ApplyGravity;
-            //_ETERNAL.r.lateRecorder.earlyCallbackF -= SetPrevious;
+            //_ETERNAL.r.lateRecorder.callbackF -= SetPrevious;
 
             this.enabled = false;
         }
