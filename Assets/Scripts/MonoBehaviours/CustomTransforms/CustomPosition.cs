@@ -41,25 +41,25 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     {
         get
         {
-            if (rigidbody != null)
+            /*if (rigidbody != null)
             {
                 return rigidbody.position;
             }
             else
-            {
+            {*/
                 return transform.position;
-            }
+            //}
         }
         set
         {
-            if (rigidbody != null)
+            /*if (rigidbody != null)
             {
                 rigidbody.position = value;
             }
             else
-            {
+            {*/
                 transform.position = value;
-            }
+            //}
         }
     }
 
@@ -75,7 +75,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             return;
         }
 
-        modifiable = GetTarget();
+        operationalPosition = GetTarget();
     }
 
 
@@ -86,29 +86,44 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 
         if (enabled)
         {
-            if (!follow || link == Link.Match)
+            if (space == Space.World)
             {
                 modifiable = target;
             }
-            else
+            else if (space == Space.Self)
             {
-                if (transition.type == Curve.Linear)
+                if (link == Link.Offset)
                 {
-                    modifiable = transition.MoveTowards(modifiable, target);
+                    if (!follow)
+                    {
+                        modifiable = target;
+                    }
+                    else
+                    {
+                        modifiable = transition.MoveTowards(modifiable, target);
+                    }
                 }
-                else if (transition.type == Curve.Interpolate)
+                else if (link == Link.Match)
                 {
-                    modifiable = transition.MoveTowards(modifiable, target);
-                }
-                else if (transition.type == Curve.Custom)
-                {
-                    //+++++still have to add curves!
-                }
-            }
+                    modifiable = target;
 
-            if (counter)
-            {
-                operationalPosition = modifiable;
+                    if (counter)
+                    {
+                        /*modifiable = operationalPosition;
+                        target = GetTarget();
+                        modifiable = target;*/
+
+                        //operationalPosition += (target - operationalPosition);
+                        operationalPosition += (modifiable - operationalPosition);
+                        //modifiable = operationalPosition;
+                    }
+                    else if (!counter)
+                    {
+                        //modifiable += (operationalPosition - modifiable);
+                        modifiable = operationalPosition;
+                        //modifiable = target;
+                    }
+                }
             }
 
             counter = !counter;
@@ -137,7 +152,15 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             } else if (link == Link.Match)
             {
                 if (factorScale) {
+                    //Quaternion originalRot = parent.rotation;
+
+                    //parent.rotation = parent.rotation * Quaternion.Euler((Quaternion.LookRotation(previousDirection) * Quaternion.Inverse(Quaternion.LookRotation(parent.InverseTransformDirection(transform.position)))).eulerAngles * 2f);
+                    
+
+                    //parent.Rotate(previousDirection * Quaternion.Inverse(parent.rotation))
                     target = parent.TransformPoint(previous * offsetScale); //WORKS!
+                    //target = 
+                    //parent.rotation = originalRot;
                 } else
                 {
                     target = parent.TransformPoint(AxisOrder.DivideVector3(previousDirection, parent.localScale)); //WORKS!
@@ -242,6 +265,12 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         //}
 
         //counter = !counter;
+    }
+
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(modifiable, 0.5f);
     }
 
     protected override void Awake()

@@ -76,7 +76,8 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         {
             if (rigidbody != null)
             {
-                rigidbody.rotation = value.normalized;
+                rigidbody.rotation = value/*.normalized*/;
+                //transform.rotation = value;
             }
             else
             {
@@ -94,7 +95,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             return;
         }
 
-        modifiable = GetTarget();
+        operationalRotation = GetTarget();
     }
 
     private bool counter;
@@ -110,18 +111,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             }
             else
             {
-                if (transition.type == Curve.Linear)
-                {
-                    modifiable = transition.MoveTowards(modifiable, target);
-                }
-                else if (transition.type == Curve.Interpolate)
-                {
-                    modifiable = transition.MoveTowards(modifiable, target);
-                }
-                else if (transition.type == Curve.Custom)
-                {
-                    //++++++CURVES
-                }
+                modifiable = transition.MoveTowards(modifiable, target);
             }
 
             if (counter)
@@ -204,18 +194,9 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     public override void SetPrevious ()
     {
         //previous = Quaternion.Inverse(parent.rotation) * transform.rotation;
-        previous = Quaternion.Inverse(parent.rotation) * target;
+        //previous = Quaternion.Inverse(parent.rotation) * target;
+        previous = Quaternion.Inverse(parent.rotation) * modifiable;
     }
-
-    /*protected override void Awake()
-    {
-        SetPrevious();
-
-        rigidbody = GetComponent<Rigidbody>();
-
-        _ETERNAL.r.lateRecorder.callback += SetPrevious;
-        _ETERNAL.r.earlyRecorder.callback += MoveToTarget;
-    }*/
 
     protected override void Awake()
     {
@@ -224,12 +205,6 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
         base.Awake();
     }
-
-    //protected override void OnDestroy()
-    //{
-    //    _ETERNAL.r.lateRecorder.callback -= SetPrevious;
-    //    _ETERNAL.r.earlyRecorder.callback -= MoveToTarget;
-    //}
 
     private void Start()
     {

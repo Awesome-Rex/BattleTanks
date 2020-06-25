@@ -20,7 +20,7 @@ public class CustomGravity : CustomTransform<Vector3>
     {
         if (enabled)
         {
-            if (counter)
+            if (!counter)
             {
                 /*if (space == Space.Self)
                 {
@@ -84,7 +84,7 @@ public class CustomGravity : CustomTransform<Vector3>
         {
             //disable rigidhodies, add custom behaviour
             _ETERNAL.r.earlyRecorder.lateCallbackF += ApplyGravity;
-            //_ETERNAL.r.lateRecorder.callbackF += SetPrevious;
+            _ETERNAL.r.lateRecorder.earlyCallbackF += SetPrevious;
 
             this.enabled = true;
         }
@@ -93,7 +93,7 @@ public class CustomGravity : CustomTransform<Vector3>
             //enable rigidbodies, disable this scirpt
 
             _ETERNAL.r.earlyRecorder.lateCallbackF -= ApplyGravity;
-            //_ETERNAL.r.lateRecorder.callbackF -= SetPrevious;
+            _ETERNAL.r.lateRecorder.earlyCallbackF -= SetPrevious;
 
             this.enabled = false;
         }

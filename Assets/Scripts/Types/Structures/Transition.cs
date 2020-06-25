@@ -17,8 +17,6 @@ public struct Transition
 
     public float percent;
 
-    public AnimationCurve curve;
-
     public float MoveTowards (float a, float b)
     {
         if (type == Curve.Linear)
@@ -28,8 +26,6 @@ public struct Transition
         else if (type == Curve.Interpolate)
         {
             return Mathf.Lerp(a, b, percent * Time.deltaTime);
-        } else if (type == Curve.Custom) {
-            
         }
 
         return a;
@@ -45,10 +41,6 @@ public struct Transition
         {
             return Vector3.Lerp(a, b, percent * Time.deltaTime);
         }
-        else if (type == Curve.Custom)
-        {
-
-        }
 
         return a;
     }
@@ -62,10 +54,6 @@ public struct Transition
         else if (type == Curve.Interpolate)
         {
             return Quaternion.Lerp(a, b, percent * Time.deltaTime);
-        }
-        else if (type == Curve.Custom)
-        {
-
         }
 
         return a;
