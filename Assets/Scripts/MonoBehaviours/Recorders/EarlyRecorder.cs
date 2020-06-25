@@ -8,10 +8,12 @@ public class EarlyRecorder : MonoBehaviour
     public System.Action lateCallback;
 
     public System.Action callbackF;
+    public System.Action lateCallbackF;
 
     private void FixedUpdate()
     {
         callbackF?.Invoke();
+        lateCallbackF?.Invoke();
     }
 
     // Update is called once per frame

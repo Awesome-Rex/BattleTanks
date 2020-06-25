@@ -3,54 +3,52 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class CustomGravity : CustomTransform<Quaternion>
+public class CustomGravity : CustomTransform<Vector3>
 {
     public float gravity = 9.81f;
     public float gravityScale = 1f;
 
     public AxisOrder offset;  //local
 
-    //previous
-    private float previousMagnitude;
-    private Vector3 previousVel;
-
     //script reference
     private new Rigidbody rigidbody;
 
+    private bool counter;
     public void ApplyGravity()
     {
         if (enabled)
         {
-            if (rigidbody.velocity != Vector3.zero)
-            {
-                //rigidbody.velocity = GetTarget() * Vector3.down * previousMagnitude;
-                //rigidbody.velocity = previousVel;
+            if (counter) {
+                rigidbody.velocity = GetTarget().normalized * rigidbody.velocity.magnitude;
             }
+            counter = !counter;
 
             if (space == Space.World)
             {
-                rigidbody.AddForce(offset.ApplyRotation(Quaternion.Euler(Vector3.zero)) * Vector3.down * gravity * gravityScale, ForceMode.Acceleration);
+                //rigidbody.AddForce(offset.ApplyRotation(Quaternion.Euler(Vector3.zero)) * Vector3.down * gravity * gravityScale, ForceMode.Acceleration);
+                rigidbody.AddForce(value.normalized * gravity * gravityScale, ForceMode.Acceleration);
             }
-            else
+            else if (space == Space.Self)
             {
-                rigidbody.AddForce(offset.ApplyRotation(parent.rotation) * Vector3.down * gravity * gravityScale, ForceMode.Acceleration);
+                //rigidbody.AddForce(offset.ApplyRotation(parent.rotation) * Vector3.down * gravity * gravityScale, ForceMode.Acceleration);
+                rigidbody.AddForce((parent.TransformPoint(value.normalized) - parent.position) * gravity * gravityScale, ForceMode.Acceleration);
             }
 
             SetPrevious();
         }
     }
 
-    public override Quaternion GetTarget()
+    public override Vector3 GetTarget()
     {
-        Quaternion target = new Quaternion();
+        Vector3 target = Vector3.zero;
 
         if (space == Space.World)
         {
-            target = offset.ApplyRotation(Quaternion.Euler(Vector3.zero));
+            target = previous;
         }
         else if (space == Space.Self)
         {
-            target = offset.ApplyRotation(parent.rotation) * previous;
+            target = parent.TransformPoint(previous) - parent.position;
         }
 
         return target;
@@ -58,14 +56,7 @@ public class CustomGravity : CustomTransform<Quaternion>
 
     public override void SetPrevious()
     {
-        previousMagnitude = rigidbody.velocity.magnitude;
-        previous = Quaternion.Inverse(parent.rotation) * Quaternion.LookRotation(rigidbody.velocity.normalized);
-
-        previousVel = rigidbody.velocity;
-
-        //Debug.Log(previous * Vector3.down);
-        //Debug.Log(previousMagnitude);
-        Debug.Log(previousVel);
+        previous = parent.TransformPoint(rigidbody.velocity) - parent.position;
     }
 
     public void EnableGravity(bool enabled)
@@ -73,12 +64,17 @@ public class CustomGravity : CustomTransform<Quaternion>
         if (enabled)
         {
             //disable rigidhodies, add custom behaviour
-            
+            _ETERNAL.r.earlyRecorder.lateCallbackF += ApplyGravity;
+            //_ETERNAL.r.lateRecorder.earlyCallbackF += SetPrevious;
+
             this.enabled = true;
         }
         else
         {
             //enable rigidbodies, disable this scirpt
+
+            _ETERNAL.r.earlyRecorder.lateCallbackF -= ApplyGravity;
+            //_ETERNAL.r.lateRecorder.earlyCallbackF -= SetPrevious;
 
             this.enabled = false;
         }
@@ -96,11 +92,6 @@ public class CustomGravity : CustomTransform<Quaternion>
     }
     
     void Start() { }
-
-    private void FixedUpdate()
-    {
-        ApplyGravity();
-    }
 
     private void OnEnable()
     {

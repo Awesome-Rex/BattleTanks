@@ -81,12 +81,14 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         operationalPosition = GetTarget();
     }
 
+
+    private bool counter;
     public override void MoveToTarget ()
     {
         target = GetTarget();
 
         if (enabled) {
-            //if (counter % 8 == 0) {
+            if (counter) {
                 if (!follow || link == Link.Match)
                 {
                     operationalPosition = target;
@@ -96,7 +98,8 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                     if (transition.type == Curve.Linear)
                     {
                         operationalPosition = transition.MoveTowards(operationalPosition, target);
-                    } else if (transition.type == Curve.Interpolate)
+                    }
+                    else if (transition.type == Curve.Interpolate)
                     {
                         operationalPosition = transition.MoveTowards(operationalPosition, target);
                     }
@@ -105,9 +108,9 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                         //+++++still have to add curves!
                     }
                 }
-            //}
+            }
 
-            //counter += 1;
+            counter = !counter;
         }
     }
 
