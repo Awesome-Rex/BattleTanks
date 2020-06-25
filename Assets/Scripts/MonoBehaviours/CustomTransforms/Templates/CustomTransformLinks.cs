@@ -11,9 +11,15 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
     
     public Link link = Link.Offset;
     
-
     public AxisOrder offset;  //local
-    
+
+
+    protected T modifiable;
+
+    //components
+    protected new Rigidbody rigidbody;
+
+    //methods
     public abstract void SetToTarget();
 
     public abstract void MoveToTarget();

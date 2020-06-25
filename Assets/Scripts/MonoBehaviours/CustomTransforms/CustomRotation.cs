@@ -21,7 +21,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
         set
         {
-            operationalRotation = SetRotation(value.eulerAngles, Space.World);
+            modifiable = SetRotation(value.eulerAngles, Space.World);
         }
     }
     public Quaternion localRotation
@@ -32,7 +32,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
         set
         {
-            operationalRotation = SetRotation(value.eulerAngles, Space.Self);
+            modifiable = SetRotation(value.eulerAngles, Space.Self);
         }
     }
 
@@ -85,9 +85,6 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
     }
 
-    //
-    private new Rigidbody rigidbody;
-
     [ContextMenu("Set to target")]
     public override void SetToTarget()
     {
@@ -97,7 +94,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             return;
         }
 
-        operationalRotation = GetTarget();
+        modifiable = GetTarget();
     }
 
     private bool counter;
@@ -105,28 +102,33 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         target = GetTarget();
 
-        if (enabled) {
-            if (counter) {
-                if (!follow || link == Link.Match)
+        if (enabled)
+        {
+            if (!follow || link == Link.Match)
+            {
+                modifiable = target;
+            }
+            else
+            {
+                if (transition.type == Curve.Linear)
                 {
-                    operationalRotation = target;
+                    modifiable = transition.MoveTowards(modifiable, target);
                 }
-                else
+                else if (transition.type == Curve.Interpolate)
                 {
-                    if (transition.type == Curve.Linear)
-                    {
-                        operationalRotation = transition.MoveTowards(operationalRotation, target);
-                    }
-                    else if (transition.type == Curve.Interpolate)
-                    {
-                        operationalRotation = transition.MoveTowards(operationalRotation, target);
-                    }
-                    else if (transition.type == Curve.Custom)
-                    {
-                        //++++++CURVES
-                    }
+                    modifiable = transition.MoveTowards(modifiable, target);
+                }
+                else if (transition.type == Curve.Custom)
+                {
+                    //++++++CURVES
                 }
             }
+
+            if (counter)
+            {
+                operationalRotation = modifiable;
+            }
+
             counter = !counter;
         }
     }
@@ -158,10 +160,10 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         if (relativeTo == Space.Self)
         {
-            return operationalRotation * Quaternion.Euler(eulers); //WORKS!
+            return modifiable * Quaternion.Euler(eulers); //WORKS!
         } else
         {
-            return Quaternion.Euler(eulers) * operationalRotation; //WORKS!
+            return Quaternion.Euler(eulers) * modifiable; //WORKS!
         }
     }
 
@@ -192,10 +194,10 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     public Quaternion GetRotation (Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self) {
-            return Quaternion.Inverse(parent.rotation) * operationalRotation; //WORKS!
+            return Quaternion.Inverse(parent.rotation) * modifiable; //WORKS!
         } else
         {
-            return operationalRotation; //WORKS!
+            return modifiable; //WORKS!
         }
     }
 
@@ -205,7 +207,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         previous = Quaternion.Inverse(parent.rotation) * target;
     }
 
-    protected override void Awake()
+    /*protected override void Awake()
     {
         SetPrevious();
 
@@ -213,13 +215,21 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
         _ETERNAL.r.lateRecorder.callback += SetPrevious;
         _ETERNAL.r.earlyRecorder.callback += MoveToTarget;
+    }*/
+
+    protected override void Awake()
+    {
+        rigidbody = GetComponent<Rigidbody>();
+        modifiable = operationalRotation;
+
+        base.Awake();
     }
 
-    protected override void OnDestroy()
-    {
-        _ETERNAL.r.lateRecorder.callback -= SetPrevious;
-        _ETERNAL.r.earlyRecorder.callback -= MoveToTarget;
-    }
+    //protected override void OnDestroy()
+    //{
+    //    _ETERNAL.r.lateRecorder.callback -= SetPrevious;
+    //    _ETERNAL.r.earlyRecorder.callback -= MoveToTarget;
+    //}
 
     private void Start()
     {

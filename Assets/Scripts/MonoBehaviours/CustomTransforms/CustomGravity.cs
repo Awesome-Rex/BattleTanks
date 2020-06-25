@@ -65,7 +65,8 @@ public class CustomGravity : CustomTransform<Vector3>
         {
             //target = parent.TransformPoint(previous) - parent.position;
             //target = parent.TransformPoint(rigidbody.velocity) - parent.position;
-            target = ((transform.rotation * (parent.rotation * Quaternion.Inverse(previousParentRot))) * (GetTarget().normalized)) * rigidbody.velocity.magnitude;
+            //target = ((parent.rotation * Quaternion.Inverse(previousParentRot))) * (rigidbody.velocity.normalized) * rigidbody.velocity.magnitude;
+            target = ((parent.rotation * Quaternion.Euler(90f, 0f, 0f)) * Vector3.forward) * rigidbody.velocity.magnitude;
         }
 
         return target;
