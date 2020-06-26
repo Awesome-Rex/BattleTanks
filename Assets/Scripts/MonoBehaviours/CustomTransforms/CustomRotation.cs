@@ -21,7 +21,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
         set
         {
-            modifiable = SetRotation(value.eulerAngles, Space.World);
+            operationalRotation = SetRotation(value.eulerAngles, Space.World);
         }
     }
     public Quaternion localRotation
@@ -32,7 +32,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
         set
         {
-            modifiable = SetRotation(value.eulerAngles, Space.Self);
+            operationalRotation = SetRotation(value.eulerAngles, Space.Self);
         }
     }
 
@@ -74,17 +74,19 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
         set
         {
-            if (rigidbody != null)
+            /*if (rigidbody != null)
             {
-                rigidbody.rotation = value/*.normalized*/;
+                rigidbody.rotation = value/*.normalized;
                 //transform.rotation = value;
             }
             else
-            {
+            {*/
                 transform.rotation = value;
-            }
+            //}
         }
     }
+
+    private Quaternion parentRotation;
 
     [ContextMenu("Set to target")]
     public override void SetToTarget()
@@ -99,27 +101,39 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     }
 
     private bool counter;
-    public override void MoveToTarget ()
+    public override void MoveToTarget()
     {
         target = GetTarget();
 
         if (enabled)
         {
-            if (!follow || link == Link.Match)
+            if (space == Space.World)
             {
-                modifiable = target;
+                operationalRotation = target;
             }
-            else
+            else if (space == Space.Self)
             {
-                modifiable = transition.MoveTowards(modifiable, target);
-            }
+                if (link == Link.Offset)
+                {
+                    if (!follow)
+                    {
+                        operationalRotation = target;
+                    } else {
+                        operationalRotation = transition.MoveTowards(operationalRotation, target);
+                    }
+                }
+                else if (link == Link.Match)
+                {
+                    if (counter)
+                    {
+                        Quaternion local = InverseTransformEuler(operationalRotation, parentRotation);
 
-            if (counter)
-            {
-                operationalRotation = modifiable;
-            }
+                        operationalRotation = TransformEuler(local, parent.rotation);
 
-            counter = !counter;
+                        parentRotation = parent.rotation;
+                    }
+                }
+            }
         }
     }
 
@@ -135,11 +149,11 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         {
             if (link == Link.Offset)
             {
-                target = parent.rotation * value; //++++++++offset
+                target = parentRotation * value; //++++++++offset
                 target = offset.ApplyRotation(this, target);
             } else if (link == Link.Match)
             {
-                target = parent.rotation * previous; //WORKS!
+                target = parentRotation * previous; //WORKS!
             }
         }
 
@@ -150,10 +164,10 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         if (relativeTo == Space.Self)
         {
-            return modifiable * Quaternion.Euler(eulers); //WORKS!
+            return operationalRotation * Quaternion.Euler(eulers); //WORKS!
         } else
         {
-            return Quaternion.Euler(eulers) * modifiable; //WORKS!
+            return Quaternion.Euler(eulers) * operationalRotation; //WORKS!
         }
     }
 
@@ -173,7 +187,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         if (relativeTo == Space.Self)
         {
-            return parent.rotation * Quaternion.Euler(rotation); //WORKS!
+            return parentRotation * Quaternion.Euler(rotation); //WORKS!
         }
         else 
         {
@@ -184,10 +198,10 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     public Quaternion GetRotation (Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self) {
-            return Quaternion.Inverse(parent.rotation) * modifiable; //WORKS!
+            return Quaternion.Inverse(parentRotation) * operationalRotation; //WORKS!
         } else
         {
-            return modifiable; //WORKS!
+            return operationalRotation; //WORKS!
         }
     }
 
@@ -195,21 +209,20 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         //previous = Quaternion.Inverse(parent.rotation) * transform.rotation;
         //previous = Quaternion.Inverse(parent.rotation) * target;
-        previous = Quaternion.Inverse(parent.rotation) * modifiable;
+        previous = Quaternion.Inverse(parentRotation) * operationalRotation;
+
+        counter = !counter;
     }
 
     protected override void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
-        modifiable = operationalRotation;
+        //operationalRotation = operationalRotation;
 
         base.Awake();
     }
 
-    private void Start()
-    {
-        
-    }
+    private void Start() { }
 
 #if UNITY_EDITOR
     //[CustomEditor(typeof(CustomRotation))]

@@ -13,9 +13,6 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
     
     public AxisOrder offset;  //local
 
-
-    protected T modifiable;
-
     //components
     protected new Rigidbody rigidbody;
 
