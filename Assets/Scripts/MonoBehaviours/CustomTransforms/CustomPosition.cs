@@ -16,7 +16,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         set
         {
-            modifiable = SetPosition(value, Space.World);
+            operationalPosition = SetPosition(value, Space.World);
         }
     }
     public Vector3 localPosition
@@ -27,7 +27,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         set
         {
-            modifiable = SetPosition(value, Space.Self);
+            operationalPosition = SetPosition(value, Space.Self);
         }
     }
 
@@ -91,7 +91,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         {
             if (space == Space.World)
             {
-                modifiable = target;
+                operationalPosition = target;
             }
             else if (space == Space.Self)
             {
@@ -99,18 +99,18 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 {
                     if (!follow)
                     {
-                        modifiable = target;
+                        operationalPosition = target;
                     }
                     else
                     {
-                        modifiable = transition.MoveTowards(modifiable, target);
+                        operationalPosition = transition.MoveTowards(operationalPosition, target);
                     }
                 }
                 else if (link == Link.Match)
                 {
                     
 
-                    modifiable = target;
+                    //modifiable = target;
 
                     /*operationalPosition += (modifiable - previousPosition);
 
@@ -162,11 +162,12 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             {
                 if (factorScale)
                 {
-                    target = parent.TransformPoint(value * offsetScale); //WORKS!
+                    target = TransformPoint(value * offsetScale, previousParentPosition, previousParentRotation, previousParentScale); //WORKS!
                 }
                 else
                 {
-                    target = parent.position + parent.TransformDirection(value); //WORKS!
+                    //target = parent.position + parent.TransformDirection(value); //WORKS!
+                    target = TransformPoint(value, previousParentPosition, previousParentRotation); ;
                 }
 
                 target = offset.ApplyPosition(this, target);
@@ -175,11 +176,11 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             {
                 if (factorScale)
                 {
-                    target = parent.TransformPoint(previous * offsetScale); //WORKS!
+                    target = TransformPoint(previous * offsetScale, previousParentPosition, previousParentRotation, previousParentScale); //WORKS!
                 }
                 else
                 {
-                    target = parent.TransformPoint(AxisOrder.DivideVector3(previousDirection, parent.localScale)); //WORKS!
+                    target = TransformPoint(AxisOrder.DivideVector3(previousDirection, previousParentScale), previousParentPosition, previousParentRotation, previousParentScale); //WORKS!
                 }
             }
         }
@@ -192,15 +193,15 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         if (relativeTo == Space.Self) {
             if (factorScale)
             {
-                return modifiable + (parent.TransformPoint(translation * offsetScale) - parent.position); //WORKS!
+                return operationalPosition + (TransformPoint(translation * offsetScale, previousParentPosition, previousParentRotation, previousParentScale) - previousParentPosition); //WORKS!
             }
             else
             {
-                return AxisOrder.DivideVector3(parent.TransformPoint(modifiable + translation), parent.localScale); //WORKS!
+                return AxisOrder.DivideVector3(TransformPoint(operationalPosition + translation, previousParentPosition, previousParentRotation, previousParentScale), parent.localScale); //WORKS!
             }
         } else
         {
-            return modifiable + translation; //WORKS!
+            return operationalPosition + translation; //WORKS!
         }
     }
     public Vector3 Translate(Vector3 from, Vector3 translation, Space relativeTo = Space.Self)
@@ -209,11 +210,11 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         {
             if (factorScale)
             {
-                return from + (parent.TransformPoint(translation * offsetScale) - parent.position); //WORKS!
+                return from + (TransformPoint(translation * offsetScale, previousParentPosition, previousParentRotation, previousParentScale) - parent.position); //WORKS!
             }
             else
             {
-                return AxisOrder.DivideVector3(parent.TransformPoint(from + translation), parent.localScale); //WORKS!
+                return AxisOrder.DivideVector3(TransformPoint(from + translation, previousParentPosition, previousParentRotation, previousParentScale), previousParentScale); //WORKS!
             }
         }
         else
@@ -227,10 +228,10 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         if (relativeTo == Space.Self)
         {
             if (factorScale) {
-                return parent.TransformPoint(position * offsetScale); //WORKS!
+                return TransformPoint(position * offsetScale, previousParentPosition, previousParentRotation, previousParentScale); //WORKS!
             } else
             {
-                return AxisOrder.DivideVector3(parent.TransformPoint(position), parent.localScale); //WORKS!
+                return AxisOrder.DivideVector3(TransformPoint(position, previousParentPosition, previousParentRotation, previousParentScale), parent.localScale); //WORKS!
             }
         } else
         {
@@ -245,7 +246,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             {
                 if (offsetScale != 0f) //ALL WORKS!
                 {
-                    return parent.InverseTransformPoint(modifiable) / offsetScale;
+                    return InverseTransformPoint(operationalPosition, previousParentPosition, previousParentRotation, previousParentScale) / offsetScale;
                 } else
                 {
                     return Vector3.zero;
@@ -253,12 +254,12 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             }
             else
             {
-                return AxisOrder.MultiplyVector3(parent.InverseTransformPoint(modifiable), parent.localScale); //WORKS
+                return AxisOrder.MultiplyVector3(InverseTransformPoint(operationalPosition, previousParentPosition, previousParentRotation, previousParentScale), parent.localScale); //WORKS
             }
         }
         else
         {
-            return modifiable; //WORKS!
+            return operationalPosition; //WORKS!
         }
     }
 
@@ -269,14 +270,14 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             {
                 if (offsetScale != 0f)
                 {
-                    previous = parent.InverseTransformPoint(modifiable) / offsetScale;
-                    previousDirection = AxisOrder.MultiplyVector3(parent.InverseTransformPoint(modifiable), parent.localScale / offsetScale); //for no scale
+                    previous = InverseTransformPoint(operationalPosition, previousParentPosition, previousParentRotation, previousParentScale) / offsetScale;
+                    previousDirection = AxisOrder.MultiplyVector3(InverseTransformPoint(operationalPosition, previousParentPosition, previousParentRotation, previousParentScale), previousParentScale / offsetScale); //for no scale
                 } else { previous = Vector3.zero; }
             }
             else
             {
-                previous = parent.InverseTransformPoint(modifiable);
-                previousDirection = AxisOrder.MultiplyVector3(parent.InverseTransformPoint(modifiable), parent.localScale);
+                previous = InverseTransformPoint(operationalPosition, previousParentPosition, previousParentRotation, previousParentScale);
+                previousDirection = AxisOrder.MultiplyVector3(InverseTransformPoint(operationalPosition, previousParentPosition, previousParentRotation, previousParentScale), previousParentScale);
             }
         //}
 
@@ -296,7 +297,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(modifiable, 0.5f);
+        //Gizmos.DrawSphere(operationalPosition, 0.5f);
         Gizmos.DrawLine(operationalPosition, parent.position);
     }
 
