@@ -116,12 +116,12 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 
                         Vector3 local = InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale);
 
-                        if (
+                        /*if (
                             !float.IsNaN(local.x) && 
                             !float.IsNaN(local.y) && 
-                            !float.IsNaN(local.z)) {
+                            !float.IsNaN(local.z)) {*/
                             operationalPosition = parent.TransformPoint(local);
-                        }
+                        //}
 
                         //previousPosition = operationalPosition;
                         parentPos = parent.position;
@@ -158,14 +158,26 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             }
             else if (link == Link.Match)
             {
+                Vector3 newTarget;
+
                 if (factorScale)
                 {
-                    target = TransformPoint(previous * offsetScale, parentPos, parentRot, parentScale); //WORKS!
+                    
+                    newTarget = TransformPoint(previous * offsetScale, parentPos, parentRot, parentScale); //WORKS!
                 }
                 else
                 {
-                    target = TransformPoint(AxisOrder.DivideVector3(previousDirection, parentScale), parentPos, parentRot, parentScale); //WORKS!
+                    newTarget = TransformPoint(AxisOrder.DivideVector3(previousDirection, parentScale), parentPos, parentRot, parentScale); //WORKS!
                 }
+
+                /*if (
+                    !float.IsNaN(newTarget.x) &&
+                    !float.IsNaN(newTarget.y) &&
+                    !float.IsNaN(newTarget.z)
+                    )
+                {*/
+                    target = newTarget;
+                //}
             }
         }
 
@@ -280,6 +292,11 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         base.Awake();
 
         _ETERNAL.r.earlyRecorder.callbackF -= SetPrevious;
+
+
+        parentPos = parent.position;
+        parentRot = parent.rotation;
+        parentScale = parent.localScale;
     }
 
     private void Start() { }

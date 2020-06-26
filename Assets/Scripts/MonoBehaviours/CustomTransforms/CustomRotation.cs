@@ -86,7 +86,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
     }
 
-    private Quaternion parentRotation;
+    private Quaternion parentRot;
 
     [ContextMenu("Set to target")]
     public override void SetToTarget()
@@ -126,11 +126,11 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 {
                     if (counter)
                     {
-                        Quaternion local = InverseTransformEuler(operationalRotation, parentRotation);
+                        Quaternion local = InverseTransformEuler(operationalRotation, parentRot);
 
                         operationalRotation = TransformEuler(local, parent.rotation);
 
-                        parentRotation = parent.rotation;
+                        parentRot = parent.rotation;
                     }
                 }
             }
@@ -149,11 +149,11 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         {
             if (link == Link.Offset)
             {
-                target = parentRotation * value; //++++++++offset
+                target = parentRot * value; //++++++++offset
                 target = offset.ApplyRotation(this, target);
             } else if (link == Link.Match)
             {
-                target = parentRotation * previous; //WORKS!
+                target = parentRot * previous; //WORKS!
             }
         }
 
@@ -187,7 +187,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         if (relativeTo == Space.Self)
         {
-            return parentRotation * Quaternion.Euler(rotation); //WORKS!
+            return parentRot * Quaternion.Euler(rotation); //WORKS!
         }
         else 
         {
@@ -198,7 +198,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     public Quaternion GetRotation (Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self) {
-            return Quaternion.Inverse(parentRotation) * operationalRotation; //WORKS!
+            return Quaternion.Inverse(parentRot) * operationalRotation; //WORKS!
         } else
         {
             return operationalRotation; //WORKS!
@@ -207,9 +207,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
     public override void SetPrevious ()
     {
-        //previous = Quaternion.Inverse(parent.rotation) * transform.rotation;
-        //previous = Quaternion.Inverse(parent.rotation) * target;
-        previous = Quaternion.Inverse(parentRotation) * operationalRotation;
+        previous = Quaternion.Inverse(parentRot) * operationalRotation;
 
         counter = !counter;
     }
@@ -217,9 +215,10 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     protected override void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
-        //operationalRotation = operationalRotation;
 
         base.Awake();
+
+        parentRot = parent.rotation;
     }
 
     private void Start() { }
