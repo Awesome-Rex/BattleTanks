@@ -16,8 +16,8 @@ public class ForTESTING : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
-        //transform.Translate(new Vector3(1f, 3f, 0f) * Time.deltaTime, Space.World);
-        transform.Translate(new Vector3(Input.GetAxis("Horizontal") * 5f, Input.GetAxis("Vertical") * 5f, 0f) * Time.deltaTime, Space.World);
+        SR.Get<CustomPosition>().position = SR.Get<CustomPosition>().Translate(new Vector3(1f, 0f, 0f) * Time.deltaTime, Space.Self);
+        /*transform.Translate(new Vector3(Input.GetAxis("Horizontal") * 5f, Input.GetAxis("Vertical") * 5f, 0f) * Time.deltaTime, Space.World);
 
 
         if (boolean) {
@@ -25,7 +25,7 @@ public class ForTESTING : MonoBehaviour
         } else
         {
             transform.forward = SR.Get<DirectionRecorder>().estimatedDirection;
-        }
+        }*/
 
 
 

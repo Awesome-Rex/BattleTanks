@@ -108,8 +108,14 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 }
                 else if (link == Link.Match)
                 {
-                    modifiable = target;
                     
+
+                    modifiable = target;
+
+                    /*operationalPosition += (modifiable - previousPosition);
+
+                    modifiable = operationalPosition;*/
+
                     if (counter)
                     {
                         //operationalPosition = 
@@ -125,6 +131,11 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                             !float.IsNaN(local.z)) {
                             operationalPosition = parent.TransformPoint(local);
                         }
+
+                        previousPosition = operationalPosition;
+                        previousParentPosition = parent.position;
+                        previousParentRotation = parent.rotation;
+                        previousParentScale = parent.localScale;
 
                         //operationalPosition += (modifiable - operationalPosition);
                     }
@@ -269,14 +280,14 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             }
         //}
 
-        if (counter) {
-            previousPosition = operationalPosition;
-            previousParentPosition = parent.position;
-            previousParentRotation = parent.rotation;
-            previousParentScale = parent.localScale;
+        //if (counter) {
+        //previousPosition = operationalPosition;
+        //previousParentPosition = parent.position;
+        //previousParentRotation = parent.rotation;
+        //previousParentScale = parent.localScale;
 
-            //previousParentTransform = new Transform();
-        }
+        ////previousParentTransform = new Transform();
+        //}
 
         counter = !counter;
         //counter = !counter;
