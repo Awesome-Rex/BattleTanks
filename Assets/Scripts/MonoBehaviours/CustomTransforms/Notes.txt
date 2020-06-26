@@ -1,0 +1,22 @@
+
+
+Start
+	CustomTransform.SetPrevious()
+	CustomGravity.SetPrevious()
+
+Update
+	Counter FALSE
+		Early
+			CustomGravity.ApplyGravity(GetTarget())
+
+		Late
+			
+
+	Counter TRUE
+		Early
+			CustomTransform.MoveToTarget(GetTarget())
+
+	Universal
+		Late
+			Customtransform.SetPrevious()
+			CustomGravity.SetPrevious()

@@ -17,6 +17,12 @@ public abstract class CustomTransform<T> : MonoBehaviour
 
     public abstract void SetPrevious();
 
+
+    /*public static Vector3 TransformPoint (Vector3 point, Vector3 position, Quaternion rotation, Vector3 scale)
+    {
+
+    }*/
+
     protected virtual void Awake()
     {
         SetPrevious();

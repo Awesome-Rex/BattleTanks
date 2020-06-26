@@ -20,8 +20,7 @@ public class CustomGravity : CustomTransform<Vector3>
     {
         if (enabled)
         {
-            if (!counter)
-            {
+            if (!counter){
                 /*if (space == Space.Self)
                 {
                     rigidbody.velocity = ((parent.rotation * Quaternion.Inverse(previousParentRot)) * (GetTarget().normalized)) * rigidbody.velocity.magnitude;
@@ -31,9 +30,8 @@ public class CustomGravity : CustomTransform<Vector3>
                 rigidbody.velocity = GetTarget();
             }
 
-            Debug.Log((parent.rotation * Quaternion.Inverse(previousParentRot)).eulerAngles);
-            counter = !counter;
-
+            //Debug.Log((parent.rotation * Quaternion.Inverse(previousParentRot)).eulerAngles);
+            
             if (space == Space.World)
             {
                 //rigidbody.AddForce(offset.ApplyRotation(Quaternion.Euler(Vector3.zero)) * Vector3.down * gravity * gravityScale, ForceMode.Acceleration);
@@ -47,7 +45,10 @@ public class CustomGravity : CustomTransform<Vector3>
             }
 
             //if (counter) {
-                SetPrevious();
+
+            counter = !counter;
+            //SetPrevious();
+            //GetComponent<CustomPosition>().SetPrevious();
             //}
         }
     }
@@ -123,7 +124,7 @@ public class CustomGravity : CustomTransform<Vector3>
 
     protected override void OnDestroy()
     {
-        base.OnDestroy();
+        //base.OnDestroy();
         EnableGravity(false);
     }
 }

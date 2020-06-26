@@ -35,20 +35,26 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     public float offsetScale = 1f;
 
     private Vector3 previousDirection;
+    private Vector3 previousPosition;
 
 
+    //https://answers.unity.com/questions/124486/need-equivalent-of-transforminversetransformpoint.html
+    private Vector3 previousParentPosition;
+    private Quaternion previousParentRotation; //USE THE STUFF HERE 
+    private Vector3 previousParentScale;
+    
     private Vector3 operationalPosition
     {
         get
         {
-            /*if (rigidbody != null)
+            if (rigidbody != null)
             {
                 return rigidbody.position;
             }
             else
-            {*/
+            {
                 return transform.position;
-            //}
+            }
         }
         set
         {
@@ -62,9 +68,6 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             //}
         }
     }
-
-    //check if even or odd
-    //private int counter = 0;
 
     [ContextMenu("Set to target")]
     public override void SetToTarget ()
@@ -106,27 +109,31 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 else if (link == Link.Match)
                 {
                     modifiable = target;
-
+                    
                     if (counter)
                     {
-                        /*modifiable = operationalPosition;
-                        target = GetTarget();
-                        modifiable = target;*/
+                        //operationalPosition = 
 
-                        //operationalPosition += (target - operationalPosition);
-                        operationalPosition += (modifiable - operationalPosition);
-                        //modifiable = operationalPosition;
+                        Vector3 local = Vector3.Scale(
+                            AxisOrder.DivideVector3(Vector3.one, previousParentScale),
+                            (Quaternion.Inverse(previousParentRotation) * (operationalPosition - previousParentPosition))
+                        );
+
+                        if (
+                            !float.IsNaN(local.x) && 
+                            !float.IsNaN(local.y) && 
+                            !float.IsNaN(local.z)) {
+                            operationalPosition = parent.TransformPoint(local);
+                        }
+
+                        //operationalPosition += (modifiable - operationalPosition);
                     }
                     else if (!counter)
                     {
-                        //modifiable += (operationalPosition - modifiable);
-                        modifiable = operationalPosition;
-                        //modifiable = target;
+                        
                     }
                 }
             }
-
-            counter = !counter;
         }
     }
 
@@ -140,28 +147,26 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         else if (space == Space.Self)
         {
-            if (link == Link.Offset) {
-                if (factorScale) {
+            if (link == Link.Offset)
+            {
+                if (factorScale)
+                {
                     target = parent.TransformPoint(value * offsetScale); //WORKS!
-                } else
+                }
+                else
                 {
                     target = parent.position + parent.TransformDirection(value); //WORKS!
                 }
 
                 target = offset.ApplyPosition(this, target);
-            } else if (link == Link.Match)
+            }
+            else if (link == Link.Match)
             {
-                if (factorScale) {
-                    //Quaternion originalRot = parent.rotation;
-
-                    //parent.rotation = parent.rotation * Quaternion.Euler((Quaternion.LookRotation(previousDirection) * Quaternion.Inverse(Quaternion.LookRotation(parent.InverseTransformDirection(transform.position)))).eulerAngles * 2f);
-                    
-
-                    //parent.Rotate(previousDirection * Quaternion.Inverse(parent.rotation))
+                if (factorScale)
+                {
                     target = parent.TransformPoint(previous * offsetScale); //WORKS!
-                    //target = 
-                    //parent.rotation = originalRot;
-                } else
+                }
+                else
                 {
                     target = parent.TransformPoint(AxisOrder.DivideVector3(previousDirection, parent.localScale)); //WORKS!
                 }
@@ -264,6 +269,16 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             }
         //}
 
+        if (counter) {
+            previousPosition = operationalPosition;
+            previousParentPosition = parent.position;
+            previousParentRotation = parent.rotation;
+            previousParentScale = parent.localScale;
+
+            //previousParentTransform = new Transform();
+        }
+
+        counter = !counter;
         //counter = !counter;
     }
 
@@ -271,6 +286,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     private void OnDrawGizmos()
     {
         Gizmos.DrawSphere(modifiable, 0.5f);
+        Gizmos.DrawLine(operationalPosition, parent.position);
     }
 
     protected override void Awake()
@@ -279,6 +295,10 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         modifiable = operationalPosition;
 
         base.Awake();
+
+        _ETERNAL.r.earlyRecorder.callbackF -= SetPrevious;
+
+        //_ETERNAL.r.earlyRecorder.lateCallbackF += SetPrevious;
     }
 
     private void Start()
