@@ -15,12 +15,12 @@ public class CustomGravity : CustomTransform<Vector3>
     //script reference
     private new Rigidbody rigidbody;
 
-    private bool counter;
+    //private bool counter;
     public void ApplyGravity()
     {
         if (enabled)
         {
-            if (!counter){
+            if (!_ETERNAL.R.counter){
                 /*if (space == Space.Self)
                 {
                     rigidbody.velocity = ((parent.rotation * Quaternion.Inverse(previousParentRot)) * (GetTarget().normalized)) * rigidbody.velocity.magnitude;
@@ -46,7 +46,7 @@ public class CustomGravity : CustomTransform<Vector3>
 
             //if (counter) {
 
-            counter = !counter;
+            //counter = !counter;
             //SetPrevious();
             //GetComponent<CustomPosition>().SetPrevious();
             //}
@@ -84,8 +84,8 @@ public class CustomGravity : CustomTransform<Vector3>
         if (enabled)
         {
             //disable rigidhodies, add custom behaviour
-            _ETERNAL.r.earlyRecorder.lateCallbackF += ApplyGravity;
-            _ETERNAL.r.lateRecorder.earlyCallbackF += SetPrevious;
+            _ETERNAL.R.earlyRecorder.lateCallbackF += ApplyGravity;
+            _ETERNAL.R.lateRecorder.earlyCallbackF += SetPrevious;
 
             this.enabled = true;
         }
@@ -93,8 +93,8 @@ public class CustomGravity : CustomTransform<Vector3>
         {
             //enable rigidbodies, disable this scirpt
 
-            _ETERNAL.r.earlyRecorder.lateCallbackF -= ApplyGravity;
-            _ETERNAL.r.lateRecorder.earlyCallbackF -= SetPrevious;
+            _ETERNAL.R.earlyRecorder.lateCallbackF -= ApplyGravity;
+            _ETERNAL.R.lateRecorder.earlyCallbackF -= SetPrevious;
 
             this.enabled = false;
         }
@@ -108,7 +108,7 @@ public class CustomGravity : CustomTransform<Vector3>
 
         base.Awake();
 
-        _ETERNAL.r.lateRecorder.callback -= SetPrevious;
+        _ETERNAL.R.lateRecorder.callback -= SetPrevious;
     }
     
     void Start() { }

@@ -6,12 +6,14 @@ using UnityEngine;
 
 public class _ETERNAL : MonoBehaviour
 {
-    public static _ETERNAL r;
+    public static _ETERNAL R;
 
     //children
     public bool transformableUsed;
     private Transform transformable;
 
+    //even/odd frames
+    public bool counter;
 
     //component references
     public LateRecorder lateRecorder;
@@ -37,14 +39,21 @@ public class _ETERNAL : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
 
-        r = this;
+        R = this;
 
         //children
         transformableUsed = false;
         transformable = GameObject.FindGameObjectWithTag("Transformable").transform;
 
+        counter = false;
+
         //component references
         lateRecorder = GetComponent<LateRecorder>();
         earlyRecorder = GetComponent<EarlyRecorder>();
+
+
+
+        //settings
+        lateRecorder.lateCallbackF += () => { counter = !counter; };
     }
 }

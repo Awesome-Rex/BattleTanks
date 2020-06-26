@@ -81,7 +81,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     }
 
 
-    private bool counter;
+    //private bool counter;
     public override void MoveToTarget ()
     {
         target = GetTarget();
@@ -107,7 +107,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 }
                 else if (link == Link.Match)
                 {
-                    if (counter)
+                    if (_ETERNAL.R.counter)
                     {
                         /*Vector3 local = Vector3.Scale(
                             AxisOrder.DivideVector3(Vector3.one, parentScale),
@@ -276,7 +276,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             previousDirection = AxisOrder.MultiplyVector3(InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parentScale);
         }
 
-        counter = !counter;
+        //counter = !counter;
     }
 
 
@@ -291,7 +291,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 
         base.Awake();
 
-        _ETERNAL.r.earlyRecorder.callbackF -= SetPrevious;
+        _ETERNAL.R.earlyRecorder.callbackF -= SetPrevious;
 
 
         parentPos = parent.position;

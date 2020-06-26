@@ -100,7 +100,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         operationalRotation = GetTarget();
     }
 
-    private bool counter;
+    //private bool counter;
     public override void MoveToTarget()
     {
         target = GetTarget();
@@ -124,7 +124,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 }
                 else if (link == Link.Match)
                 {
-                    if (counter)
+                    if (_ETERNAL.R.counter)
                     {
                         Quaternion local = InverseTransformEuler(operationalRotation, parentRot);
 
@@ -209,7 +209,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         previous = Quaternion.Inverse(parentRot) * operationalRotation;
 
-        counter = !counter;
+        //counter = !counter;
     }
 
     protected override void Awake()

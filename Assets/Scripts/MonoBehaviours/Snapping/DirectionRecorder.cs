@@ -171,7 +171,7 @@ public class DirectionRecorder : MonoBehaviour
         positionHistory = new Queue<KeyValuePair<float, Vector3>>();
         speedFactor = 1f;
 
-        loop = _ETERNAL.r.StartCoroutine(RecordPosition());
+        loop = _ETERNAL.R.StartCoroutine(RecordPosition());
     }
 
     private void OnDestroy()

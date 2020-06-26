@@ -5,15 +5,19 @@ using UnityEngine;
 public class LateRecorder : MonoBehaviour
 {
     public System.Action earlyCallbackF;
-    public System.Action callback;
-
     public System.Action earlyCallback;
+
+    public System.Action callback;
     public System.Action callbackF;
+
+    public System.Action lateCallback;
+    public System.Action lateCallbackF;
 
     private void FixedUpdate()
     {
         earlyCallbackF?.Invoke();
         callbackF?.Invoke();
+        lateCallbackF?.Invoke();
     }
 
     // Update is called once per frame
@@ -21,5 +25,6 @@ public class LateRecorder : MonoBehaviour
     {
         earlyCallback?.Invoke();
         callback?.Invoke();
+        lateCallback?.Invoke();
     }
 }

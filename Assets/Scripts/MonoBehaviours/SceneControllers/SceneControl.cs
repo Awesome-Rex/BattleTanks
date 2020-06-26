@@ -9,7 +9,7 @@ public class SceneControl : MonoBehaviour
     {
         transform.SetAsFirstSibling();
 
-        if (_ETERNAL.r == null)
+        if (_ETERNAL.R == null)
         {
             GameObject instance = Instantiate(Resources.Load("_ETERNAL") as GameObject);
             instance.transform.SetAsFirstSibling();

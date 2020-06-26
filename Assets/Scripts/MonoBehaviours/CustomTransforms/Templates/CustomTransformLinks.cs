@@ -25,12 +25,12 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
     protected override void Awake ()
     {
         base.Awake();
-        _ETERNAL.r.earlyRecorder.callbackF += MoveToTarget;
+        _ETERNAL.R.earlyRecorder.callbackF += MoveToTarget;
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        _ETERNAL.r.earlyRecorder.callbackF -= MoveToTarget;
+        _ETERNAL.R.earlyRecorder.callbackF -= MoveToTarget;
     }
 }
