@@ -35,12 +35,12 @@ public class CustomGravity : CustomTransform<Vector3>
             if (space == Space.World)
             {
                 //rigidbody.AddForce(offset.ApplyRotation(Quaternion.Euler(Vector3.zero)) * Vector3.down * gravity * gravityScale, ForceMode.Acceleration);
-                rigidbody.AddForce(value.normalized * gravity * gravityScale, ForceMode.Acceleration);
+                rigidbody.AddForce(value.normalized * gravity * gravityScale * 0.5f, ForceMode.Acceleration);
             }
             else if (space == Space.Self)
             {
                 //rigidbody.AddForce(offset.ApplyRotation(parent.rotation) * Vector3.down * gravity * gravityScale, ForceMode.Acceleration);
-                rigidbody.AddForce((parent.TransformPoint(value.normalized) - parent.position) * gravity * gravityScale, ForceMode.Acceleration);
+                rigidbody.AddForce((parent.TransformPoint(value.normalized) - parent.position) * gravity * gravityScale * 0.5f, ForceMode.Acceleration);
                 //Debug.Log((parent.TransformPoint(value.normalized) - parent.position));
             }
 
