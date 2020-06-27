@@ -84,23 +84,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
         set
         {
-            if ((space == Space.Self && link == Link.Match))
-            {
-                /*if (rigidbody != null)
-            {
-                rigidbody.rotation = value/*.normalized;
-                //transform.rotation = value;
-            }
-            else
-            {*/
-                transform.rotation = value;
-                //}
-            }
-            else if (space == Space.World)
-            {
-                this.value = value;
-            }
-            
+            transform.rotation = value;
         }
     }
 
@@ -171,7 +155,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             if (link == Link.Offset)
             {
                 target = parentRot * value; //++++++++offset
-                //target = offset.ApplyRotation(this, target);
+                target = offset.ApplyRotation(this, target);
             } else if (link == Link.Match)
             {
                 target = parentRot * previous; //WORKS!

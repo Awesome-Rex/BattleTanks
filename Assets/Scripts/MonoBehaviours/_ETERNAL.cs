@@ -15,7 +15,10 @@ public class _ETERNAL : MonoBehaviour
     //even/odd frames
     public bool counter;
 
+
     //component references
+    public ResourceReference resourceReference;
+
     public LateRecorder lateRecorder;
     public EarlyRecorder earlyRecorder;
 
@@ -48,9 +51,10 @@ public class _ETERNAL : MonoBehaviour
         counter = false;
 
         //component references
+        resourceReference = GetComponent<ResourceReference>();
+
         lateRecorder = GetComponent<LateRecorder>();
         earlyRecorder = GetComponent<EarlyRecorder>();
-
 
 
         //settings

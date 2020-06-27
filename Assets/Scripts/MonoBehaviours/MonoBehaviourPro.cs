@@ -10,15 +10,9 @@ public class MonoBehaviourPRO : MonoBehaviour
     {
         get
         {
-            if (_T == null)
-            {
-                _T = base.GetComponent<Tagged>();
-                
-            }
-            return _T;
+            return SR.Get<Tagged>();
         }
     }
-    private Tagged _T;
     
     public ScriptReference SR
     {
@@ -37,5 +31,10 @@ public class MonoBehaviourPRO : MonoBehaviour
     public new T GetComponent<T> ()
     {
         return SR.Get<T>();
+    }
+
+    public T ResourcesLoad<T>(string path) where T : Object
+    {
+        return _ETERNAL.R.resourceReference.Load<T>(path);
     }
 }

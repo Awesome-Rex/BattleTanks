@@ -93,6 +93,7 @@ public class AxisOrder
         this.space = space;
     }
 
+    //Methods
 
     public Quaternion ApplyRotation(CustomRotation relative, Quaternion? current = null) //WORKS!
     {

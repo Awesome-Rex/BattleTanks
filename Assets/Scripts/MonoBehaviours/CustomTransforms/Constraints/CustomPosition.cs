@@ -55,30 +55,11 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     {
         get
         {
-            if (rigidbody != null)
-            {
-                return rigidbody.position;
-            }
-            else
-            {
-                return transform.position;
-            }
+            return transform.position;
         }
         set
         {
-            /*if (space == Space.World)
-            {
-                this.value = value;
-            }*/
-                /*if (rigidbody != null)
-                {
-                    rigidbody.position = value;
-                }
-                else
-                {*/
-                transform.position = value; //////////MAKE IT WORK FOR CHANGING OFFSET POSITION
-                //}
-            
+            transform.position = value; //////////MAKE IT WORK FOR CHANGING OFFSET POSITION
         }
     }
 
@@ -168,7 +149,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                     target = TransformPoint(value, parentPos, parentRot);
                 }
 
-                //target = offset.ApplyPosition(this, target);
+                target = offset.ApplyPosition(this, target);
             }
             else if (link == Link.Match)
             {
