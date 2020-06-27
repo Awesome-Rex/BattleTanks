@@ -2,17 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IgnoreParentRotation : MonoBehaviour
+using TransformControl;
+
+public class IgnoreParentRotation : IgnoreLink
 {
-    // Start is called before the first frame update
-    void Start()
+    //private previous'
+    private Quaternion parentRotation;
+
+    public override void MoveToTarget()
     {
-        
+        if (enabled)
+        {
+            transform.rotation *= Quaternion.Inverse((transform.parent.rotation * Quaternion.Inverse(parentRotation)));
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void SetPrevious()
     {
-        
+        parentRotation = transform.parent.rotation;
     }
+
+    private void Start() { }
 }

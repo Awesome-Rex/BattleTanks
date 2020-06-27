@@ -2,29 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IgnoreParentPosition : MonoBehaviour
+using TransformControl;
+
+public class IgnoreParentPosition : IgnoreLink
 {
-    //previous
-    //Vector3 position;
-    Vector3 localPosition;
+    public bool factorScale;
 
-    Vector3 parentPosition;
-    Quaternion parentRotation;
-    Vector3 parentScale;
+    //private previous'
+    private Vector3 localPosition;
 
-    void MoveToTarget ()
+    private Vector3 parentPosition;
+    private Quaternion parentRotation;
+    private Vector3 parentScale;
+
+
+    public override void MoveToTarget()
     {
-        transform.position += -(transform.parent.position - parentPosition);
-        //SAVE FOR IGNORE PARENT ROTATION -> transform.rotation *= Quaternion.Inverse((transform.parent.rotation * Quaternion.Inverse(parentRotation)));
-
-        //transform.position += CustomTransform.TransformPoint()transform.parent.TransformPoint(localPosition);
-        
-        //transform.localPosition = AxisOrder.MultiplyVector3(transform.localPosition, AxisOrder.DivideVector3(transform.parent.localScale, parentScale));
+        if (enabled) {
+            transform.position += -((transform.parent.TransformPoint(localPosition) - transform.parent.position) - (Linking.TransformPoint(localPosition, parentPosition, parentRotation, parentScale) - parentPosition));
+            transform.position += -(transform.parent.position - parentPosition);
+            if (!factorScale) {
+                transform.localPosition =
+                    Vectors.DivideVector3(transform.localPosition, Vectors.DivideVector3(parentScale, transform.parent.localScale));
+            }
+        }
     }
 
-    void SetPrevious ()
+    public override void SetPrevious ()
     {
-       // position = transform.position;
         localPosition = transform.localPosition;
 
         parentPosition = transform.parent.position;
@@ -32,9 +37,5 @@ public class IgnoreParentPosition : MonoBehaviour
         parentScale = transform.parent.localScale;
     }
 
-    private void Awake()
-    {
-        _ETERNAL.R.lateRecorder.lateCallbackF += SetPrevious;
-        _ETERNAL.R.earlyRecorder.earlyCallbackF += MoveToTarget;
-    }
+    private void Start() { }
 }
