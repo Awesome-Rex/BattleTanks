@@ -21,7 +21,14 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
         set
         {
-            operationalRotation = SetRotation(value.eulerAngles, Space.World);
+            if (!(space == Space.Self && link == Link.Offset))
+            {
+                if (space == Space.World)
+                {
+                    this.value = value;
+                }
+                operationalRotation = SetRotation(value.eulerAngles, Space.World);
+            }
         }
     }
     public Quaternion localRotation
@@ -32,7 +39,10 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
         set
         {
-            operationalRotation = SetRotation(value.eulerAngles, Space.Self);
+            if (!(space == Space.Self && link == Link.Offset))
+            {
+                operationalRotation = SetRotation(value.eulerAngles, Space.Self);
+            }
         }
     }
 
@@ -74,7 +84,9 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
         set
         {
-            /*if (rigidbody != null)
+            if ((space == Space.Self && link == Link.Match))
+            {
+                /*if (rigidbody != null)
             {
                 rigidbody.rotation = value/*.normalized;
                 //transform.rotation = value;
@@ -82,7 +94,13 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             else
             {*/
                 transform.rotation = value;
-            //}
+                //}
+            }
+            else if (space == Space.World)
+            {
+                this.value = value;
+            }
+            
         }
     }
 
@@ -129,10 +147,13 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                         Quaternion local = InverseTransformEuler(operationalRotation, parentRot);
 
                         operationalRotation = TransformEuler(local, parent.rotation);
-
-                        parentRot = parent.rotation;
                     }
                 }
+            }
+
+            if (_ETERNAL.R.counter)
+            {
+                parentRot = parent.rotation;
             }
         }
     }
@@ -150,7 +171,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             if (link == Link.Offset)
             {
                 target = parentRot * value; //++++++++offset
-                target = offset.ApplyRotation(this, target);
+                //target = offset.ApplyRotation(this, target);
             } else if (link == Link.Match)
             {
                 target = parentRot * previous; //WORKS!

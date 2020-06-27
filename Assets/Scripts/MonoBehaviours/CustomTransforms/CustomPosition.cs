@@ -16,7 +16,13 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         set
         {
-            operationalPosition = SetPosition(value, Space.World);
+            if (!(space == Space.Self && link == Link.Offset)) {
+                if (space == Space.World)
+                {
+                    this.value = value;
+                }
+                operationalPosition = SetPosition(value, Space.World);
+            }
         }
     }
     public Vector3 localPosition
@@ -27,7 +33,10 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         set
         {
-            operationalPosition = SetPosition(value, Space.Self);
+            if (!(space == Space.Self && link == Link.Offset))
+            {
+                operationalPosition = SetPosition(value, Space.Self);
+            }
         }
     }
 
@@ -57,14 +66,19 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         set
         {
-            /*if (rigidbody != null)
+            /*if (space == Space.World)
             {
-                rigidbody.position = value;
-            }
-            else
-            {*/
-                transform.position = value;
-            //}
+                this.value = value;
+            }*/
+                /*if (rigidbody != null)
+                {
+                    rigidbody.position = value;
+                }
+                else
+                {*/
+                transform.position = value; //////////MAKE IT WORK FOR CHANGING OFFSET POSITION
+                //}
+            
         }
     }
 
@@ -86,7 +100,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     {
         target = GetTarget();
 
-        if (enabled)
+        if (enabled/* && _ETERNAL.R.counter*/)
         {
             if (space == Space.World)
             {
@@ -109,11 +123,6 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 {
                     if (_ETERNAL.R.counter)
                     {
-                        /*Vector3 local = Vector3.Scale(
-                            AxisOrder.DivideVector3(Vector3.one, parentScale),
-                            (Quaternion.Inverse(parentRot) * (operationalPosition - parentPos))
-                        );*/
-
                         Vector3 local = InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale);
 
                         /*if (
@@ -122,13 +131,18 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                             !float.IsNaN(local.z)) {*/
                             operationalPosition = parent.TransformPoint(local);
                         //}
-
-                        //previousPosition = operationalPosition;
+                        
                         parentPos = parent.position;
                         parentRot = parent.rotation;
                         parentScale = parent.localScale;
                     }
                 }
+            }
+            if (_ETERNAL.R.counter)
+            {
+                parentPos = parent.position;
+                parentRot = parent.rotation;
+                parentScale = parent.localScale;
             }
         }
     }
@@ -151,10 +165,10 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 }
                 else
                 {
-                    target = TransformPoint(value, parentPos, parentRot); ;
+                    target = TransformPoint(value, parentPos, parentRot);
                 }
 
-                target = offset.ApplyPosition(this, target);
+                //target = offset.ApplyPosition(this, target);
             }
             else if (link == Link.Match)
             {

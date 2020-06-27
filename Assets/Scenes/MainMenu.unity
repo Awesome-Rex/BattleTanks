@@ -505,7 +505,7 @@ MonoBehaviour:
   space: 1
   parent: {fileID: 867021773}
   value: {x: 0, y: -1, z: 0}
-  gravity: 1
+  gravity: 9.81
   gravityScale: 1
   offset:
     axes:
@@ -538,7 +538,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 452247522}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89cbb4000df042f4494208cd787e1515, type: 3}
   m_Name: 
@@ -670,7 +670,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   space: 1
   parent: {fileID: 867021773}
-  value: {x: 5, y: 1, z: 0}
+  value: {x: 0, y: 5, z: 0}
   follow: 0
   transition:
     type: 0
@@ -796,7 +796,6 @@ GameObject:
   - component: {fileID: 686122758}
   - component: {fileID: 686122757}
   - component: {fileID: 686122756}
-  - component: {fileID: 686122755}
   - component: {fileID: 686122753}
   m_Layer: 0
   m_Name: Cube (4)
@@ -821,19 +820,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &686122755
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 686122751}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cac407ef72d3aba48a2e89985b13ada6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  T: {fileID: 0}
 --- !u!65 &686122756
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -843,7 +829,7 @@ BoxCollider:
   m_GameObject: {fileID: 686122751}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -902,7 +888,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 686122751}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 5.5, z: -0.49}
+  m_LocalPosition: {x: 1.8, y: 5.5, z: -0.49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

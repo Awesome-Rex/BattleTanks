@@ -17,7 +17,7 @@ public class ForTESTING : MonoBehaviour
     // Update is called once per frame
     void Update() {
         SR.Get<CustomPosition>().position = SR.Get<CustomPosition>().Translate(new Vector3(0.5f, 0f, 0f) * Time.deltaTime, Space.Self);
-        SR.Get<CustomRotation>().rotation = SR.Get<CustomRotation>().Rotate(new Vector3(0f, 0f, 90f) * Time.deltaTime);
+        SR.Get<CustomRotation>().rotation = SR.Get<CustomRotation>().Rotate(new Vector3(0f, 0f, -90f) * Time.deltaTime);
         /*transform.Translate(new Vector3(Input.GetAxis("Horizontal") * 5f, Input.GetAxis("Vertical") * 5f, 0f) * Time.deltaTime, Space.World);
 
 
