@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using TransformControl;
+using TransformTools;
 
 [System.Serializable]
 public struct AxisApplied

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TransformControl
+namespace TransformTools
 {
     public enum Axis { X, Y, Z }
     public enum SpaceVariety { OneSided, Mixed }

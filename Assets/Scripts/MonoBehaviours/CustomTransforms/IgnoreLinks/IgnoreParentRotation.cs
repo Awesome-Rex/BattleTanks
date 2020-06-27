@@ -2,24 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using TransformControl;
+using TransformTools;
 
 public class IgnoreParentRotation : IgnoreLink
 {
     //private previous'
-    private Quaternion parentRotation;
+    private Quaternion parentRot;
 
     public override void MoveToTarget()
     {
         if (enabled)
         {
-            transform.rotation *= Quaternion.Inverse((transform.parent.rotation * Quaternion.Inverse(parentRotation)));
+            transform.rotation *= Quaternion.Inverse((transform.parent.rotation * Quaternion.Inverse(parentRot)));
         }
     }
 
     public override void SetPrevious()
     {
-        parentRotation = transform.parent.rotation;
+        parentRot = transform.parent.rotation;
     }
 
     private void Start() { }

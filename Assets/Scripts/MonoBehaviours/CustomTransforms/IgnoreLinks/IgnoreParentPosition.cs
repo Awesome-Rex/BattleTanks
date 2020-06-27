@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using TransformControl;
+using TransformTools;
 
 public class IgnoreParentPosition : IgnoreLink
 {
@@ -11,16 +11,16 @@ public class IgnoreParentPosition : IgnoreLink
     //private previous'
     private Vector3 localPosition;
 
-    private Vector3 parentPosition;
-    private Quaternion parentRotation;
+    private Vector3 parentPos;
+    private Quaternion parentRot;
     private Vector3 parentScale;
 
 
     public override void MoveToTarget()
     {
         if (enabled) {
-            transform.position += -((transform.parent.TransformPoint(localPosition) - transform.parent.position) - (Linking.TransformPoint(localPosition, parentPosition, parentRotation, parentScale) - parentPosition));
-            transform.position += -(transform.parent.position - parentPosition);
+            transform.position += -((transform.parent.TransformPoint(localPosition) - transform.parent.position) - (Linking.TransformPoint(localPosition, parentPos, parentRot, parentScale) - parentPos));
+            transform.position += -(transform.parent.position - parentPos);
             if (!factorScale) {
                 transform.localPosition =
                     Vectors.DivideVector3(transform.localPosition, Vectors.DivideVector3(parentScale, transform.parent.localScale));
@@ -32,8 +32,8 @@ public class IgnoreParentPosition : IgnoreLink
     {
         localPosition = transform.localPosition;
 
-        parentPosition = transform.parent.position;
-        parentRotation = transform.parent.rotation;
+        parentPos = transform.parent.position;
+        parentRot = transform.parent.rotation;
         parentScale = transform.parent.localScale;
     }
 

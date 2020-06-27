@@ -2,17 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IgnoreParentScale : MonoBehaviour
+using TransformTools;
+
+public class IgnoreParentScale : IgnoreLink
 {
-    // Start is called before the first frame update
-    void Start()
+    //private previous'
+    private Vector3 parentScale;
+
+    public override void MoveToTarget()
     {
-        
+        if (enabled)
+        {
+            transform.localScale = Vectors.DivideVector3(transform.localScale, Vectors.DivideVector3(transform.parent.localScale, parentScale));
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void SetPrevious()
     {
-        
+        parentScale = transform.parent.localScale;
     }
+
+    private void Start() { }
 }
