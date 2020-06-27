@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.Experimental.AI;
 using UnityEngine.UIElements;
 
+using TransformControl;
+
 public class CustomPosition : CustomTransformLinks<Vector3>
 {
     public Vector3 position
@@ -104,7 +106,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 {
                     if (_ETERNAL.R.counter)
                     {
-                        Vector3 local = InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale);
+                        Vector3 local = Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale);
 
                         /*if (
                             !float.IsNaN(local.x) && 
@@ -142,11 +144,11 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             {
                 if (factorScale)
                 {
-                    target = TransformPoint(value * offsetScale, parentPos, parentRot, parentScale); //WORKS!
+                    target = Linking.TransformPoint(value * offsetScale, parentPos, parentRot, parentScale); //WORKS!
                 }
                 else
                 {
-                    target = TransformPoint(value, parentPos, parentRot);
+                    target = Linking.TransformPoint(value, parentPos, parentRot);
                 }
 
                 target = offset.ApplyPosition(this, target);
@@ -158,11 +160,11 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 if (factorScale)
                 {
                     
-                    newTarget = TransformPoint(previous * offsetScale, parentPos, parentRot, parentScale); //WORKS!
+                    newTarget = Linking.TransformPoint(previous * offsetScale, parentPos, parentRot, parentScale); //WORKS!
                 }
                 else
                 {
-                    newTarget = TransformPoint(AxisOrder.DivideVector3(previousDirection, parentScale), parentPos, parentRot, parentScale); //WORKS!
+                    newTarget = Linking.TransformPoint(Vectors.DivideVector3(previousDirection, parentScale), parentPos, parentRot, parentScale); //WORKS!
                 }
 
                 /*if (
@@ -184,11 +186,11 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         if (relativeTo == Space.Self) {
             if (factorScale)
             {
-                return operationalPosition + (TransformPoint(translation * offsetScale, parentPos, parentRot, parentScale) - parentPos); //WORKS!
+                return operationalPosition + (Linking.TransformPoint(translation * offsetScale, parentPos, parentRot, parentScale) - parentPos); //WORKS!
             }
             else
             {
-                return AxisOrder.DivideVector3(TransformPoint(operationalPosition + translation, parentPos, parentRot, parentScale), parent.localScale); //WORKS!
+                return Vectors.DivideVector3(Linking.TransformPoint(operationalPosition + translation, parentPos, parentRot, parentScale), parent.localScale); //WORKS!
             }
         } else
         {
@@ -201,11 +203,11 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         {
             if (factorScale)
             {
-                return from + (TransformPoint(translation * offsetScale, parentPos, parentRot, parentScale) - parent.position); //WORKS!
+                return from + (Linking.TransformPoint(translation * offsetScale, parentPos, parentRot, parentScale) - parent.position); //WORKS!
             }
             else
             {
-                return AxisOrder.DivideVector3(TransformPoint(from + translation, parentPos, parentRot, parentScale), parentScale); //WORKS!
+                return Vectors.DivideVector3(Linking.TransformPoint(from + translation, parentPos, parentRot, parentScale), parentScale); //WORKS!
             }
         }
         else
@@ -219,10 +221,10 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         if (relativeTo == Space.Self)
         {
             if (factorScale) {
-                return TransformPoint(position * offsetScale, parentPos, parentRot, parentScale); //WORKS!
+                return Linking.TransformPoint(position * offsetScale, parentPos, parentRot, parentScale); //WORKS!
             } else
             {
-                return AxisOrder.DivideVector3(TransformPoint(position, parentPos, parentRot, parentScale), parent.localScale); //WORKS!
+                return Vectors.DivideVector3(Linking.TransformPoint(position, parentPos, parentRot, parentScale), parent.localScale); //WORKS!
             }
         } else
         {
@@ -237,7 +239,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             {
                 if (offsetScale != 0f) //ALL WORKS!
                 {
-                    return InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale) / offsetScale;
+                    return Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale) / offsetScale;
                 } else
                 {
                     return Vector3.zero;
@@ -245,7 +247,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             }
             else
             {
-                return AxisOrder.MultiplyVector3(InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parent.localScale); //WORKS
+                return Vectors.MultiplyVector3(Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parent.localScale); //WORKS
             }
         }
         else
@@ -260,15 +262,15 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         {
             if (offsetScale != 0f)
             {
-                previous = InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale) / offsetScale;
-                previousDirection = AxisOrder.MultiplyVector3(InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parentScale / offsetScale); //for no scale
+                previous = Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale) / offsetScale;
+                previousDirection = Vectors.MultiplyVector3(Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parentScale / offsetScale); //for no scale
             }
             else { previous = Vector3.zero; }
         }
         else
         {
-            previous = InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale);
-            previousDirection = AxisOrder.MultiplyVector3(InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parentScale);
+            previous = Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale);
+            previousDirection = Vectors.MultiplyVector3(Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parentScale);
         }
 
         //counter = !counter;

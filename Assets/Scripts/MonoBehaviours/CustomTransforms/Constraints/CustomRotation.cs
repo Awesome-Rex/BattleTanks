@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+using TransformControl;
+
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditorInternal;
@@ -128,9 +130,9 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 {
                     if (_ETERNAL.R.counter)
                     {
-                        Quaternion local = InverseTransformEuler(operationalRotation, parentRot);
+                        Quaternion local = Linking.InverseTransformEuler(operationalRotation, parentRot);
 
-                        operationalRotation = TransformEuler(local, parent.rotation);
+                        operationalRotation = Linking.TransformEuler(local, parent.rotation);
                     }
                 }
             }

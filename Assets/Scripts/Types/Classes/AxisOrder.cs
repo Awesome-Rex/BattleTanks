@@ -5,6 +5,8 @@ using System.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
+using TransformControl;
+
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditorInternal;
@@ -13,55 +15,6 @@ using UnityEditorInternal;
 [System.Serializable]
 public class AxisOrder
 {
-    // THE AXIS BIBLE
-    public static Axis[] axisIterate = new Axis[]
-    {
-        Axis.X, Axis.Y, Axis.Z
-    };
-    public static Axis[] axisDefaultOrder = new Axis[]
-    {
-        Axis.X, Axis.Y, Axis.Z
-    };
-
-    public static Dictionary<Axis, string> axisNames = new Dictionary<Axis, string>
-    {
-        { Axis.X, "X" },
-        { Axis.Y, "Y" },
-        { Axis.Z, "Z" }
-    };
-    public static Dictionary<Axis, Vector3> axisDirections = new Dictionary<Axis, Vector3>
-    {
-        { Axis.X, new Vector3(1f, 0f, 0f) },
-        { Axis.Y, new Vector3(0f, 1f, 0f) },
-        { Axis.Z, new Vector3(0f, 0f, 1f) }
-    };
-
-    public static float GetAxis (Axis axis, Vector3 from)
-    {
-        if (axis == Axis.X)
-        {
-            return from.x;
-        } else if (axis == Axis.Y)
-        {
-            return from.y;
-        } else if (axis == Axis.Z)
-        {
-            return from.z;
-        }
-
-        return 0f;
-    }
-
-    public static Vector3 MultiplyVector3 (Vector3 a, Vector3 b)
-    {
-        return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
-    }
-    public static Vector3 DivideVector3(Vector3 a, Vector3 b)
-    {
-        return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
-    }
-    //END
-
     public List<AxisApplied> axes = new List<AxisApplied>();
     public SpaceVariety variety = SpaceVariety.OneSided;
 
@@ -85,16 +38,15 @@ public class AxisOrder
     {
         this.axes = new List<AxisApplied>();
 
-        foreach (Axis i in axisDefaultOrder)
+        foreach (Axis i in Vectors.axisDefaultOrder)
         {
-            this.axes.Add(new AxisApplied(i, GetAxis(i, axes), SpaceVariety.OneSided, space));
+            this.axes.Add(new AxisApplied(i, Vectors.GetAxis(i, axes), SpaceVariety.OneSided, space));
         }
 
         this.space = space;
     }
 
     //Methods
-
     public Quaternion ApplyRotation(CustomRotation relative, Quaternion? current = null) //WORKS!
     {
         Quaternion newRot;
@@ -111,14 +63,14 @@ public class AxisOrder
         {
             foreach (AxisApplied i in axes)
             {
-                newRot = relative.Rotate(newRot, (axisDirections[i.axis] * i.units), space);
+                newRot = relative.Rotate(newRot, (Vectors.axisDirections[i.axis] * i.units), space);
             }
         }
         else if (variety == SpaceVariety.Mixed)
         {
             foreach (AxisApplied i in axes)
             {
-                newRot = relative.Rotate(newRot, (axisDirections[i.axis] * i.units), i.space);
+                newRot = relative.Rotate(newRot, (Vectors.axisDirections[i.axis] * i.units), i.space);
             }
         }
 
@@ -134,11 +86,11 @@ public class AxisOrder
             {
                 if (space == Space.Self)
                 {
-                    newRot = newRot * Quaternion.Euler(axisDirections[i.axis] * i.units);
+                    newRot = newRot * Quaternion.Euler(Vectors.axisDirections[i.axis] * i.units);
                 }
                 else
                 {
-                    newRot = Quaternion.Euler(axisDirections[i.axis] * i.units) * newRot;
+                    newRot = Quaternion.Euler(Vectors.axisDirections[i.axis] * i.units) * newRot;
                 }
             }
         }
@@ -148,11 +100,11 @@ public class AxisOrder
             {
                 if (space == Space.Self)
                 {
-                    newRot = newRot * Quaternion.Euler(axisDirections[i.axis] * i.units);
+                    newRot = newRot * Quaternion.Euler(Vectors.axisDirections[i.axis] * i.units);
                 }
                 else
                 {
-                    newRot = Quaternion.Euler(axisDirections[i.axis] * i.units) * newRot;
+                    newRot = Quaternion.Euler(Vectors.axisDirections[i.axis] * i.units) * newRot;
                 }
             }
         }
@@ -167,10 +119,10 @@ public class AxisOrder
             foreach (AxisApplied i in axes)
             {
                 if (space == Space.Self) {
-                    newRot = newRot * Quaternion.Euler(axisDirections[i.axis] * i.units);
+                    newRot = newRot * Quaternion.Euler(Vectors.axisDirections[i.axis] * i.units);
                 } else
                 {
-                    newRot = Quaternion.Euler(axisDirections[i.axis] * i.units) * newRot;
+                    newRot = Quaternion.Euler(Vectors.axisDirections[i.axis] * i.units) * newRot;
                 }
             }
         }
@@ -180,11 +132,11 @@ public class AxisOrder
             {
                 if (space == Space.Self)
                 {
-                    newRot = newRot * Quaternion.Euler(axisDirections[i.axis] * i.units);
+                    newRot = newRot * Quaternion.Euler(Vectors.axisDirections[i.axis] * i.units);
                 }
                 else
                 {
-                    newRot = Quaternion.Euler(axisDirections[i.axis] * i.units) * newRot;
+                    newRot = Quaternion.Euler(Vectors.axisDirections[i.axis] * i.units) * newRot;
                 }
             }
         }
@@ -205,14 +157,14 @@ public class AxisOrder
         {
             foreach (AxisApplied i in axes)
             {
-                newPos = relative.Translate(newPos, (axisDirections[i.axis] * i.units), space);
+                newPos = relative.Translate(newPos, (Vectors.axisDirections[i.axis] * i.units), space);
             }
         }
         else if (variety == SpaceVariety.Mixed)
         {
             foreach (AxisApplied i in axes)
             {
-                newPos = relative.Translate(newPos, (axisDirections[i.axis] * i.units), i.space);
+                newPos = relative.Translate(newPos, (Vectors.axisDirections[i.axis] * i.units), i.space);
             }
         }
         return newPos;
@@ -227,11 +179,11 @@ public class AxisOrder
             {
                 if (space == Space.Self)
                 {
-                    newPos += relative.parent.TransformPoint(axisDirections[i.axis] * i.units);
+                    newPos += relative.parent.TransformPoint(Vectors.axisDirections[i.axis] * i.units);
                 }
                 else
                 {
-                    newPos += (axisDirections[i.axis] * i.units);
+                    newPos += (Vectors.axisDirections[i.axis] * i.units);
                 }
             }
         }
@@ -241,11 +193,11 @@ public class AxisOrder
             {
                 if (i.space == Space.Self)
                 {
-                    newPos += relative.parent.TransformPoint(axisDirections[i.axis] * i.units);
+                    newPos += relative.parent.TransformPoint(Vectors.axisDirections[i.axis] * i.units);
                 }
                 else
                 {
-                    newPos += (axisDirections[i.axis] * i.units);
+                    newPos += (Vectors.axisDirections[i.axis] * i.units);
                 }
             }
         }
