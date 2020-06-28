@@ -58,6 +58,6 @@ public class _ETERNAL : MonoBehaviour
 
 
         //settings
-        lateRecorder.lateCallbackF += () => { counter = !counter; };
+        lateRecorder.lateCallbackF += () => counter = !counter;
     }
 }

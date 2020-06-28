@@ -30,7 +30,7 @@ public class DirectionRecorder : MonoBehaviour
     private float speedFactor = 1f;
 
     public Space space = Space.Self;
-    public LocalRelativity relativity = LocalRelativity.Custom; //if space == space.self
+    public LocalRelativity relativity = LocalRelativity.Constraint; //if space == space.self
 
     public float intervalLength;
     public float minRecordedDistance = 0.02f;
