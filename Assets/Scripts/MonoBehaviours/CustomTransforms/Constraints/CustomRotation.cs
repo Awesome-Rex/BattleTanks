@@ -90,6 +90,40 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
     }
 
+    public Vector3 up
+    {
+        get
+        {
+            return (rotation * Vector3.up).normalized;
+        }
+        set
+        {
+            rotation = (Quaternion.LookRotation(value) * Quaternion.Euler(90f, 0f, 0f));
+        }
+    }
+    public Vector3 forward
+    {
+        get
+        {
+            return (rotation * Vector3.forward).normalized;
+        }
+        set
+        {
+            rotation = Quaternion.LookRotation(value);
+        }
+    }
+    public Vector3 right
+    {
+        get
+        {
+            return (rotation * Vector3.right).normalized;
+        }
+        set
+        {
+            rotation = (Quaternion.LookRotation(value) * Quaternion.Euler(0f, -90f, 0f));
+        }
+    }
+
     private Quaternion parentRot;
 
     [ContextMenu("Set to target")]
