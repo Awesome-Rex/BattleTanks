@@ -2,17 +2,126 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CustomTorque : MonoBehaviour
+using TransformTools;
+
+[RequireComponent(typeof(Rigidbody))]
+public class CustomTorque : CustomTransform<Vector3>
 {
-    // Start is called before the first frame update
-    void Start()
+    public float torque = 9.81f;
+    public float torqueScale = 1f;
+
+    public AxisOrder offset;  //local
+
+    public LocalRelativity linkTo;
+
+    //previous
+    private Quaternion parentRot;
+
+
+    //script reference
+    private new Rigidbody rigidbody;
+    private CustomTorque parentTorque;
+
+    public void Apply()
     {
-        
+        if (enabled)
+        {
+            //Rotate velocity
+            rigidbody.velocity = GetTarget();
+
+            //Apply force
+            Vector3 fallDirection = Vector3.zero;
+
+
+            if (linkTo == LocalRelativity.Natural || parentTorque == null) //Transform Direction Vector
+            {
+                
+            }
+            else if (linkTo == LocalRelativity.Constraint && parentTorque != null) //CustomGravity
+            {
+                
+            }
+
+            if (space == Space.World)
+            {
+                
+            }
+            else if (space == Space.Self)
+            {
+                
+            }
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public override Vector3 GetTarget()
     {
-        
+        Vector3 target = Vector3.zero;
+
+        if (space == Space.World)
+        {
+            target = rigidbody.angularVelocity;
+        }
+        else if (space == Space.Self)
+        {
+            target = parent.eulerAngles + Vectors.Rad2Deg(rigidbody.angularVelocity);
+        }
+
+        return target;
+    }
+
+    public override void SetPrevious()
+    {
+        previous = parent.eulerAngles;
+
+        //parentRot = parent.rotation;
+    }
+
+    public void Enable(bool enabled)
+    {
+        if (enabled)
+        {
+            //disable rigidhodies, add custom behaviour
+
+            _ETERNAL.R.earlyRecorder.lateCallbackF += Apply;
+            _ETERNAL.R.lateRecorder.callbackF += SetPrevious;
+
+            rigidbody.useGravity = false;
+
+            this.enabled = true;
+        }
+        else
+        {
+            //enable rigidbodies, disable this scirpt
+
+            _ETERNAL.R.earlyRecorder.lateCallbackF -= Apply;
+            _ETERNAL.R.lateRecorder.callbackF -= SetPrevious;
+
+            rigidbody.useGravity = true;
+
+            this.enabled = false;
+        }
+    }
+
+    protected override void Awake()
+    {
+        rigidbody = GetComponent<Rigidbody>();
+        parentTorque = parent.GetComponent<CustomTorque>();
+
+        base.Awake();
+    }
+
+    void Start() { }
+
+    private void OnEnable()
+    {
+        Enable(true);
+    }
+    private void OnDisable()
+    {
+        Enable(false);
+    }
+    protected override void OnDestroy()
+    {
+        Enable(false);
     }
 }

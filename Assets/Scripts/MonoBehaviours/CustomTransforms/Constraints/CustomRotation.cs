@@ -164,9 +164,11 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 {
                     if (_ETERNAL.R.counter)
                     {
-                        Quaternion local = Linking.InverseTransformEuler(operationalRotation, parentRot);
+                        /*Quaternion local = Linking.InverseTransformEuler(operationalRotation, parentRot);
 
-                        operationalRotation = Linking.TransformEuler(local, parent.rotation);
+                        operationalRotation = Linking.TransformEuler(local, parent.rotation);*/
+
+                        operationalRotation = target;
                     }
                 }
             }
@@ -194,7 +196,10 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 target = offset.ApplyRotation(this, target);
             } else if (link == Link.Match)
             {
-                target = parentRot * previous; //WORKS!
+                SetPrevious();
+
+                //target = parentRot * previous; //WORKS!
+                target = Linking.TransformEuler(previous, parent.rotation);
             }
         }
 
@@ -248,8 +253,8 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
     public override void SetPrevious ()
     {
-        previous = Quaternion.Inverse(parentRot) * operationalRotation;
-
+        //previous = Quaternion.Inverse(parentRot) * operationalRotation;
+        previous = Linking.InverseTransformEuler(operationalRotation, parentRot);
         //counter = !counter;
     }
 

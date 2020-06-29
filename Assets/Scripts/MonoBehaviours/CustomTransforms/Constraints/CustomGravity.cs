@@ -26,7 +26,7 @@ public class CustomGravity : CustomTransform<Vector3>
     private new Rigidbody rigidbody;
     private CustomGravity parentGravity;
 
-    public void ApplyGravity()
+    public void Apply()
     {
         if (enabled)
         {
@@ -85,23 +85,27 @@ public class CustomGravity : CustomTransform<Vector3>
         parentRot = parent.rotation;
     }
 
-    public void EnableGravity(bool enabled)
+    public void Enable(bool enabled)
     {
         if (enabled)
         {
             //disable rigidhodies, add custom behaviour
 
-            _ETERNAL.R.earlyRecorder.lateCallbackF += ApplyGravity;
+            _ETERNAL.R.earlyRecorder.lateCallbackF += Apply;
             _ETERNAL.R.lateRecorder.callbackF += SetPrevious;
+
+            rigidbody.useGravity = false;
 
             this.enabled = true;
         }
         else
         {
-            //enable rigidbodies, disable this scirpt
+            //enable rigidbodies, disable this script
 
-            _ETERNAL.R.earlyRecorder.lateCallbackF -= ApplyGravity;
+            _ETERNAL.R.earlyRecorder.lateCallbackF -= Apply;
             _ETERNAL.R.lateRecorder.callbackF -= SetPrevious;
+            
+            rigidbody.useGravity = true;
 
             this.enabled = false;
         }
@@ -119,15 +123,15 @@ public class CustomGravity : CustomTransform<Vector3>
 
     private void OnEnable()
     {
-        EnableGravity(true);
+        Enable(true);
     }
     private void OnDisable()
     {
-        EnableGravity(false);
+        Enable(false);
     }
 
     protected override void OnDestroy()
     {
-        EnableGravity(false);
+        Enable(false);
     }
 }

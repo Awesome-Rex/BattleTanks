@@ -83,7 +83,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     {
         target = GetTarget();
 
-        if (enabled/* && _ETERNAL.R.counter*/)
+        if (enabled)
         {
             if (space == Space.World)
             {
@@ -106,18 +106,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 {
                     if (_ETERNAL.R.counter)
                     {
-                        Vector3 local = Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale);
-
-                        /*if (
-                            !float.IsNaN(local.x) && 
-                            !float.IsNaN(local.y) && 
-                            !float.IsNaN(local.z)) {*/
-                            operationalPosition = parent.TransformPoint(local);
-                        //}
-                        
-                        parentPos = parent.position;
-                        parentRot = parent.rotation;
-                        parentScale = parent.localScale;
+                        operationalPosition = target;
                     }
                 }
             }
@@ -157,24 +146,20 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             {
                 Vector3 newTarget;
 
+                SetPrevious();
+
                 if (factorScale)
                 {
-                    
-                    newTarget = Linking.TransformPoint(previous * offsetScale, parentPos, parentRot, parentScale); //WORKS!
+                    //newTarget = Linking.TransformPoint(previous * offsetScale, parentPos, parentRot, parentScale); //WORKS!
+                    newTarget = Linking.TransformPoint(previous * offsetScale, parent.position, parent.rotation, parent.localScale);
                 }
                 else
                 {
-                    newTarget = Linking.TransformPoint(Vectors.DivideVector3(previousDirection, parentScale), parentPos, parentRot, parentScale); //WORKS!
+                    //newTarget = Linking.TransformPoint(previousDirection, parentPos, parentRot);
+                    newTarget = Linking.TransformPoint(previousDirection, parent.position, parent.rotation); //++++++++ ATTENTION
                 }
-
-                /*if (
-                    !float.IsNaN(newTarget.x) &&
-                    !float.IsNaN(newTarget.y) &&
-                    !float.IsNaN(newTarget.z)
-                    )
-                {*/
-                    target = newTarget;
-                //}
+                
+                target = newTarget;
             }
         }
 
@@ -190,7 +175,8 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             }
             else
             {
-                return Vectors.DivideVector3(Linking.TransformPoint(operationalPosition + translation, parentPos, parentRot, parentScale), parent.localScale); //WORKS!
+                //return Vectors.DivideVector3(Linking.TransformPoint(operationalPosition + translation, parentPos, parentRot, parentScale), parent.localScale); //WORKS!
+                return Linking.TransformPoint(operationalPosition + translation, parentPos, parentRot); //WORKS!
             }
         } else
         {
@@ -207,7 +193,8 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             }
             else
             {
-                return Vectors.DivideVector3(Linking.TransformPoint(from + translation, parentPos, parentRot, parentScale), parentScale); //WORKS!
+                //return Vectors.DivideVector3(Linking.TransformPoint(from + translation, parentPos, parentRot, parentScale), parentScale); //WORKS!
+                return Linking.TransformPoint(from + translation, parentPos, parentRot);
             }
         }
         else
@@ -224,7 +211,8 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 return Linking.TransformPoint(position * offsetScale, parentPos, parentRot, parentScale); //WORKS!
             } else
             {
-                return Vectors.DivideVector3(Linking.TransformPoint(position, parentPos, parentRot, parentScale), parent.localScale); //WORKS!
+                //return Vectors.DivideVector3(Linking.TransformPoint(position, parentPos, parentRot, parentScale), parent.localScale); //WORKS!
+                return Linking.TransformPoint(position, parentPos, parentRot); //WORKS!
             }
         } else
         {
@@ -247,7 +235,8 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             }
             else
             {
-                return Vectors.MultiplyVector3(Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parent.localScale); //WORKS
+                //return Vectors.MultiplyVector3(Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parent.localScale); //WORKS
+                return Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot); //WORKS
             }
         }
         else
@@ -263,17 +252,21 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             if (offsetScale != 0f)
             {
                 previous = Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale) / offsetScale;
-                previousDirection = Vectors.MultiplyVector3(Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parentScale / offsetScale); //for no scale
+                //previousDirection = Vectors.MultiplyVector3(Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parentScale / offsetScale); //for no scale
+
+                previousDirection = Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot) / offsetScale;
+                //previousDirection = Vectors.DivideVector3(Linking.InverseTransformPoint(operationalPosition, parent.position, parent.rotation), parent.localScale) / offsetScale;
             }
             else { previous = Vector3.zero; }
         }
         else
         {
             previous = Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale);
-            previousDirection = Vectors.MultiplyVector3(Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parentScale);
-        }
+            //previousDirection = Vectors.MultiplyVector3(Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot, parentScale), parentScale);
 
-        //counter = !counter;
+            previousDirection = Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot);
+            //previousDirection = Vectors.DivideVector3(Linking.InverseTransformPoint(operationalPosition, parent.position, parent.rotation), parent.localScale);
+        }
     }
 
 
@@ -287,10 +280,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         rigidbody = GetComponent<Rigidbody>();
 
         base.Awake();
-
-        _ETERNAL.R.earlyRecorder.callbackF -= SetPrevious;
-
-
+        
         parentPos = parent.position;
         parentRot = parent.rotation;
         parentScale = parent.localScale;
