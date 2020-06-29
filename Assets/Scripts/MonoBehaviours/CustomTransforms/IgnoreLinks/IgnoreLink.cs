@@ -9,15 +9,15 @@ public abstract class IgnoreLink : MonoBehaviour
 
     protected void Awake()
     {
-        _ETERNAL.R.lateRecorder.lateCallbackF += SetPrevious;
-        _ETERNAL.R.earlyRecorder.earlyCallbackF += MoveToTarget;
+        _ETERNAL.I.lateRecorder.lateCallbackF += SetPrevious;
+        _ETERNAL.I.earlyRecorder.earlyCallbackF += MoveToTarget;
 
         SetPrevious();
     }
 
     protected void OnDestroy()
     {
-        _ETERNAL.R.lateRecorder.lateCallbackF -= SetPrevious;
-        _ETERNAL.R.earlyRecorder.earlyCallbackF -= MoveToTarget;
+        _ETERNAL.I.lateRecorder.lateCallbackF -= SetPrevious;
+        _ETERNAL.I.earlyRecorder.earlyCallbackF -= MoveToTarget;
     }
 }

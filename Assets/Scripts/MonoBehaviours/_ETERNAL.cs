@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class _ETERNAL : MonoBehaviour
 {
-    public static _ETERNAL R;
+    public static _ETERNAL I;
 
     //children
     public bool transformableUsed;
@@ -42,7 +42,7 @@ public class _ETERNAL : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
 
-        R = this;
+        I = this;
 
         //children
         transformableUsed = false;

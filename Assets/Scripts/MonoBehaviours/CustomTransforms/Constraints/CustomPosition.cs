@@ -6,6 +6,11 @@ using UnityEngine;
 using UnityEngine.Experimental.AI;
 using UnityEngine.UIElements;
 
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditorInternal;
+#endif
+
 using TransformTools;
 
 public class CustomPosition : CustomTransformLinks<Vector3>
@@ -74,6 +79,8 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             return;
         }
 
+        RecordParent();
+
         operationalPosition = GetTarget();
     }
 
@@ -104,17 +111,15 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 }
                 else if (link == Link.Match)
                 {
-                    if (_ETERNAL.R.counter)
+                    if (_ETERNAL.I.counter)
                     {
                         operationalPosition = target;
                     }
                 }
             }
-            if (_ETERNAL.R.counter)
+            if (_ETERNAL.I.counter)
             {
-                parentPos = parent.position;
-                parentRot = parent.rotation;
-                parentScale = parent.localScale;
+                RecordParent();
             }
         }
     }
@@ -164,6 +169,13 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
 
         return target;
+    }
+
+    public override void RecordParent()
+    {
+        parentPos = parent.position;
+        parentRot = parent.rotation;
+        parentScale = parent.localScale;
     }
 
     public Vector3 Translate(Vector3 translation, Space relativeTo = Space.Self)
@@ -280,11 +292,39 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         rigidbody = GetComponent<Rigidbody>();
 
         base.Awake();
-        
-        parentPos = parent.position;
-        parentRot = parent.rotation;
-        parentScale = parent.localScale;
+
+        RecordParent();
     }
 
     private void Start() { }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(CustomPosition))]
+    public class E : Editor
+    {
+        private bool applyInRuntime = false;
+
+        private void OnSceneGUI()
+        {
+            if (applyInRuntime)
+            {
+                //((CustomPosition)target).SetToTarget();
+                //Debug.Log("RUNTIME ON");
+            }
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            if (Application.isEditor)
+            {
+                if (GUILayout.Button(applyInRuntime ? "Apply in Runtime [ON]" : "Apply in Runtime [OFF]"))
+                {
+                    applyInRuntime = !applyInRuntime;
+                }
+            }
+        }
+    }
+#endif
 }

@@ -35,6 +35,6 @@ public class MonoBehaviourPRO : MonoBehaviour
 
     public T ResourcesLoad<T>(string path) where T : Object
     {
-        return _ETERNAL.R.resourceReference.Load<T>(path);
+        return _ETERNAL.I.resourceReference.Load<T>(path);
     }
 }

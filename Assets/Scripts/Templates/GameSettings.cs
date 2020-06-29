@@ -11,7 +11,7 @@ using UnityEditor;
 [CreateAssetMenu(fileName = "GameSettings", menuName = "Project/GameSettings")] [System.Serializable]
 public class GameSettings : ScriptableObject
 {
-    public static GameSettings current;
+    public static GameSettings I;
 
     public float tileSize = 0.5f;
 
@@ -26,7 +26,7 @@ public class GameSettings : ScriptableObject
 
     public void SetAsCurrent ()
     {
-        current = this;
+        I = this;
     }
 
     private void OnEnable()
@@ -35,6 +35,30 @@ public class GameSettings : ScriptableObject
     }
 
 #if UNITY_EDITOR
+    [CustomEditor(typeof(GameSettings))]
+    public class E : Editor
+    {
+        private new GameSettings target;
+
+        private void OnEnable()
+        {
+            target = (GameSettings)base.target;
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            if (target != I)
+            {
+                if (GUILayout.Button("Set as Current"))
+                {
+                    (target).SetAsCurrent();
+                }
+            }
+        }
+    }
+
     public class W : EditorWindow
     {
         //private GameSettings instance;
@@ -48,12 +72,12 @@ public class GameSettings : ScriptableObject
 
         private void OnEnable()
         {
-            instanceEditor = Editor.CreateEditor(GameSettings.current, typeof(E));
+            instanceEditor = Editor.CreateEditor(I, typeof(E));
         }
 
         private void OnFocus()
         {
-            instanceEditor = Editor.CreateEditor(GameSettings.current, typeof(E));
+            instanceEditor = Editor.CreateEditor(I, typeof(E));
         }
 
         private void OnGUI()
@@ -62,31 +86,6 @@ public class GameSettings : ScriptableObject
             
             if (instanceEditor != null) {
                 instanceEditor.OnInspectorGUI();
-            }
-        }
-    }
-
-
-    [CustomEditor(typeof(GameSettings))]
-    public class E : Editor
-    {
-        private new GameSettings target;
-
-        private void OnEnable()
-        {
-            target = (GameSettings)base.target;
-        }
-
-
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-
-            if (target != current) {
-                if (GUILayout.Button("Set as Current"))
-                {
-                    (target).SetAsCurrent();
-                }
             }
         }
     }

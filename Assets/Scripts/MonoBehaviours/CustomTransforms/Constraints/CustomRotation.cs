@@ -135,6 +135,8 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             return;
         }
 
+        RecordParent();
+
         operationalRotation = GetTarget();
     }
 
@@ -162,7 +164,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 }
                 else if (link == Link.Match)
                 {
-                    if (_ETERNAL.R.counter)
+                    if (_ETERNAL.I.counter)
                     {
                         /*Quaternion local = Linking.InverseTransformEuler(operationalRotation, parentRot);
 
@@ -173,9 +175,9 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 }
             }
 
-            if (_ETERNAL.R.counter)
+            if (_ETERNAL.I.counter)
             {
-                parentRot = parent.rotation;
+                RecordParent();
             }
         }
     }
@@ -204,6 +206,11 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
 
         return target;
+    }
+
+    public override void RecordParent()
+    {
+        parentRot = parent.rotation;
     }
 
     public Quaternion Rotate (Vector3 eulers, Space relativeTo = Space.Self)
@@ -264,7 +271,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
         base.Awake();
 
-        parentRot = parent.rotation;
+        RecordParent();
     }
 
     private void Start() { }

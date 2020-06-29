@@ -82,8 +82,8 @@ public class CustomTorque : CustomTransform<Vector3>
         {
             //disable rigidhodies, add custom behaviour
 
-            _ETERNAL.R.earlyRecorder.lateCallbackF += Apply;
-            _ETERNAL.R.lateRecorder.callbackF += SetPrevious;
+            _ETERNAL.I.earlyRecorder.lateCallbackF += Apply;
+            _ETERNAL.I.lateRecorder.callbackF += SetPrevious;
 
             rigidbody.useGravity = false;
 
@@ -93,8 +93,8 @@ public class CustomTorque : CustomTransform<Vector3>
         {
             //enable rigidbodies, disable this scirpt
 
-            _ETERNAL.R.earlyRecorder.lateCallbackF -= Apply;
-            _ETERNAL.R.lateRecorder.callbackF -= SetPrevious;
+            _ETERNAL.I.earlyRecorder.lateCallbackF -= Apply;
+            _ETERNAL.I.lateRecorder.callbackF -= SetPrevious;
 
             rigidbody.useGravity = true;
 

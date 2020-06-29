@@ -21,16 +21,18 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
 
     public abstract void MoveToTarget();
 
+    public abstract void RecordParent();
+
 
     protected override void Awake ()
     {
-        base.Awake();
-        _ETERNAL.R.earlyRecorder.callbackF += MoveToTarget;
+        //base.Awake();
+        _ETERNAL.I.earlyRecorder.callbackF += MoveToTarget;
     }
 
     protected override void OnDestroy()
     {
-        base.OnDestroy();
-        _ETERNAL.R.earlyRecorder.callbackF -= MoveToTarget;
+        //base.OnDestroy();
+        _ETERNAL.I.earlyRecorder.callbackF -= MoveToTarget;
     }
 }
