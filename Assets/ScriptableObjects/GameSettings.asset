@@ -13,3 +13,22 @@ MonoBehaviour:
   m_Name: GameSettings
   m_EditorClassIdentifier: 
   tileSize: 0.5
+  gameTags:
+  - name: 
+    id: 0
+    tags: []
+  - name: 
+    id: 0
+    tags: []
+  - name: 
+    id: 0
+    tags: []
+  - name: 
+    id: 0
+    tags: []
+  - name: 
+    id: 0
+    tags: []
+  - name: 
+    id: 0
+    tags: []

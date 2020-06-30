@@ -77,8 +77,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98ed123a1215050449d785bf9e20e89c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameSettings: {fileID: 11400000, guid: 03e05f18ff76aad4aaa24a648e61e836, type: 2}
+  gameEditorSettings: {fileID: 11400000, guid: b17baaffbd2a70c41a470e2717e8ffd0, type: 2}
   transformableUsed: 0
   counter: 0
+  resourceReference: {fileID: 0}
   lateRecorder: {fileID: 0}
   earlyRecorder: {fileID: 0}
 --- !u!114 &5021975282267869460

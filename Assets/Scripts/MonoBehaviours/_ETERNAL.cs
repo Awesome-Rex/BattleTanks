@@ -3,10 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class _ETERNAL : MonoBehaviour
 {
     public static _ETERNAL I;
+
+    public GameSettings gameSettings;
+    public GameEditorSettings gameEditorSettings;
 
     //children
     public bool transformableUsed;
@@ -36,7 +42,7 @@ public class _ETERNAL : MonoBehaviour
             transformableUsed = false;
         }
     }
-
+    
     // Start is called before the first frame update
     void Awake()
     {
@@ -60,4 +66,21 @@ public class _ETERNAL : MonoBehaviour
         //settings
         lateRecorder.lateCallbackF += () => counter = !counter;
     }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(_ETERNAL))]
+    public class E : Editor
+    {
+        //private void OnEnable()
+        //{
+        //    //Debug.Log("called");
+        //    I = (_ETERNAL)target;
+        //}
+
+        //public override void OnInspectorGUI()
+        //{
+        //    base.OnInspectorGUI();
+        //}
+    }
+#endif
 }

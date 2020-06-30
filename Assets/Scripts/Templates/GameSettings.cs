@@ -8,10 +8,17 @@ using TransformTools;
 using UnityEditor;
 #endif
 
-[CreateAssetMenu(fileName = "GameSettings", menuName = "Project/GameSettings")] [System.Serializable]
+[CreateAssetMenu(fileName = "GameSettings", menuName = "Project/Game Settings")]
+[System.Serializable]
 public class GameSettings : ScriptableObject
 {
-    public static GameSettings I;
+    public static GameSettings I
+    {
+        get
+        {
+            return _ETERNAL.I.gameSettings;
+        }
+    }
 
     public float tileSize = 0.5f;
 
@@ -23,16 +30,6 @@ public class GameSettings : ScriptableObject
         { Axis.Y, new Color(154 / 255f, 243 / 255f, 72f / 255f) },
         { Axis.Z, new Color(58f / 255f, 122f / 255f, 237f / 255f) }
     };
-
-    public void SetAsCurrent ()
-    {
-        I = this;
-    }
-
-    private void OnEnable()
-    {
-        
-    }
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(GameSettings))]
@@ -51,9 +48,9 @@ public class GameSettings : ScriptableObject
 
             if (target != I)
             {
-                if (GUILayout.Button("Set as Current"))
+                if (GUILayout.Button("Set as Main"))
                 {
-                    (target).SetAsCurrent();
+                    _ETERNAL.I.gameSettings = target;
                 }
             }
         }
@@ -61,8 +58,18 @@ public class GameSettings : ScriptableObject
 
     public class W : EditorWindow
     {
+        private Vector2 scroll;
+
         //private GameSettings instance;
-        private Editor instanceEditor;
+        private Editor gameSettings;
+        private Editor gameEditorSettings;
+
+        public void retrieveProperties()
+        {
+            // Debug.Log(_ETERNAL.I);
+            gameSettings = Editor.CreateEditor(_ETERNAL.I.gameSettings, typeof(E));
+            gameEditorSettings = Editor.CreateEditor(_ETERNAL.I.gameEditorSettings, typeof(GameEditorSettings.E));
+        }
 
         [MenuItem("Window/Game Settings")]
         public static void OpenWindow ()
@@ -72,21 +79,39 @@ public class GameSettings : ScriptableObject
 
         private void OnEnable()
         {
-            instanceEditor = Editor.CreateEditor(I, typeof(E));
+            _ETERNAL.I = ((GameObject)Resources.Load("_ETERNAL")).GetComponent<_ETERNAL>();
+
+            retrieveProperties();
         }
 
         private void OnFocus()
         {
-            instanceEditor = Editor.CreateEditor(I, typeof(E));
+            retrieveProperties();
         }
 
         private void OnGUI()
         {
-            //instance = (GameSettings)EditorGUILayout.ObjectField("Instance", null, typeof(GameSettings), true);
+            scroll = EditorGUILayout.BeginScrollView(scroll, GUILayout.Width(position.width), GUILayout.Height(position.height));
+            EditorGUI.BeginChangeCheck();
             
-            if (instanceEditor != null) {
-                instanceEditor.OnInspectorGUI();
+            if (gameSettings != null) {
+                EditorGUILayout.LabelField("Game Settings", EditorStyles.boldLabel);
+
+                gameSettings.OnInspectorGUI();
             }
+            
+            if (gameEditorSettings != null)
+            {
+                EditorGUILayout.LabelField("Editor Settings", EditorStyles.boldLabel);
+
+                gameEditorSettings.OnInspectorGUI();
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObjects(new Object[] { gameSettings, gameEditorSettings }, "Changed Game Settings");
+            }
+            EditorGUILayout.EndScrollView();
         }
     }
 #endif
