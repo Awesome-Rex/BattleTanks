@@ -15,6 +15,7 @@ using UnityEditorInternal;
 [System.Serializable]
 public class AxisOrder
 {
+    [SerializeField]
     public List<AxisApplied> axes = new List<AxisApplied>();
     public SpaceVariety variety = SpaceVariety.OneSided;
 

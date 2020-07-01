@@ -1,3 +1,0 @@
-﻿# SPSpawn
-
-Spawn Pool Library

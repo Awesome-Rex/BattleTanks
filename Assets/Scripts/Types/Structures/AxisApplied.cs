@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Reflection;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 using TransformTools;
+using EditorTools;
 
 [System.Serializable]
 public struct AxisApplied
@@ -73,10 +75,16 @@ public struct AxisApplied
                 GUI.backgroundColor = new Color(58f / 255f, 122f / 255f, 237f / 255f);
                 if (GUI.Button(newPosition, "Z", EditorStyles.miniButton))
                 {
-                    //fieldInfo.SetValue(property.serializedObject.targetObject, )
-                }
+                //fieldInfo.SetValue(property.serializedObject.targetObject, )
+                Debug.Log("something is happening");
+            }
             //}
+
             
+            Debug.Log(((AxisApplied)(fieldInfo.GetValue(property.serializedObject.targetObject) as AxisApplied?)).units);
+            
+
+
             //var field = property.serializedObject.targetObject.GetType().GetField(property.propertyPath);
             //Debug.Log(field);
             //if (field != null)

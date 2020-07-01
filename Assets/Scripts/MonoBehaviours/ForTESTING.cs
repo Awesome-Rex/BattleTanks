@@ -6,6 +6,8 @@ public class ForTESTING : MonoBehaviour
 {
     public bool boolean;
 
+    public AxisApplied testSerializable;
+
     private ScriptReference SR;
 
     // Start is called before the first frame update
