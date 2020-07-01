@@ -884,7 +884,13 @@ MonoBehaviour:
   gravity: 9.81
   gravityScale: 1
   offset:
-    axes: []
+    axes:
+    - axis: 0
+      units: 0
+      space: 0
+    - axis: 0
+      units: 0
+      space: 0
     variety: 1
     space: 0
   linkTo: 0
@@ -1044,11 +1050,9 @@ MonoBehaviour:
     - axis: 2
       units: 0
       space: 0
-      variety: 0
     - axis: 1
       units: 0
       space: 0
-      variety: 0
     variety: 1
     space: 1
   factorScale: 0

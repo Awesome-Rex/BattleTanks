@@ -40,7 +40,7 @@ public class AxisOrder
 
         foreach (Axis i in Vectors.axisDefaultOrder)
         {
-            this.axes.Add(new AxisApplied(i, Vectors.GetAxis(i, axes), SpaceVariety.OneSided, space));
+            this.axes.Add(new AxisApplied(i, Vectors.GetAxis(i, axes),/* SpaceVariety.OneSided,*/ space));
         }
 
         this.space = space;
