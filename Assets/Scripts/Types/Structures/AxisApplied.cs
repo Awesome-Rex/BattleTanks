@@ -32,61 +32,54 @@ public struct AxisApplied
 
 #if UNITY_EDITOR
     [CustomPropertyDrawer(typeof(AxisApplied))]
-    public class P : PropertyDrawer
+    public class P : PropertyDrawerPRO
     {
         private static bool showSpace = false;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            //SETUP
-            Rect indentedPosition = EditorGUI.IndentedRect(position);
-            
-            int indentLevelOG = EditorGUI.indentLevel;
+            OnGUIPRO(position, property, label, () => {
+                //CONTENT
+                EditorGUI.indentLevel = 0;
+                
+                
+                newPosition.width /= 2;
+                EditorGUI.PropertyField(newPosition, property.FindPropertyRelative("axis"), GUIContent.none);
 
-            float lineHeight = base.GetPropertyHeight(property, label);
-
-            //START
-            EditorGUI.BeginProperty(indentedPosition, label, property);
-            
-            Rect newPosition = indentedPosition;
-
-            //CONTENT
-            EditorGUI.indentLevel = 0;
-
-            newPosition.height = lineHeight;
-
-            newPosition.width /= 2;
-            EditorGUI.PropertyField(newPosition, property.FindPropertyRelative("axis"), GUIContent.none);
-
-            newPosition.x += indentedPosition.width / 2f;
-            EditorGUI.PropertyField(newPosition, property.FindPropertyRelative("units"), GUIContent.none);
+                newPosition.x += indentedPosition.width / 2f;
+                newPosition.width -= lineHeight;
+                EditorGUI.PropertyField(newPosition, property.FindPropertyRelative("units"), GUIContent.none);
+                
 
 
-            newPosition = indentedPosition;
-            newPosition.size = Vector2.one * lineHeight;
-            newPosition.x -= lineHeight;
-            if (GUI.Button(newPosition, GUIContent.none))
-            {
-                showSpace = !showSpace;
-            }
-
-            if (showSpace)
-            {
                 newPosition = indentedPosition;
-                newPosition.height = lineHeight;
-                newPosition.y += lineHeight;
-                EditorGUI.PropertyField(newPosition, property.FindPropertyRelative("space"));
-            }
-            
-            //END
-            EditorGUI.indentLevel = indentLevelOG;
-            
-            EditorGUI.EndProperty();
-        }
+                newPosition.size = Vector2.one * lineHeight;
+                newPosition.x = position.width;
+                if (showSpace)
+                {
+                    newPosition.y += lineHeight;
+                }
+                if (GUI.Button(newPosition, GUIContent.none))
+                {
+                    showSpace = !showSpace;
+                }
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            return base.GetPropertyHeight(property, label) * (showSpace ? 2f : 1f);
+                if (showSpace)
+                {
+                    newPosition = indentedPosition;
+                    newPosition.y += lineHeight;
+                    newPosition.width -= lineHeight;
+                    newPosition.height = lineHeight;
+                    EditorGUI.PropertyField(newPosition, property.FindPropertyRelative("space"), GUIContent.none);
+                    lines = 2f;
+                }
+                else
+                {
+                    lines = 1f;
+                }
+
+                //END
+            });
         }
     }
 #endif
