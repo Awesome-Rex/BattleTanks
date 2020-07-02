@@ -4,7 +4,7 @@ using System.Security.Policy;
 using UnityEngine;
 
 [RequireComponent(typeof(ScriptReference), typeof(Tagged))]
-public class MonoBehaviourPRO : MonoBehaviour
+public abstract class MonoBehaviourPRO : MonoBehaviour
 {
     public Tagged T
     {

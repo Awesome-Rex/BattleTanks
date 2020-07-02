@@ -41,17 +41,88 @@ public struct AxisApplied
             OnGUIPRO(position, property, label, () => {
                 //CONTENT
                 EditorGUI.indentLevel = 0;
-                
-                
-                newPosition.width /= 2;
-                EditorGUI.PropertyField(newPosition, property.FindPropertyRelative("axis"), GUIContent.none);
 
-                newPosition.x += indentedPosition.width / 2f;
+                #region "COLOURED BUTTONS"
+
+                newPosition.width /= 4;
+                
+                Renter.rentUse(GUI.backgroundColor, (i) => GUI.backgroundColor = i, () =>
+                {
+                    GUI.backgroundColor = new Color(219f / 255f, 62f / 255f, 29f / 255f);
+                    
+                    if (property.FindPropertyRelative("axis").enumValueIndex == (int)Axis.X)
+                    {
+                        if (GUI.Button(newPosition, "X".colour(Color.white).bold(), EditorStyles.miniButton.clone().richText().fontSize(lineHeight * 0.9f)))
+                        {
+                            property.FindPropertyRelative("axis").enumValueIndex = (int)Axis.X;
+                        }
+                    } else
+                    {
+                        //GUI.backgroundColor *= 1.5f;
+
+                        if (GUI.Button(newPosition, "X".colour(GUI.backgroundColor * 1.5f), EditorStyles.miniButton.clone().richText()))
+                        {
+                            property.FindPropertyRelative("axis").enumValueIndex = (int)Axis.X;
+                        }
+                    }
+
+
+                });
+                
+
+                newPosition.x += (indentedPosition.width / 4);
+                Renter.rentUse(GUI.backgroundColor, (i) => GUI.backgroundColor = i, () =>
+                {
+                    GUI.backgroundColor = new Color(154 / 255f, 243 / 255f, 72f / 255f);
+
+                    if (property.FindPropertyRelative("axis").enumValueIndex == (int)Axis.Y)
+                    {
+                        if (GUI.Button(newPosition, "Y".colour(Color.white).bold(), EditorStyles.miniButton.clone().richText().fontSize(lineHeight * 0.9f)))
+                        {
+                            property.FindPropertyRelative("axis").enumValueIndex = (int)Axis.Y;
+                        }
+                    }
+                    else
+                    {
+                        //GUI.backgroundColor *= 1.5f;
+
+                        if (GUI.Button(newPosition, "Y".colour(GUI.backgroundColor * 1.5f), EditorStyles.miniButton.clone().richText()))
+                        {
+                            property.FindPropertyRelative("axis").enumValueIndex = (int)Axis.Y;
+                        }
+                    }
+                });
+
+                newPosition.x += (indentedPosition.width / 4);
+                Renter.rentUse(GUI.backgroundColor, (i) => GUI.backgroundColor = i, () =>
+                {
+                    GUI.backgroundColor = new Color(58f / 255f, 122f / 255f, 237f / 255f);
+
+                    if (property.FindPropertyRelative("axis").enumValueIndex == (int)Axis.Z)
+                    {
+                        if (GUI.Button(newPosition, "Z".colour(Color.white).bold(), EditorStyles.miniButton.clone().richText().fontSize(lineHeight * 0.9f)))
+                        {
+                            property.FindPropertyRelative("axis").enumValueIndex = (int)Axis.Z;
+                        }
+                    }
+                    else
+                    {
+                        //GUI.backgroundColor *= 1.5f;
+
+                        if (GUI.Button(newPosition, "Z".colour(GUI.backgroundColor * 1.5f), EditorStyles.miniButton.clone().richText()))
+                        {
+                            property.FindPropertyRelative("axis").enumValueIndex = (int)Axis.Z;
+                        }
+                    }
+                });
+                #endregion
+
+                //units
+                newPosition.x += (indentedPosition.width / 4);
                 newPosition.width -= lineHeight;
-                EditorGUI.PropertyField(newPosition, property.FindPropertyRelative("units"), GUIContent.none);
+                property.FindPropertyRelative("units").floatValue = EditorGUI.FloatField(newPosition, GUIContent.none, property.FindPropertyRelative("units").floatValue);
                 
-
-
+                //show/hide button
                 newPosition = indentedPosition;
                 newPosition.size = Vector2.one * lineHeight;
                 newPosition.x = position.width;
@@ -64,84 +135,34 @@ public struct AxisApplied
                     showSpace = !showSpace;
                 }
 
+                //enum
                 if (showSpace)
                 {
                     newPosition = indentedPosition;
                     newPosition.y += lineHeight;
                     newPosition.width -= lineHeight;
                     newPosition.height = lineHeight;
-                    EditorGUI.PropertyField(newPosition, property.FindPropertyRelative("space"), GUIContent.none);
+                    
+                    if (property.FindPropertyRelative("space").enumValueIndex == (int)Space.Self) {
+                        if (GUI.Button(newPosition, "Self", EditorStyles.miniButton)) {
+                            property.FindPropertyRelative("space").enumValueIndex = (int)Space.World;
+                        }
+                    } else
+                    {
+                        if (GUI.Button(newPosition, "World", EditorStyles.miniButton))
+                        {
+                            property.FindPropertyRelative("space").enumValueIndex = (int)Space.Self;
+                        }
+                    }
+                    
                     lines = 2f;
                 }
                 else
                 {
                     lines = 1f;
                 }
-
-                //END
             });
         }
-	   
-	   /*Rect indentedPosition = EditorGUI.IndentedRect(position);
-
-            EditorGUI.BeginProperty(indentedPosition, label, property);
-
-
-            Color backgroundColorOG = GUI.backgroundColor;
-            int indentLevelOG = EditorGUI.indentLevel;
-
-            Rect newPosition = indentedPosition;
-            newPosition.width /= 4;
-            newPosition.x = indentedPosition.x;
-
-
-            GUI.backgroundColor = new Color(219f / 255f, 62f / 255f, 29f / 255f);
-            //if (((AxisApplied)(fieldInfo.GetValue(property.serializedObject.targetObject) as AxisApplied?)).axis == Axis.X)
-            //{
-                if (GUI.Button(newPosition, "X", EditorStyles.miniButton))
-                {
-
-                }
-            //}
-
-            newPosition.x += (indentedPosition.width / 4);
-            //if (((AxisApplied)(fieldInfo.GetValue(property.serializedObject.targetObject) as AxisApplied?)).axis == Axis.Y)
-            //{
-                GUI.backgroundColor = new Color(154 / 255f, 243 / 255f, 72f / 255f);
-                if (GUI.Button(newPosition, "Y", EditorStyles.miniButton))
-                {
-
-                }
-            //}
-
-            newPosition.x += (indentedPosition.width / 4);
-            //if (((AxisApplied)(fieldInfo.GetValue(property.serializedObject.targetObject) as AxisApplied?)).axis == Axis.Z)
-            //{
-                GUI.backgroundColor = new Color(58f / 255f, 122f / 255f, 237f / 255f);
-                if (GUI.Button(newPosition, "Z", EditorStyles.miniButton))
-                {
-                    //fieldInfo.SetValue(property.serializedObject.targetObject, )
-                }
-            //}
-
-            //var field = property.serializedObject.targetObject.GetType().GetField(property.propertyPath);
-            //Debug.Log(field);
-            //if (field != null)
-            //{
-            //    var value = field.GetValue(property.serializedObject.targetObject);
-            //    Debug.Log(((AxisApplied)(value as AxisApplied?)).axis);
-            //}
-
-
-
-            GUI.backgroundColor = backgroundColorOG;
-
-            EditorGUI.indentLevel = 0;
-            newPosition.x += (indentedPosition.width / 4);
-            EditorGUI.PropertyField(newPosition, property.FindPropertyRelative("units"), GUIContent.none);
-            EditorGUI.indentLevel = indentLevelOG;
-
-            EditorGUI.EndProperty();*/
     }
 #endif
 }

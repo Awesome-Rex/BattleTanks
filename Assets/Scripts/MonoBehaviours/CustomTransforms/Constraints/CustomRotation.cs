@@ -277,62 +277,68 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     private void Start() { }
 
 #if UNITY_EDITOR
-    //[CustomEditor(typeof(CustomRotation))]
-    //public class E : Editor {
-    //    private SerializedProperty transitionP;
-    //    //private SerializedProperty axisOrder;
+    [CustomEditor(typeof(CustomRotation))]
+    public class E : EditorPRO<CustomRotation>
+    {
+        private SerializedProperty transitionP;
+        private SerializedProperty axisOrder;
 
-    //    private void OnEnable()
-    //    {
-    //        transitionP = serializedObject.FindProperty("transition");
-    //        //axisOrder = serializedObject.FindProperty("axisOrder");
-    //    }
+        protected override void DeclareProperties ()
+        {
+            AddProperty("transition");
+            AddProperty("offset");
+            AddProperty("link");
+        }
 
-    //    public override void OnInspectorGUI()
-    //    {
-    //        var t = (CustomRotation)target;
+        public override void OnInspectorGUI()
+        {
+            OnInspectorGUIPRO(() => {
+                //EditorGUILayout.LabelField("Space", EditorStyles.boldLabel);
+                target.space = (Space)EditorGUILayout.EnumPopup(target.space);
 
+                EditorGUILayout.Space();
 
-    //        EditorGUILayout.LabelField("Space", EditorStyles.boldLabel);
-    //        t.space = (Space)EditorGUILayout.EnumPopup(t.space);
-
-    //        EditorGUILayout.Space();
-            
-    //        if (t.space == Space.Self) t.parent = (Transform)EditorGUILayout.ObjectField("Parent", t.parent, typeof(Transform), true);
-
-    //        t.value = Quaternion.Euler(EditorGUILayout.Vector3Field("Rotation", t.value.eulerAngles));
-
-    //        EditorGUILayout.Space();
-
-    //        if (t.space == Space.Self)
-    //        {
-    //            EditorGUILayout.LabelField("Local Space", EditorStyles.boldLabel);
-
-    //            t.link = (Link)EditorGUILayout.EnumPopup("Link", t.link);
-
-    //            if (t.link == Link.Offset)
-    //            {
-    //                //t.globalOffset = Quaternion.Euler(EditorGUILayout.Vector3Field("Global Offset", t.globalOffset.eulerAngles));
-    //                //EditorGUILayout.PropertyField(axisOrder);
-
-    //                //EditorGUILayout.BeginHorizontal();
-
+                EditorGUILayout.LabelField("Rotation", EditorStyles.boldLabel);
+                if (target.space == Space.Self)
+                {
+                    target.parent = (Transform)EditorGUILayout.ObjectField("Parent", target.parent, typeof(Transform), true);
+                }
+                if (!(target.space == Space.Self && target.link == Link.Match)) {
                     
-    //                /*foreach (Axis i in t.axisOrder)
-    //                {
-    //                }*/
-    //            }
-    //        }
+                    target.value = Quaternion.Euler(EditorGUILayout.Vector3Field("Value", target.value.eulerAngles));
+                }
 
-    //        EditorGUILayout.Space();
-            
-    //        t.follow = EditorGUILayout.Toggle("Transitioning", t.follow);
-    //        if (t.follow)
-    //        {
-    //            //t.transition = (Transition)EditorGUILayout.ObjectField("Transition", t.transition, typeof(Transition), true);
-    //            EditorGUILayout.PropertyField(transitionP);
-    //        }
-    //    }
-    //}
+                EditorGUILayout.Space();
+
+                if (target.space == Space.Self)
+                {
+                    EditorGUILayout.LabelField("Local", EditorStyles.boldLabel);
+
+                    EditorGUILayout.PropertyField(FindProperty("link"));
+
+                    if (target.link == Link.Offset)
+                    {
+                        EditorGUILayout.PropertyField(FindProperty("offset"));
+                    }
+                }
+
+                EditorGUILayout.Space();
+
+                if (target.space == Space.Self && target.link == Link.Offset) {
+                    EditorGUILayout.BeginHorizontal();
+
+                    EditorGUILayout.LabelField("Transition", EditorStyles.boldLabel);
+                    
+                    target.follow = EditorGUILayout.Toggle(string.Empty, target.follow);
+
+                    EditorGUILayout.EndHorizontal();
+                    if (target.follow)
+                    {
+                        EditorGUILayout.PropertyField(FindProperty("transition"));
+                    }
+                }
+            });
+        }
+    }
 #endif
 }

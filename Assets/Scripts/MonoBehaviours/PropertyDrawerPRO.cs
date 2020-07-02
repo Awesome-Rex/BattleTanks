@@ -5,8 +5,21 @@ using UnityEngine;
 
 using UnityEditor;
 
-public class PropertyDrawerPRO : PropertyDrawer
+public abstract class PropertyDrawerPRO : PropertyDrawer
 {
+    protected Renter renter
+    {
+        get
+        {
+            if (_renter == null)
+            {
+                _renter = new Renter();
+            }
+            return _renter;
+        }
+    }
+    private Renter _renter;
+
     protected Rect indentedPosition
     {
         get

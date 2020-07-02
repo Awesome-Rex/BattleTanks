@@ -105,22 +105,33 @@ namespace EditorTools
     public static class StyleExtensions
     {
         //<---------------------PROPERTIES----------------------->
+        
+        public static GUIStyle clone (this GUIStyle style)
+        {
+            return new GUIStyle(style);
+        }
 
         public static GUIStyle fontStyle(this GUIStyle style, FontStyle fontStyle)
         {
+            //GUIStyle clone = new GUIStyle(style);
+
             style.fontStyle = fontStyle;
 
             return style;
         }
 
-        public static GUIStyle fontSize(this GUIStyle style, int size)
+        public static GUIStyle fontSize(this GUIStyle style, float size)
         {
-            style.fontSize = size;
+            //GUIStyle clone = new GUIStyle(style);
+
+            style.fontSize = (int)size;
 
             return style;
         }
         public static GUIStyle richText(this GUIStyle style)
         {
+            //GUIStyle clone = new GUIStyle(style);
+
             style.richText = true;
 
             return style;
@@ -128,6 +139,8 @@ namespace EditorTools
 
         public static GUIStyle wordWrap(this GUIStyle style)
         {
+            //GUIStyle clone = new GUIStyle(style);
+
             style.wordWrap = true;
 
             return style;
@@ -135,6 +148,8 @@ namespace EditorTools
 
         public static GUIStyle contentOffset(this GUIStyle style, Vector2 offset)
         {
+            //GUIStyle clone = new GUIStyle(style);
+
             style.contentOffset = offset;
 
             return style;
@@ -142,18 +157,24 @@ namespace EditorTools
 
         public static GUIStyle padding(this GUIStyle style, RectOffset padding)
         {
+            //GUIStyle clone = new GUIStyle(style);
+
             style.padding = padding;
 
             return style;
         }
         public static GUIStyle margin(this GUIStyle style, RectOffset margin)
         {
+            //GUIStyle clone = new GUIStyle(style);
+
             style.margin = margin;
 
             return style;
         }
         public static GUIStyle border(this GUIStyle style, RectOffset border)
         {
+            ///GUIStyle clone = new GUIStyle(style);
+
             style.border = border;
 
             return style;
@@ -161,6 +182,8 @@ namespace EditorTools
 
         public static GUIStyle alignment(this GUIStyle style, TextAnchor anchor)
         {
+            //GUIStyle clone = new GUIStyle(style);
+
             style.alignment = anchor;
 
             return style;
