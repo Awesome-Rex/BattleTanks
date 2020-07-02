@@ -70,14 +70,14 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
     }
 
-    [ContextMenu("Set to target")]
+    //[ContextMenu("Set to target")]
     public override void SetToTarget ()
     {
-        if (space == Space.Self && link == Link.Match)
-        {
-            Debug.LogWarning("Cannot apply to target position if link is set to \"match!\"", gameObject);
-            return;
-        }
+        //if (space == Space.Self && link == Link.Match)
+        //{
+        //    Debug.LogWarning("Cannot apply to target position if link is set to \"match!\"", gameObject);
+        //    return;
+        //}
 
         RecordParent();
 

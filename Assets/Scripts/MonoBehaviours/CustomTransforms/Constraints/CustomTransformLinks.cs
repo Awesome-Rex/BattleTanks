@@ -13,6 +13,8 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
     
     public AxisOrder offset;  //local
 
+    public bool applyInEditor = false;
+
     //components
     protected new Rigidbody rigidbody;
 

@@ -76,7 +76,7 @@ public abstract class EditorPRO<T> : Editor where T : Object
         serializedObject.ApplyModifiedProperties();
         if (EditorGUI.EndChangeCheck())
         {
-            //Debug.Log("changed!");
+
         }
     }
 }

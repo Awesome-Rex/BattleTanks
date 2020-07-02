@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Linq;
 
 using TransformTools;
+using EditorTools;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -75,7 +76,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         get
         {
-            if (rigidbody != null)
+            if (rigidbody != null || !applyInEditor)
             {
                 return rigidbody.rotation;
             }
@@ -125,16 +126,17 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     }
 
     private Quaternion parentRot;
-
-    [ContextMenu("Set to target")]
+    
     public override void SetToTarget()
     {
-        if (space == Space.Self && link == Link.Match)
-        {
-            Debug.LogWarning("Cannot apply to target position if link is set to \"match!\"", gameObject);
-            return;
-        }
+        //if (space == Space.Self && link == Link.Match)
+        //{
+        //    Debug.LogWarning("Cannot apply to target position if link is set to \"match!\"", gameObject);
+        //    return;
+        //}
 
+        Debug.Log("Trying to set Rotation!");
+        
         RecordParent();
 
         operationalRotation = GetTarget();
@@ -166,10 +168,6 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 {
                     if (_ETERNAL.I.counter)
                     {
-                        /*Quaternion local = Linking.InverseTransformEuler(operationalRotation, parentRot);
-
-                        operationalRotation = Linking.TransformEuler(local, parent.rotation);*/
-
                         operationalRotation = target;
                     }
                 }
@@ -276,12 +274,20 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
     private void Start() { }
 
+    private void OnDrawGizmos()
+    {
+        if (applyInEditor) {
+            SetToTarget();
+
+            SetPrevious();
+        }
+    }
+
 #if UNITY_EDITOR
     [CustomEditor(typeof(CustomRotation))]
     public class E : EditorPRO<CustomRotation>
     {
-        private SerializedProperty transitionP;
-        private SerializedProperty axisOrder;
+        private bool showContextInfo = false;
 
         protected override void DeclareProperties ()
         {
@@ -290,9 +296,21 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             AddProperty("link");
         }
 
+        /*public void OnSceneGUI()
+        {
+            if (target.applyInEditor)
+            {
+                //Debug.Log("Apply Custom Transform!");
+                target.SetToTarget();
+
+                target.SetPrevious();
+            }
+        }*/
+
         public override void OnInspectorGUI()
         {
-            OnInspectorGUIPRO(() => {
+            OnInspectorGUIPRO(() =>
+            {
                 //EditorGUILayout.LabelField("Space", EditorStyles.boldLabel);
                 target.space = (Space)EditorGUILayout.EnumPopup(target.space);
 
@@ -303,8 +321,9 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 {
                     target.parent = (Transform)EditorGUILayout.ObjectField("Parent", target.parent, typeof(Transform), true);
                 }
-                if (!(target.space == Space.Self && target.link == Link.Match)) {
-                    
+                if (!(target.space == Space.Self && target.link == Link.Match))
+                {
+
                     target.value = Quaternion.Euler(EditorGUILayout.Vector3Field("Value", target.value.eulerAngles));
                 }
 
@@ -324,17 +343,47 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
                 EditorGUILayout.Space();
 
-                if (target.space == Space.Self && target.link == Link.Offset) {
+                if (target.space == Space.Self && target.link == Link.Offset)
+                {
                     EditorGUILayout.BeginHorizontal();
 
                     EditorGUILayout.LabelField("Transition", EditorStyles.boldLabel);
-                    
+
                     target.follow = EditorGUILayout.Toggle(string.Empty, target.follow);
 
                     EditorGUILayout.EndHorizontal();
                     if (target.follow)
                     {
                         EditorGUILayout.PropertyField(FindProperty("transition"));
+                    }
+                }
+
+                EditorGUILayout.Space();
+
+                showContextInfo = EditorGUILayout.Foldout(showContextInfo, "Context Info".bold(), EditorStyles.foldout.clone().richText());
+                if (showContextInfo)
+                {
+                    target.eulerAngles = EditorGUILayout.Vector3Field("eulerAngles", target.eulerAngles);
+                    target.localEulerAngles = EditorGUILayout.Vector3Field("localEulerAngles", target.localEulerAngles);
+                }
+
+                if (Application.isEditor)
+                {
+                    EditorGUILayout.Space();
+
+                    if (!target.applyInEditor)
+                    {
+                        if (GUILayout.Button("Apply in Editor", EditorStyles.miniButton))
+                        {
+                            target.applyInEditor = true;
+                        }
+                    }
+                    else
+                    {
+                        if (GUILayout.Button("Don't Apply in Editor".colour(Color.red).bold(), EditorStyles.miniButton.clone().richText()))
+                        {
+                            target.applyInEditor = false;
+                        }
                     }
                 }
             });
