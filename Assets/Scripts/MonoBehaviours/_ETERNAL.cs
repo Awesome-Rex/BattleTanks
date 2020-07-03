@@ -69,8 +69,13 @@ public class _ETERNAL : MonoBehaviour
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(_ETERNAL))]
-    public class E : Editor
+    public class E : EditorPRO<_ETERNAL>
     {
+        protected override void DeclareProperties()
+        {
+            
+        }
+
         //private void OnEnable()
         //{
         //    //Debug.Log("called");
@@ -81,6 +86,12 @@ public class _ETERNAL : MonoBehaviour
         //{
         //    base.OnInspectorGUI();
         //}
+
+        /*protected override void OnEnable()
+        {
+            base.OnEnable();
+            I = target;
+        }*/
     }
 #endif
 }

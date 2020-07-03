@@ -76,7 +76,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         get
         {
-            if (rigidbody != null || !applyInEditor)
+            if (rigidbody != null || !editorApply)
             {
                 return rigidbody.rotation;
             }
@@ -129,20 +129,15 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     
     public override void SetToTarget()
     {
-        //if (space == Space.Self && link == Link.Match)
-        //{
-        //    Debug.LogWarning("Cannot apply to target position if link is set to \"match!\"", gameObject);
-        //    return;
-        //}
+        target = GetTarget();
 
-        Debug.Log("Trying to set Rotation!");
-        
-        RecordParent();
+        if (enabled) {
+            operationalRotation = target;
 
-        operationalRotation = GetTarget();
+            RecordParent();
+        }
     }
 
-    //private bool counter;
     public override void MoveToTarget()
     {
         target = GetTarget();
@@ -166,14 +161,14 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 }
                 else if (link == Link.Match)
                 {
-                    if (_ETERNAL.I.counter)
+                    if ((_ETERNAL.I != null &&_ETERNAL.I.counter) || editorApply)
                     {
                         operationalRotation = target;
                     }
                 }
             }
 
-            if (_ETERNAL.I.counter)
+            if ((_ETERNAL.I != null && _ETERNAL.I.counter) || editorApply)
             {
                 RecordParent();
             }
@@ -221,7 +216,6 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             return Quaternion.Euler(eulers) * operationalRotation; //WORKS!
         }
     }
-
     public Quaternion Rotate(Quaternion from, Vector3 eulers, Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self)
@@ -245,7 +239,6 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             return Quaternion.Euler(rotation); //WORKS!
         }
     }
-
     public Quaternion GetRotation (Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self) {
@@ -258,9 +251,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
     public override void SetPrevious ()
     {
-        //previous = Quaternion.Inverse(parentRot) * operationalRotation;
         previous = Linking.InverseTransformEuler(operationalRotation, parentRot);
-        //counter = !counter;
     }
 
     protected override void Awake()
@@ -268,20 +259,9 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         rigidbody = GetComponent<Rigidbody>();
 
         base.Awake();
-
-        RecordParent();
     }
 
     private void Start() { }
-
-    private void OnDrawGizmos()
-    {
-        if (applyInEditor) {
-            SetToTarget();
-
-            SetPrevious();
-        }
-    }
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(CustomRotation))]
@@ -294,25 +274,24 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             AddProperty("transition");
             AddProperty("offset");
             AddProperty("link");
+
+            AddProperty("space");
         }
 
-        /*public void OnSceneGUI()
+        protected override void OnEnable()
         {
-            if (target.applyInEditor)
-            {
-                //Debug.Log("Apply Custom Transform!");
-                target.SetToTarget();
-
-                target.SetPrevious();
-            }
-        }*/
+            base.OnEnable();
+            
+            target.RecordParent();
+            target.rigidbody = target.GetComponent<Rigidbody>();
+        }
 
         public override void OnInspectorGUI()
         {
             OnInspectorGUIPRO(() =>
             {
-                //EditorGUILayout.LabelField("Space", EditorStyles.boldLabel);
-                target.space = (Space)EditorGUILayout.EnumPopup(target.space);
+                //target.space = (Space)EditorGUILayout.EnumPopup(target.space);
+                EditorGUILayout.PropertyField(FindProperty("space"));
 
                 EditorGUILayout.Space();
 
@@ -367,7 +346,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                     target.localEulerAngles = EditorGUILayout.Vector3Field("localEulerAngles", target.localEulerAngles);
                 }
 
-                if (Application.isEditor)
+                if (EditorApplication.isPaused || !EditorApplication.isPlaying)
                 {
                     EditorGUILayout.Space();
 
@@ -375,7 +354,15 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                     {
                         if (GUILayout.Button("Apply in Editor", EditorStyles.miniButton))
                         {
+                            target.SetPrevious();
+                            target.RecordParent();
+
                             target.applyInEditor = true;
+
+                            /*if (EditorApplication.isPaused)
+                            {
+                                target.OnDrawGizmos();
+                            }*/
                         }
                     }
                     else

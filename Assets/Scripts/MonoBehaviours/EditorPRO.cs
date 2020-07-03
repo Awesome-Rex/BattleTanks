@@ -56,7 +56,7 @@ public abstract class EditorPRO<T> : Editor where T : Object
         EditorGUI.DrawRect(r, (Color)colour);
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         target = (T)(base.target);
         DeclareProperties();

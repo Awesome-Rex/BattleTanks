@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//[ExecuteAlways]
 public class EarlyRecorder : MonoBehaviour
 {
     public System.Action earlyCallback;

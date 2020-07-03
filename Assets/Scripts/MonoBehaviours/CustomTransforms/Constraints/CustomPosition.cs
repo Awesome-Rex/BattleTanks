@@ -51,9 +51,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     public float offsetScale = 1f;
 
     private Vector3 previousDirection;
-    //private Vector3 previousPosition;
     
-    //https://answers.unity.com/questions/124486/need-equivalent-of-transforminversetransformpoint.html
     private Vector3 parentPos;
     private Quaternion parentRot; //USE THE STUFF HERE 
     private Vector3 parentScale;
@@ -69,23 +67,14 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             transform.position = value; //////////MAKE IT WORK FOR CHANGING OFFSET POSITION
         }
     }
-
-    //[ContextMenu("Set to target")]
+    
     public override void SetToTarget ()
     {
-        //if (space == Space.Self && link == Link.Match)
-        //{
-        //    Debug.LogWarning("Cannot apply to target position if link is set to \"match!\"", gameObject);
-        //    return;
-        //}
+        operationalPosition = GetTarget();
 
         RecordParent();
-
-        operationalPosition = GetTarget();
     }
-
-
-    //private bool counter;
+    
     public override void MoveToTarget ()
     {
         target = GetTarget();
@@ -111,13 +100,13 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 }
                 else if (link == Link.Match)
                 {
-                    if (_ETERNAL.I.counter)
+                    if ((_ETERNAL.I != null && _ETERNAL.I.counter) || editorApply)
                     {
                         operationalPosition = target;
                     }
                 }
             }
-            if (_ETERNAL.I.counter)
+            if ((_ETERNAL.I != null && _ETERNAL.I.counter) || editorApply)
             {
                 RecordParent();
             }
@@ -281,19 +270,11 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
     }
 
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawLine(operationalPosition, parent.position);
-    }
-
     protected override void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
 
         base.Awake();
-
-        RecordParent();
     }
 
     private void Start() { }
@@ -302,28 +283,9 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     [CustomEditor(typeof(CustomPosition))]
     public class E : Editor
     {
-        private bool applyInRuntime = false;
-
-        private void OnSceneGUI()
-        {
-            if (applyInRuntime)
-            {
-                //((CustomPosition)target).SetToTarget();
-                //Debug.Log("RUNTIME ON");
-            }
-        }
-
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-
-            if (Application.isEditor)
-            {
-                if (GUILayout.Button(applyInRuntime ? "Apply in Runtime [ON]" : "Apply in Runtime [OFF]"))
-                {
-                    applyInRuntime = !applyInRuntime;
-                }
-            }
         }
     }
 #endif
