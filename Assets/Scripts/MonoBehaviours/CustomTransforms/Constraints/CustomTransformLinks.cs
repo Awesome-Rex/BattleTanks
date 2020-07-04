@@ -46,6 +46,7 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
 
     public abstract void RecordParent();
 
+    public abstract void Switch(Space newSpace, Link newLink, bool keepOffset = false);
 
     protected override void Awake ()
     {

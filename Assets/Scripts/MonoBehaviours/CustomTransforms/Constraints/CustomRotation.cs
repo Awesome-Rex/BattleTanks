@@ -119,7 +119,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     }
 
     private Quaternion parentRot;
-    
+
     public override void SetToTarget()
     {
         target = GetTarget();
@@ -199,7 +199,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         parentRot = parent.rotation;
     }
 
-    public Quaternion Rotate (Vector3 eulers, Space relativeTo = Space.Self)
+    public Quaternion Rotate(Vector3 eulers, Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self)
         {
@@ -221,18 +221,18 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
     }
 
-    public Quaternion SetRotation (Vector3 rotation, Space relativeTo = Space.Self)
+    public Quaternion SetRotation(Vector3 rotation, Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self)
         {
             return parentRot * Quaternion.Euler(rotation); //WORKS!
         }
-        else 
+        else
         {
             return Quaternion.Euler(rotation); //WORKS!
         }
     }
-    public Quaternion GetRotation (Space relativeTo = Space.Self)
+    public Quaternion GetRotation(Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self) {
             return Quaternion.Inverse(parentRot) * operationalRotation; //WORKS!
@@ -242,9 +242,70 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
     }
 
-    public override void SetPrevious ()
+    public override void SetPrevious()
     {
         previous = Linking.InverseTransformEuler(operationalRotation, parentRot);
+    }
+
+    public override void Switch(Space newSpace, Link newLink, bool keepOffset = false)
+    {
+        if (space == Space.World)
+        {
+            if (newSpace == Space.Self)
+            {
+                if (newLink == Link.Offset) //world > offset
+                {
+                    if (!keepOffset) //dont keep offset
+                    {
+
+                    } else //keep offset
+                    {
+
+                    }
+                }
+                else if (newLink == Link.Match) //world > match
+                {
+
+                }
+            }
+        }
+        else if (space == Space.Self)
+        {
+            if (link == Link.Offset)
+            {
+                if (newSpace == Space.World) //offset > world
+                {
+
+                }
+                else
+                {
+                    if (newLink == Link.Match) //offset > match
+                    {
+
+                    }
+                }
+            }
+            else if (link == Link.Match)
+            {
+                if (newSpace == Space.World) //match > world
+                {
+
+                }
+                else
+                {
+                    if (newLink == Link.Offset) //match > offset
+                    {
+                        if (!keepOffset) //dont keep offset
+                        {
+
+                        } else //keep offset
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
     }
 
     protected override void Awake()
