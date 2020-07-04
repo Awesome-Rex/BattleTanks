@@ -5,13 +5,15 @@ using UnityEngine.SceneManagement;
 
 public class SceneControl : MonoBehaviour
 {
+    private GameObject instance;
+
     private void Awake()
     {
         transform.SetAsFirstSibling();
 
         if (_ETERNAL.I == null)
         {
-            GameObject instance = Instantiate(Resources.Load("_ETERNAL") as GameObject);
+            instance = Instantiate(Resources.Load("_ETERNAL") as GameObject);
             instance.transform.SetAsFirstSibling();
         }
     }

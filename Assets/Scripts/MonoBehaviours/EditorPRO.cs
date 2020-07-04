@@ -22,7 +22,7 @@ public abstract class EditorPRO<T> : Editor where T : Object
         return props[name];
     }
 
-    protected void Window (string title, System.Action content)
+    public static void Window (string title, System.Action content)
     {
         GUILayout.BeginVertical(title, "window");
         content();
@@ -54,6 +54,15 @@ public abstract class EditorPRO<T> : Editor where T : Object
         r.x -= 2;
         r.width += 6;
         EditorGUI.DrawRect(r, (Color)colour);
+    }
+
+    public static void DisableGroup (bool value, System.Action content)
+    {
+        bool originalValue = GUI.enabled;
+
+        GUI.enabled = value;
+        content();
+        GUI.enabled = originalValue;
     }
 
     protected virtual void OnEnable()

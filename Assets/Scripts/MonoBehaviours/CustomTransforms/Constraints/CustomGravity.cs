@@ -6,6 +6,11 @@ using TransformTools;
 using UnityEngine.Animations.Rigging;
 using System;
 using System.Runtime.CompilerServices;
+using EditorTools;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [RequireComponent(typeof(Rigidbody))]
 public class CustomGravity : CustomTransform<Vector3>
@@ -16,6 +21,56 @@ public class CustomGravity : CustomTransform<Vector3>
     public AxisOrder offset;  //local
     
     public LocalRelativity linkTo;
+
+    public Vector3 direction
+    {
+        get 
+        {
+            return GetDirection(Space.World);
+        }
+        set
+        {
+            value = SetDirection(value, Space.World);
+        }
+    }
+
+    public Vector3 localDirection
+    {
+        get
+        {
+            return GetDirection(Space.Self);
+        }
+        set
+        {
+            value = SetDirection(value, Space.Self);
+        }
+    }
+
+    public Vector3 velocity
+    {
+        get
+        {
+            return GetVelocity(Space.World);
+        }
+        set
+        {
+            rigidbody.velocity = SetVelocity(value, Space.World);
+        }
+    }
+
+    public Vector3 localVelocity
+    {
+        get
+        {
+            return GetVelocity(Space.Self);
+        }
+        set
+        {
+            rigidbody.velocity = SetVelocity(value, Space.Self);
+        }
+    }
+
+
 
     //previous
     private Vector3 parentPos;
@@ -77,6 +132,81 @@ public class CustomGravity : CustomTransform<Vector3>
         return target;
     }
 
+    public Vector3 GetDirection (Space space)
+    {
+        if (space == Space.Self)
+        {
+            if (this.space == Space.Self)
+            {
+                return value.normalized;
+            }
+            else
+            {
+                return (parent.InverseTransformPoint(parent.position + value.normalized));
+            }
+        }
+        else // world
+        {
+            if (this.space == Space.Self)
+            {
+                return parent.TransformPoint(value.normalized) - parent.position;
+            }
+            else
+            {
+                return value.normalized;
+            }
+        }
+    }
+    public Vector3 SetDirection (Vector3 direction, Space space)
+    {
+        if (space == Space.Self)
+        {
+            if (this.space == Space.Self)
+            {
+                return direction.normalized;
+            }
+            else
+            {
+                return parent.TransformPoint(parent.position + direction.normalized);
+            }
+        } else // world
+        {
+            if (this.space == Space.Self)
+            {
+                return (parent.InverseTransformPoint(parent.position + direction.normalized));
+            }
+            else
+            {
+                return direction.normalized;
+            }
+        }
+    }
+
+    public Vector3 GetVelocity(Space space)
+    {
+        if (space == Space.Self)
+        {
+
+            return (parent.InverseTransformPoint(parent.position + rigidbody.velocity));
+
+        }
+        else // world
+        {
+            return rigidbody.velocity;
+        }
+    }
+    public Vector3 SetVelocity(Vector3 velocity, Space space)
+    {
+        if (space == Space.Self)
+        {
+            return parent.TransformPoint(parent.position + velocity);
+        }
+        else // world
+        {
+            return velocity;
+        }
+    }
+
     public override void SetPrevious()
     {
         previous = parent.InverseTransformPoint(parent.position + rigidbody.velocity);
@@ -134,4 +264,73 @@ public class CustomGravity : CustomTransform<Vector3>
     {
         Enable(false);
     }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(CustomGravity))]
+    public class E : EditorPRO<CustomGravity>
+    {
+        private bool showContextInfo = false;
+
+        protected override void DeclareProperties()
+        {
+            AddProperty("offset");
+            
+            AddProperty("space");
+
+            AddProperty("linkTo");
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            target.rigidbody = target.GetComponent<Rigidbody>();
+        }
+
+        public override void OnInspectorGUI()
+        {
+            OnInspectorGUIPRO(() =>
+            {
+                EditorGUILayout.PropertyField(FindProperty("space"));
+
+                EditorGUILayout.Space();
+
+                EditorGUILayout.LabelField("Gravity Direction", EditorStyles.boldLabel);
+                if (target.space == Space.Self)
+                {
+                    target.parent = (Transform)EditorGUILayout.ObjectField("Parent", target.parent, typeof(Transform), true);
+                }
+                target.value = EditorGUILayout.Vector3Field("Value", target.value);
+                target.gravity = EditorGUILayout.FloatField("Force", target.gravity);
+                target.gravityScale = EditorGUILayout.FloatField("Gravity Scale", target.gravityScale);
+
+                EditorGUILayout.Space();
+
+                //Local
+                if (target.space == Space.Self)
+                {
+                    EditorGUILayout.LabelField("Local", EditorStyles.boldLabel);
+
+                    EditorGUILayout.PropertyField(FindProperty("offset"));
+
+                    EditorGUILayout.PropertyField(FindProperty("linkTo"));
+                }
+
+                EditorGUILayout.Space();
+
+                showContextInfo = EditorGUILayout.Foldout(showContextInfo, "Context Info".bold(), EditorStyles.foldout.clone().richText());
+                if (showContextInfo)
+                {
+                    //local and global directions
+                    target.direction = EditorGUILayout.Vector3Field("Direction", target.direction);
+                    target.localDirection = EditorGUILayout.Vector3Field("Local Direction", target.localDirection);
+
+                    //local and global velocity
+                    target.velocity = EditorGUILayout.Vector3Field("Velocity", target.velocity);
+                    target.localVelocity = EditorGUILayout.Vector3Field("Local Velocity", target.localVelocity);
+                }
+            });
+        }
+    }
+#endif
 }

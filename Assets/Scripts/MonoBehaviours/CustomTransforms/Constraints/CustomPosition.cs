@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.Experimental.AI;
 using UnityEngine.UIElements;
 
+using EditorTools;
+
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditorInternal;
@@ -67,12 +69,16 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             transform.position = value; //////////MAKE IT WORK FOR CHANGING OFFSET POSITION
         }
     }
-    
-    public override void SetToTarget ()
-    {
-        operationalPosition = GetTarget();
 
-        RecordParent();
+    public override void SetToTarget()
+    {
+        target = GetTarget();
+
+        if (enabled) {
+            operationalPosition = target;
+
+            RecordParent();
+        }
     }
     
     public override void MoveToTarget ()
@@ -100,13 +106,13 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 }
                 else if (link == Link.Match)
                 {
-                    if ((_ETERNAL.I != null && _ETERNAL.I.counter) || editorApply)
+                    if (_ETERNAL.I.counter)
                     {
                         operationalPosition = target;
                     }
                 }
             }
-            if ((_ETERNAL.I != null && _ETERNAL.I.counter) || editorApply)
+            if (_ETERNAL.I.counter)
             {
                 RecordParent();
             }
@@ -281,11 +287,128 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(CustomPosition))]
-    public class E : Editor
+    public class E : EditorPRO<CustomPosition>
     {
+        private bool showContextInfo = false;
+
+        protected override void DeclareProperties()
+        {
+            AddProperty("transition");
+            AddProperty("offset");
+            AddProperty("link");
+
+            AddProperty("space");
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            target.RecordParent();
+            target.rigidbody = target.GetComponent<Rigidbody>();
+        }
+
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
+            OnInspectorGUIPRO(() =>
+            {
+                EditorGUILayout.PropertyField(FindProperty("space"));
+
+                EditorGUILayout.Space();
+
+                EditorGUILayout.LabelField("Position", EditorStyles.boldLabel);
+                if (target.space == Space.Self)
+                {
+                    target.parent = (Transform)EditorGUILayout.ObjectField("Parent", target.parent, typeof(Transform), true);
+                }
+                if (!(target.space == Space.Self && target.link == Link.Match))
+                {
+
+                    target.value = EditorGUILayout.Vector3Field("Value", target.value);
+                }
+
+                EditorGUILayout.Space();
+
+                //Local
+                if (target.space == Space.Self)
+                {
+                    EditorGUILayout.LabelField("Local", EditorStyles.boldLabel);
+
+                    EditorGUILayout.PropertyField(FindProperty("link"));
+
+                    if (target.link == Link.Offset)
+                    {
+                        EditorGUILayout.PropertyField(FindProperty("offset"));
+                    }
+
+                    target.factorScale = EditorGUILayout.Toggle("Factor Scale?", target.factorScale);
+                    
+                    DisableGroup(target.factorScale, () =>
+                    {
+                        target.offsetScale = EditorGUILayout.FloatField("Offset Scale", target.offsetScale);
+
+                    });
+                }
+
+                EditorGUILayout.Space();
+
+                if (target.space == Space.Self && target.link == Link.Offset)
+                {
+                    EditorGUILayout.BeginHorizontal();
+
+                    EditorGUILayout.LabelField("Transition", EditorStyles.boldLabel);
+
+                    target.follow = EditorGUILayout.Toggle(string.Empty, target.follow);
+
+                    EditorGUILayout.EndHorizontal();
+                    if (target.follow)
+                    {
+                        EditorGUILayout.PropertyField(FindProperty("transition"));
+                    }
+                }
+
+                EditorGUILayout.Space();
+
+                showContextInfo = EditorGUILayout.Foldout(showContextInfo, "Context Info".bold(), EditorStyles.foldout.clone().richText());
+                if (showContextInfo)
+                {
+                    target.position = EditorGUILayout.Vector3Field("position", target.position);
+                    target.localPosition = EditorGUILayout.Vector3Field("localPosition", target.localPosition);
+                }
+
+                if (EditorApplication.isPaused || !EditorApplication.isPlaying)
+                {
+                    EditorGUILayout.Space();
+
+                    if (!target.applyInEditor)
+                    {
+                        if (GUILayout.Button("Apply in Editor", EditorStyles.miniButton))
+                        {
+                            target.SetPrevious();
+                            target.RecordParent();
+
+                            target.applyInEditor = true;
+                        }
+
+                        if (EditorApplication.isPaused)
+                        {
+                            target.EditorApplyCheck();
+                        }
+                    }
+                    else
+                    {
+                        if (GUILayout.Button("Don't Apply in Editor".colour(Color.red).bold(), EditorStyles.miniButton.clone().richText()))
+                        {
+                            target.applyInEditor = false;
+                        }
+
+                        if (EditorApplication.isPaused)
+                        {
+                            target.EditorApplyCheck();
+                        }
+                    }
+                }
+            });
         }
     }
 #endif

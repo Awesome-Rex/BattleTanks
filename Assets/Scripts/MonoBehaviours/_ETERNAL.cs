@@ -28,9 +28,10 @@ public class _ETERNAL : MonoBehaviour
     public LateRecorder lateRecorder;
     public EarlyRecorder earlyRecorder;
 
-    public void UseTransformable (Action<Transform> modifier)
+    public void UseTransformable(Action<Transform> modifier)
     {
-        if (!transformableUsed) {
+        if (!transformableUsed)
+        {
             transformableUsed = true;
 
             transformable.transform.position = Vector3.zero;
@@ -68,7 +69,7 @@ public class _ETERNAL : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(_ETERNAL))]
+    /*[CustomEditor(typeof(_ETERNAL))]
     public class E : EditorPRO<_ETERNAL>
     {
         protected override void DeclareProperties()
@@ -91,7 +92,7 @@ public class _ETERNAL : MonoBehaviour
         {
             base.OnEnable();
             I = target;
-        }*/
-    }
+        }
+    }*/
 #endif
 }

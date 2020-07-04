@@ -4,6 +4,7 @@ using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
+using Unity.EditorCoroutines.Editor;
 #endif
 
 public abstract class CustomTransformLinks<T> : CustomTransform<T>
@@ -51,10 +52,9 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
         //base.Awake();
         if (editModeLoop != null)
         {
-            StopCoroutine(editModeLoop);
+            EditorCoroutineUtility.StopCoroutine(editModeLoop);
+            editModeLoop = null;
         }
-        //applyInEditor = false;
-
 
         _ETERNAL.I.earlyRecorder.callbackF += MoveToTarget;
 
@@ -65,6 +65,29 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
     {
         //base.OnDestroy();
         _ETERNAL.I.earlyRecorder.callbackF -= MoveToTarget;
+
+        if (editModeLoop != null) {
+            EditorCoroutineUtility.StopCoroutine(editModeLoop);
+            editModeLoop = null;
+        }
+    }
+
+    public void SyncEditModeLoops ()
+    {
+        foreach (CustomPosition i in GetComponents<CustomPosition>())
+        {
+            EditorCoroutineUtility.StopCoroutine(i.editModeLoop);
+            i.editModeLoop = null;
+
+            i.EditorApplyCheck();
+        }
+        foreach (CustomRotation i in GetComponents<CustomRotation>())
+        {
+            EditorCoroutineUtility.StopCoroutine(i.editModeLoop);
+            i.editModeLoop = null;
+
+            i.EditorApplyCheck();
+        }
     }
 
     private IEnumerator EditModeLoop ()
@@ -73,24 +96,32 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
         {
             SetToTarget();
             
-            //yield return new (Time.fixedDeltaTime * 2f);
+            yield return new EditorWaitForSeconds(Time.fixedDeltaTime/* * 2f*/);
         }
     }
-    private Coroutine editModeLoop;
-    protected virtual void OnDrawGizmos()
+    private EditorCoroutine editModeLoop;
+    public void EditorApplyCheck()
     {
+        //Starts loop during editor or pause
         if (editorApply)
         {
-            if (editModeLoop == null) {
-                editModeLoop = StartCoroutine(EditModeLoop());
-
-                Debug.Log("Started Loop!");
-            }
-        } else
-        {
-            if (editModeLoop != null) {
-                StopCoroutine(editModeLoop);
+            if (editModeLoop == null)
+            {
+                editModeLoop = EditorCoroutineUtility.StartCoroutineOwnerless(EditModeLoop()/*, this*/);
             }
         }
+        else
+        {
+            if (editModeLoop != null)
+            {
+                EditorCoroutineUtility.StopCoroutine(editModeLoop);
+                editModeLoop = null;
+            }
+        }
+    }
+
+    protected virtual void OnDrawGizmos()
+    {
+        EditorApplyCheck();
     }
 }

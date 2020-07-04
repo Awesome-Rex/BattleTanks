@@ -21,11 +21,11 @@ public struct Transition
     {
         if (type == Curve.Linear)
         {
-            return Mathf.MoveTowards(a, b, speed * Time.deltaTime);
+            return Mathf.MoveTowards(a, b, speed * Time.fixedDeltaTime);
         }
         else if (type == Curve.Interpolate)
         {
-            return Mathf.Lerp(a, b, percent * Time.deltaTime);
+            return Mathf.Lerp(a, b, percent * Time.fixedDeltaTime);
         }
 
         return a;
@@ -35,11 +35,11 @@ public struct Transition
     {
         if (type == Curve.Linear)
         {
-            return Vector3.MoveTowards(a, b, speed * Time.deltaTime);
+            return Vector3.MoveTowards(a, b, speed * Time.fixedDeltaTime);
         }
         else if (type == Curve.Interpolate)
         {
-            return Vector3.Lerp(a, b, percent * Time.deltaTime);
+            return Vector3.Lerp(a, b, percent * Time.fixedDeltaTime);
         }
 
         return a;
@@ -49,11 +49,11 @@ public struct Transition
     {
         if (type == Curve.Linear)
         {
-            return Quaternion.RotateTowards(a, b, speed * Time.deltaTime);
+            return Quaternion.RotateTowards(a, b, speed * Time.fixedDeltaTime);
         }
         else if (type == Curve.Interpolate)
         {
-            return Quaternion.Lerp(a, b, percent * Time.deltaTime);
+            return Quaternion.Lerp(a, b, percent * Time.fixedDeltaTime);
         }
 
         return a;

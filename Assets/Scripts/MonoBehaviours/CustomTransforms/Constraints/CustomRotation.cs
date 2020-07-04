@@ -76,14 +76,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         get
         {
-            if (rigidbody != null || !editorApply)
-            {
-                return rigidbody.rotation;
-            }
-            else
-            {
-                return transform.rotation;
-            }
+            return transform.rotation;
         }
         set
         {
@@ -161,14 +154,14 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 }
                 else if (link == Link.Match)
                 {
-                    if ((_ETERNAL.I != null &&_ETERNAL.I.counter) || editorApply)
+                    if (_ETERNAL.I.counter)
                     {
                         operationalRotation = target;
                     }
                 }
             }
 
-            if ((_ETERNAL.I != null && _ETERNAL.I.counter) || editorApply)
+            if (_ETERNAL.I.counter)
             {
                 RecordParent();
             }
@@ -290,7 +283,6 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         {
             OnInspectorGUIPRO(() =>
             {
-                //target.space = (Space)EditorGUILayout.EnumPopup(target.space);
                 EditorGUILayout.PropertyField(FindProperty("space"));
 
                 EditorGUILayout.Space();
@@ -358,18 +350,25 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                             target.RecordParent();
 
                             target.applyInEditor = true;
-
-                            /*if (EditorApplication.isPaused)
-                            {
-                                target.OnDrawGizmos();
-                            }*/
                         }
+
+                        if (EditorApplication.isPaused)
+                        {
+                            target.EditorApplyCheck();
+                        }
+
+                        
                     }
                     else
                     {
                         if (GUILayout.Button("Don't Apply in Editor".colour(Color.red).bold(), EditorStyles.miniButton.clone().richText()))
                         {
                             target.applyInEditor = false;
+                        }
+
+                        if (EditorApplication.isPaused)
+                        {
+                            target.EditorApplyCheck();
                         }
                     }
                 }
