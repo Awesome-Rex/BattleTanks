@@ -7,6 +7,7 @@ using UnityEngine.Experimental.AI;
 using UnityEngine.UIElements;
 
 using EditorTools;
+using UnityEngine.SocialPlatforms;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -19,7 +20,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 {
     public Vector3 position
     {
-        get 
+        get
         {
             return GetPosition(Space.World);
         }
@@ -53,11 +54,11 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     public float offsetScale = 1f;
 
     private Vector3 previousDirection;
-    
+
     private Vector3 parentPos;
     private Quaternion parentRot; //USE THE STUFF HERE 
     private Vector3 parentScale;
-    
+
     private Vector3 operationalPosition
     {
         get
@@ -80,8 +81,8 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             RecordParent();
         }
     }
-    
-    public override void MoveToTarget ()
+
+    public override void MoveToTarget()
     {
         target = GetTarget();
 
@@ -158,12 +159,17 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                     //newTarget = Linking.TransformPoint(previousDirection, parentPos, parentRot);
                     newTarget = Linking.TransformPoint(previousDirection, parent.position, parent.rotation); //++++++++ ATTENTION
                 }
-                
+
                 target = newTarget;
             }
         }
 
         return target;
+    }
+
+    public override void TargetToCurrent()
+    {
+
     }
 
     public override void RecordParent()
@@ -210,7 +216,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
     }
 
-    public Vector3 SetPosition (Vector3 position, Space relativeTo = Space.Self)
+    public Vector3 SetPosition(Vector3 position, Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self)
         {
@@ -226,7 +232,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             return position; //WORKS!
         }
     }
-    public Vector3 GetPosition (Space relativeTo = Space.Self)
+    public Vector3 GetPosition(Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self)
         {
@@ -273,6 +279,82 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 
             previousDirection = Linking.InverseTransformPoint(operationalPosition, parentPos, parentRot);
             //previousDirection = Vectors.DivideVector3(Linking.InverseTransformPoint(operationalPosition, parent.position, parent.rotation), parent.localScale);
+        }
+    }
+
+    public override void Switch(Space newSpace, Link newLink, bool keepOffset = false)
+    {
+        Vector3 originalPositon = position;
+        Vector3 originalLocalPosition = localPosition;
+
+        if (space == Space.World)
+        {
+            if (newSpace == Space.Self)
+            {
+                if (newLink == Link.Offset) //world > offset
+                {
+                    space = Space.Self;
+                    link = Link.Offset;
+
+                    if (!keepOffset) //dont keep offset
+                    {
+                        offset = new AxisOrder();
+                        value = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation, parent.localScale * offsetScale);
+                    }
+                    else //keep offset
+                    {
+
+                    }
+                }
+                else if (newLink == Link.Match) //world > match
+                {
+                    space = Space.Self;
+                    link = Link.Match;
+                }
+            }
+        }
+        else if (space == Space.Self)
+        {
+            if (link == Link.Offset)
+            {
+                if (newSpace == Space.World) //offset > world
+                {
+                    space = Space.World;
+                    position = originalPositon;
+                }
+                else
+                {
+                    if (newLink == Link.Match) //offset > match
+                    {
+                        link = Link.Match;
+                    }
+                }
+            }
+            else if (link == Link.Match)
+            {
+                if (newSpace == Space.World) //match > world
+                {
+                    space = Space.World;
+                    position = originalPositon;
+                }
+                else
+                {
+                    if (newLink == Link.Offset) //match > offset
+                    {
+                        link = Link.Offset;
+
+                        if (!keepOffset) //dont keep offset
+                        {
+                            offset = new AxisOrder();
+                            value = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation, parent.localScale * offsetScale);
+                        }
+                        else //keep offset
+                        {
+
+                        }
+                    }
+                }
+            }
         }
     }
 

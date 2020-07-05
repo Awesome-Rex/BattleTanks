@@ -41,12 +41,9 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
 
     //methods
     public abstract void SetToTarget();
-
     public abstract void MoveToTarget();
 
     public abstract void RecordParent();
-
-    public abstract void Switch(Space newSpace, Link newLink, bool keepOffset = false);
 
     protected override void Awake ()
     {

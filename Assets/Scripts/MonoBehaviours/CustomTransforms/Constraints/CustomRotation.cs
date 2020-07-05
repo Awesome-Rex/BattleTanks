@@ -194,6 +194,11 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         return target;
     }
 
+    public override void TargetToCurrent()
+    {
+
+    }
+
     public override void RecordParent()
     {
         parentRot = parent.rotation;
@@ -249,15 +254,22 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
     public override void Switch(Space newSpace, Link newLink, bool keepOffset = false)
     {
+        Quaternion originalRotation = rotation;
+        Quaternion originalLocalRotation = localRotation;
+
         if (space == Space.World)
         {
             if (newSpace == Space.Self)
             {
                 if (newLink == Link.Offset) //world > offset
                 {
+                    space = Space.Self;
+                    link = Link.Offset;
+
                     if (!keepOffset) //dont keep offset
                     {
-
+                        offset = new AxisOrder();
+                        value = Linking.InverseTransformEuler(originalRotation, parent.rotation);
                     } else //keep offset
                     {
 
@@ -265,7 +277,8 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 }
                 else if (newLink == Link.Match) //world > match
                 {
-
+                    space = Space.Self;
+                    link = Link.Match;
                 }
             }
         }
@@ -275,13 +288,14 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             {
                 if (newSpace == Space.World) //offset > world
                 {
-
+                    space = Space.World;
+                    rotation = originalRotation;
                 }
                 else
                 {
                     if (newLink == Link.Match) //offset > match
                     {
-
+                        link = Link.Match;
                     }
                 }
             }
@@ -289,15 +303,19 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             {
                 if (newSpace == Space.World) //match > world
                 {
-
+                    space = Space.World;
+                    rotation = originalRotation;
                 }
                 else
                 {
                     if (newLink == Link.Offset) //match > offset
                     {
+                        link = Link.Offset;
+
                         if (!keepOffset) //dont keep offset
                         {
-
+                            offset = new AxisOrder();
+                            value = Linking.InverseTransformEuler(originalRotation, parent.rotation);
                         } else //keep offset
                         {
 

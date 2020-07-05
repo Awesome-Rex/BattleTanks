@@ -33,7 +33,6 @@ public class CustomGravity : CustomTransform<Vector3>
             value = SetDirection(value, Space.World);
         }
     }
-
     public Vector3 localDirection
     {
         get
@@ -57,7 +56,6 @@ public class CustomGravity : CustomTransform<Vector3>
             rigidbody.velocity = SetVelocity(value, Space.World);
         }
     }
-
     public Vector3 localVelocity
     {
         get
@@ -69,8 +67,6 @@ public class CustomGravity : CustomTransform<Vector3>
             rigidbody.velocity = SetVelocity(value, Space.Self);
         }
     }
-
-
 
     //previous
     private Vector3 parentPos;
@@ -130,6 +126,11 @@ public class CustomGravity : CustomTransform<Vector3>
         }
 
         return target;
+    }
+
+    public override void TargetToCurrent()
+    {
+        
     }
 
     public Vector3 GetDirection (Space space)
@@ -204,6 +205,39 @@ public class CustomGravity : CustomTransform<Vector3>
         else // world
         {
             return velocity;
+        }
+    }
+
+    public override void Switch(Space newSpace, Link newLink, bool keepOffset = false)
+    {
+        Vector3 originalDirection = direction;
+        Vector3 originalLocalDirection = localDirection;
+
+        if (space == Space.World)
+        {
+            if (newSpace == Space.Self) //world > self
+            {
+                space = Space.Self;
+
+                if (!keepOffset) //dont keep offset
+                {
+                    offset = new AxisOrder();
+                    value = Linking.InverseTransformPoint(originalDirection, parent.position, parent.rotation);
+                }
+                else //keep offset
+                {
+
+                }
+            }
+        }
+        else if (space == Space.Self)
+        {
+            if (newSpace == Space.World) //self > world
+            {
+                space = Space.World;
+
+                value = originalDirection;
+            }
         }
     }
 

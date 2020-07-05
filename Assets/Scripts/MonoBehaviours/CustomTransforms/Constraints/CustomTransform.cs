@@ -17,7 +17,10 @@ public abstract class CustomTransform<T> : MonoBehaviour
 
     public abstract void SetPrevious();
 
-    
+    public abstract void TargetToCurrent();
+
+    public abstract void Switch(Space newSpace, Link newLink, bool keepOffset = false);
+
     protected virtual void Awake()
     {
         SetPrevious();
