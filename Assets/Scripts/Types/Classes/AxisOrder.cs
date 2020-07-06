@@ -205,6 +205,111 @@ public class AxisOrder
         return newPos;
     } //works probably
 
+    public Quaternion ReverseRotation(CustomRotation relative, Quaternion? current = null) //WORKS!
+    {
+        Quaternion newRot;
+
+        if (current != null)
+        {
+            newRot = (Quaternion)current;
+        }
+        else
+        {
+            newRot = relative.rotation;
+        }
+
+        if (variety == SpaceVariety.OneSided)
+        {
+            for (int j = axes.Count; j > 0; j--) {
+                AxisApplied i = axes[j-1];
+
+                newRot = relative.Rotate(newRot, (Vectors.axisDirections[i.axis] * -i.units), space);
+            }
+        }
+        else if (variety == SpaceVariety.Mixed)
+        {
+            for (int j = axes.Count; j > 0; j--)
+            {
+                AxisApplied i = axes[j-1];
+
+                newRot = relative.Rotate(newRot, (Vectors.axisDirections[i.axis] * -i.units), i.space);
+            }
+        }
+
+        return newRot;
+    }
+    public Quaternion ReverseRotation(Quaternion relative)
+    {
+        Quaternion newRot = relative;
+
+        if (variety == SpaceVariety.OneSided)
+        {
+            for (int j = axes.Count; j > 0; j--)
+            {
+                AxisApplied i = axes[j - 1];
+
+                if (space == Space.Self)
+                {
+                    newRot = newRot * Quaternion.Euler(Vectors.axisDirections[i.axis] * -i.units);
+                }
+                else
+                {
+                    newRot = Quaternion.Euler(Vectors.axisDirections[i.axis] * -i.units) * newRot;
+                }
+            }
+        }
+        else if (variety == SpaceVariety.Mixed)
+        {
+            for (int j = axes.Count; j > 0; j--)
+            {
+                AxisApplied i = axes[j - 1];
+
+                if (space == Space.Self)
+                {
+                    newRot = newRot * Quaternion.Euler(Vectors.axisDirections[i.axis] * -i.units);
+                }
+                else
+                {
+                    newRot = Quaternion.Euler(Vectors.axisDirections[i.axis] * -i.units) * newRot;
+                }
+            }
+        }
+        return newRot;
+    } //works
+
+    public Vector3 ReversePosition(CustomPosition relative, Vector3? current = null)
+    {
+        Vector3 newPos;
+        if (current != null)
+        {
+            newPos = (Vector3)current;
+        }
+        else
+        {
+            newPos = relative.position;
+        }
+
+        if (variety == SpaceVariety.OneSided)
+        {
+            for (int j = axes.Count; j > 0; j--)
+            {
+                AxisApplied i = axes[j - 1];
+
+                newPos = relative.Translate(newPos, -(Vectors.axisDirections[i.axis] * i.units), space);
+            }
+        }
+        else if (variety == SpaceVariety.Mixed)
+        {
+            for (int j = axes.Count; j > 0; j--)
+            {
+                AxisApplied i = axes[j - 1];
+
+                newPos = relative.Translate(newPos, -(Vectors.axisDirections[i.axis] * i.units), i.space);
+            }
+        }
+        return newPos;
+    } //WORKS!
+
 #if UNITY_EDITOR
 
     /*[CustomPropertyDrawer(typeof(AxisOrder))]

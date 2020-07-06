@@ -69,11 +69,21 @@ public class CustomTorque : CustomTransform<Vector3>
         return target;
     }
 
+    public override void TargetToCurrent(bool keepOffset = false)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public override void SetPrevious()
     {
         previous = parent.eulerAngles;
 
         //parentRot = parent.rotation;
+    }
+
+    public override void Switch(Space newSpace, Link newLink, bool keepOffset = false)
+    {
+        throw new System.NotImplementedException();
     }
 
     public void Enable(bool enabled)

@@ -40,6 +40,11 @@ public class ForTESTING : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //stuff
+            SR.Get<CustomPosition>().Switch(Space.Self, Link.Match, true);
+            SR.Get<CustomRotation>().Switch(Space.Self, Link.Match, true);
+
+            SR.Get<CustomGravity>().enabled = true;
+            SR.Get<CustomGravity>().Switch(Space.Self, Link.Offset, true);
 
             //SR.Get<CustomPosition>().factorScale = false;
             //SR.Get<CustomPosition>().position = SR.Get<CustomPosition>().Translate(Vector3.right, Space.World);

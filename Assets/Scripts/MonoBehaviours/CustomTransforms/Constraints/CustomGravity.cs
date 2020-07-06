@@ -68,6 +68,34 @@ public class CustomGravity : CustomTransform<Vector3>
         }
     }
 
+    private Vector3 operationalDirection //operational
+    {
+        get
+        {
+            if (space == Space.Self)
+            {
+                Vector3 fallDirection = Vector3.zero;
+
+                if (linkTo == LocalRelativity.Natural || parentGravity == null) //Transform Direction Vector
+                {
+                    ///////////// VALUE IS A DIRECTION VECTOR NOT EULER ANGLES
+                    fallDirection = (offset.ApplyRotation(parent.rotation) * value).normalized;
+                }
+                else if (linkTo == LocalRelativity.Constraint && parentGravity != null) //CustomGravity
+                {
+                    //fallDirection = (offset.ApplyRotation(parentRotation) * value).normalized;
+                    fallDirection = (offset.ApplyRotation(
+                        Quaternion.LookRotation(parentGravity.offset.ApplyRotation(parent.rotation) * parentGravity.value)) * value).normalized * parentGravity.gravity * parentGravity.gravityScale;
+                }
+
+                return fallDirection;
+            } else
+            {
+                return (offset.ApplyRotation(Quaternion.LookRotation(value)) * Vector3.forward).normalized;
+            }
+        }
+    } // WORKS!
+
     //previous
     private Vector3 parentPos;
     private Quaternion parentRot;
@@ -84,30 +112,14 @@ public class CustomGravity : CustomTransform<Vector3>
             //Rotate velocity
             rigidbody.velocity = GetTarget();
 
-            //Apply force
-            Vector3 fallDirection = Vector3.zero;
-
-
-            if (linkTo == LocalRelativity.Natural || parentGravity == null) //Transform Direction Vector
-            {
-                ///////////// VALUE IS A DIRECTION VECTOR NOT EULER ANGLES
-                fallDirection = (offset.ApplyRotation(parent.rotation) * value).normalized;
-            }
-            else if (linkTo == LocalRelativity.Constraint && parentGravity != null) //CustomGravity
-            {
-                //fallDirection = (offset.ApplyRotation(parentRotation) * value).normalized;
-                fallDirection = (offset.ApplyRotation(
-                    Quaternion.LookRotation(parentGravity.offset.ApplyRotation(parent.rotation) * parentGravity.value)) * value).normalized * parentGravity.gravity * parentGravity.gravityScale;
-            }
-
             if (space == Space.World)
             {
-                rigidbody.AddForce((offset.ApplyRotation(Quaternion.LookRotation(value)) * Vector3.forward).normalized * gravity * gravityScale, ForceMode.Acceleration);
+                rigidbody.AddForce(operationalDirection * gravity * gravityScale, ForceMode.Acceleration);
             }
             else if (space == Space.Self)
             {
                 //rigidbody.AddForce((offset.ApplyRotation(Quaternion.LookRotation(parent.TransformPoint(value) - parent.position)) * Vector3.forward).normalized * gravity * gravityScale/* * 0.5f*/, ForceMode.Acceleration);
-                rigidbody.AddForce(fallDirection * gravity * gravityScale, ForceMode.Acceleration);
+                rigidbody.AddForce(operationalDirection * gravity * gravityScale, ForceMode.Acceleration);
             }
         }
     }
@@ -128,57 +140,42 @@ public class CustomGravity : CustomTransform<Vector3>
         return target;
     }
 
-    public override void TargetToCurrent()
+    public override void TargetToCurrent(bool keepOffset = false)
     {
         
     }
 
     public Vector3 GetDirection (Space space)
     {
-        if (space == Space.Self)
+        if (space == Space.Self) // self
         {
-            if (this.space == Space.Self)
-            {
-                return value.normalized;
-            }
-            else
-            {
-                return (parent.InverseTransformPoint(parent.position + value.normalized));
-            }
+            return parent.InverseTransformPoint(parent.position + operationalDirection);
         }
         else // world
         {
-            if (this.space == Space.Self)
-            {
-                return parent.TransformPoint(value.normalized) - parent.position;
-            }
-            else
-            {
-                return value.normalized;
-            }
+            return operationalDirection;
         }
     }
-    public Vector3 SetDirection (Vector3 direction, Space space)
+    public Vector3 SetDirection (Vector3 direction, Space space, bool keepOffset = false) //SHOULD work
     {
-        if (space == Space.Self)
-        {
-            if (this.space == Space.Self)
+        if (!keepOffset) {
+            if (space == Space.Self)
             {
-                return direction.normalized;
+                return direction;
             }
             else
             {
-                return parent.TransformPoint(parent.position + direction.normalized);
+                return parent.InverseTransformPoint(parent.position + direction);
             }
-        } else // world
+        } else
         {
-            if (this.space == Space.Self)
+            if (space == Space.Self)
             {
-                return (parent.InverseTransformPoint(parent.position + direction.normalized));
+                return offset.ReverseRotation(Quaternion.LookRotation(direction)) * Vector3.forward;
             }
             else
             {
-                return direction.normalized;
+                return offset.ReverseRotation(Quaternion.LookRotation(parent.InverseTransformPoint(parent.position + direction))) * Vector3.forward;
             }
         }
     }
@@ -208,7 +205,7 @@ public class CustomGravity : CustomTransform<Vector3>
         }
     }
 
-    public override void Switch(Space newSpace, Link newLink, bool keepOffset = false)
+    public override void Switch(Space newSpace, Link newLink, bool keepOffset = false) //WORKS!
     {
         Vector3 originalDirection = direction;
         Vector3 originalLocalDirection = localDirection;
@@ -222,11 +219,16 @@ public class CustomGravity : CustomTransform<Vector3>
                 if (!keepOffset) //dont keep offset
                 {
                     offset = new AxisOrder();
-                    value = Linking.InverseTransformPoint(originalDirection, parent.position, parent.rotation);
+                    //value = Linking.InverseTransformPoint(originalDirection, parent.position, parent.rotation);
+                    value = originalLocalDirection;
                 }
                 else //keep offset
                 {
+                    value = offset.ReverseRotation(
+                        Linking.InverseTransformEuler(Quaternion.LookRotation(originalDirection), parent.rotation)) * Vector3.forward;
 
+                    //value = offset.ReverseRotation(Quaternion.LookRotation(
+                    //    Linking.InverseTransformPoint(originalDirection, parent.position, parent.rotation))) * Vector3.forward;
                 }
             }
         }
@@ -236,7 +238,7 @@ public class CustomGravity : CustomTransform<Vector3>
             {
                 space = Space.World;
 
-                value = originalDirection;
+                value = direction;
             }
         }
     }
@@ -299,6 +301,18 @@ public class CustomGravity : CustomTransform<Vector3>
         Enable(false);
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + (operationalDirection.normalized * 2f));
+
+        Gizmos.color = new Color(1f, 0.5f, 0f);
+        Gizmos.DrawLine(transform.position, transform.position + (localDirection.normalized * 2f));
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(transform.position, transform.position + (direction.normalized * 2f));
+    }
+
 #if UNITY_EDITOR
     [CustomEditor(typeof(CustomGravity))]
     public class E : EditorPRO<CustomGravity>
@@ -359,12 +373,19 @@ public class CustomGravity : CustomTransform<Vector3>
                     target.direction = EditorGUILayout.Vector3Field("Direction", target.direction);
                     target.localDirection = EditorGUILayout.Vector3Field("Local Direction", target.localDirection);
 
+                    EditorGUILayout.Space();
+
                     //local and global velocity
                     target.velocity = EditorGUILayout.Vector3Field("Velocity", target.velocity);
                     target.localVelocity = EditorGUILayout.Vector3Field("Local Velocity", target.localVelocity);
                 }
             });
         }
+
+        private Vector3 direction;
+        private Vector3 localDirection;
+        private Vector3 velocity;
+        private Vector3 localVelocity;
     }
 #endif
 }

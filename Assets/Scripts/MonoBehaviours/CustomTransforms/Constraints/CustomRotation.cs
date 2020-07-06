@@ -194,9 +194,35 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         return target;
     }
 
-    public override void TargetToCurrent()
+    public override void TargetToCurrent(bool keepOffset = false)
     {
+        if (space == Space.Self)
+        {
+            if (link == Link.Offset)
+            {
+                if (!keepOffset)
+                {
+                    offset = new AxisOrder();
 
+                    value = Linking.InverseTransformEuler(operationalRotation, parent.rotation);
+                }
+                else
+                {
+                    value = Linking.InverseTransformEuler(operationalRotation, parent.rotation);
+
+                    value = offset.ReverseRotation(this, value);
+                }
+            }
+            else if (link == Link.Match)
+            {
+                //already set!!!
+                //++++++++++++++++++++++MAKE A DEBUG.LOG or EXCEPTION
+            }
+        }
+        else if (space == Space.World)
+        {
+            value = operationalRotation;
+        }
     }
 
     public override void RecordParent()
@@ -270,9 +296,17 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                     {
                         offset = new AxisOrder();
                         value = Linking.InverseTransformEuler(originalRotation, parent.rotation);
-                    } else //keep offset
+                    }
+                    else //keep offset
                     {
+                        SetToTarget();
 
+                        /*Quaternion from = Linking.InverseTransformEuler(rotation, parent.rotation);
+                        Quaternion to = Linking.InverseTransformEuler(originalRotation, parent.rotation);
+
+                        value *= (to * Quaternion.Inverse(from));*/
+
+                        value = offset.ReverseRotation(this, Linking.InverseTransformEuler(originalRotation, parent.rotation));
                     }
                 }
                 else if (newLink == Link.Match) //world > match
@@ -316,9 +350,17 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                         {
                             offset = new AxisOrder();
                             value = Linking.InverseTransformEuler(originalRotation, parent.rotation);
-                        } else //keep offset
+                        }
+                        else //keep offset
                         {
+                            SetToTarget();
 
+                            /*Quaternion from = Linking.InverseTransformEuler(rotation, parent.rotation);
+                            Quaternion to = Linking.InverseTransformEuler(originalRotation, parent.rotation);
+
+                            value *= (to * Quaternion.Inverse(from));*/
+
+                            value = offset.ReverseRotation(this, Linking.InverseTransformEuler(originalRotation, parent.rotation));
                         }
                     }
                 }
@@ -436,7 +478,12 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                             target.EditorApplyCheck();
                         }
 
-                        
+                        if (GUILayout.Button("Set to Current", EditorStyles.miniButton))
+                        {
+                            Undo.RecordObject(target.gameObject, "Re-Oriented CustomRotation");
+
+                            target.TargetToCurrent(true);
+                        }
                     }
                     else
                     {

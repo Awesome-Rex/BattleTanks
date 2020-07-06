@@ -572,7 +572,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 279420174}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -11.36, y: 5, z: 0}
+  m_LocalPosition: {x: -3.52, y: 5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 686122759}
@@ -863,6 +863,7 @@ GameObject:
   - component: {fileID: 452247523}
   - component: {fileID: 452247533}
   - component: {fileID: 452247532}
+  - component: {fileID: 452247525}
   m_Layer: 0
   m_Name: SpecialCube
   m_TagString: Untagged
@@ -882,13 +883,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86ce2b4d279f1ec4faac1a88e474311b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  space: 1
+  space: 0
   parent: {fileID: 867021773}
   value: {x: 0, y: -1, z: 0}
   gravity: 9.81
   gravityScale: 1
   offset:
-    axes: []
+    axes:
+    - axis: 2
+      units: 50
+      space: 0
     variety: 1
     space: 0
   linkTo: 0
@@ -908,6 +912,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &452247525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452247522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89cbb4000df042f4494208cd787e1515, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boolean: 0
+  testSerializable:
+    axis: 0
+    units: 0
+    space: 0
 --- !u!114 &452247527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -988,9 +1009,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 452247522}
-  m_LocalRotation: {x: -0.000000050887007, y: -0.0000000079300735, z: 2.646978e-23,
-    w: 1}
-  m_LocalPosition: {x: 0.00006347237, y: 5.0000296, z: 0.000042732267}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.000060119775, y: 5.0002275, z: 0.000042732267}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 88419806}
@@ -1020,7 +1040,16 @@ MonoBehaviour:
     percent: 5
   link: 1
   offset:
-    axes: []
+    axes:
+    - axis: 2
+      units: 50
+      space: 1
+    - axis: 1
+      units: 25
+      space: 1
+    - axis: 0
+      units: 45
+      space: 1
     variety: 1
     space: 0
   applyInEditor: 0
@@ -1038,15 +1067,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   space: 0
   parent: {fileID: 867021773}
-  value: {x: 0, y: 5, z: 0}
-  follow: 1
+  value: {x: 0.00006347237, y: 5.0000296, z: 0.000042732267}
+  follow: 0
   transition:
     type: 0
     speed: 5
     percent: 10
   link: 1
   offset:
-    axes: []
+    axes:
+    - axis: 0
+      units: 5
+      space: 1
+    - axis: 1
+      units: -6
+      space: 0
+    - axis: 2
+      units: 5
+      space: 0
     variety: 1
     space: 1
   applyInEditor: 0
