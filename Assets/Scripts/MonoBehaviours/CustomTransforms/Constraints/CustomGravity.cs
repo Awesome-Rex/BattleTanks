@@ -30,7 +30,7 @@ public class CustomGravity : CustomTransform<Vector3>
         }
         set
         {
-            value = SetDirection(value, Space.World);
+            this.value = SetDirection(value, Space.World, true);
         }
     }
     public Vector3 localDirection
@@ -41,7 +41,7 @@ public class CustomGravity : CustomTransform<Vector3>
         }
         set
         {
-            value = SetDirection(value, Space.Self);
+            this.value = SetDirection(value, Space.Self, true);
         }
     }
 
@@ -140,11 +140,6 @@ public class CustomGravity : CustomTransform<Vector3>
         return target;
     }
 
-    public override void TargetToCurrent(bool keepOffset = false)
-    {
-        
-    }
-
     public Vector3 GetDirection (Space space)
     {
         if (space == Space.Self) // self
@@ -240,6 +235,19 @@ public class CustomGravity : CustomTransform<Vector3>
 
                 value = direction;
             }
+        }
+    }
+    public override void SwitchParent(Transform newParent)
+    {
+        if (space == Space.Self)
+        {
+            Vector3 originalDirection = direction;
+            Vector3 originalLocalDirection = localDirection;
+
+            //NO LINKS (compared to Position and Rotation)
+            parent = newParent;
+
+            direction = originalDirection; //Should automatically FACTOR OFFSET, no need for offset.Reverse
         }
     }
 

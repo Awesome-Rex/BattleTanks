@@ -277,7 +277,7 @@ public class AxisOrder
         return newRot;
     } //works
 
-    public Vector3 ReversePosition(CustomPosition relative, Vector3? current = null)
+    public Vector3 ReversePosition(CustomPosition relative, Vector3? current = null) //takes and return GLOBAL
     {
         Vector3 newPos;
         if (current != null)
@@ -309,27 +309,4 @@ public class AxisOrder
         }
         return newPos;
     } //WORKS!
-
-#if UNITY_EDITOR
-
-    /*[CustomPropertyDrawer(typeof(AxisOrder))]
-    public class E : PropertyDrawer
-    {
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-        {
-            //base.OnGUI(position, property, label);
-
-            EditorGUI.BeginProperty(position, label, property);
-            position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Keyboard), label);
-            EditorGUI.PropertyField(position, property, GUIContent.none);
-
-            EditorGUI.EndProperty();
-        }
-
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            return base.GetPropertyHeight(property, label);
-        }
-    }*/
-#endif
 }

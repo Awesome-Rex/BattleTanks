@@ -69,11 +69,6 @@ public class CustomTorque : CustomTransform<Vector3>
         return target;
     }
 
-    public override void TargetToCurrent(bool keepOffset = false)
-    {
-        throw new System.NotImplementedException();
-    }
-
     public override void SetPrevious()
     {
         previous = parent.eulerAngles;
@@ -82,6 +77,10 @@ public class CustomTorque : CustomTransform<Vector3>
     }
 
     public override void Switch(Space newSpace, Link newLink, bool keepOffset = false)
+    {
+        throw new System.NotImplementedException();
+    }
+    public override void SwitchParent(Transform newParent)
     {
         throw new System.NotImplementedException();
     }
