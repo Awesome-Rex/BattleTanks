@@ -442,8 +442,6 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 
     protected override void Awake()
     {
-        rigidbody = GetComponent<Rigidbody>();
-
         base.Awake();
     }
 
@@ -469,7 +467,6 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             base.OnEnable();
 
             target.RecordParent();
-            target.rigidbody = target.GetComponent<Rigidbody>();
         }
 
         public override void OnInspectorGUI()

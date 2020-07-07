@@ -381,8 +381,6 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
     protected override void Awake()
     {
-        rigidbody = GetComponent<Rigidbody>();
-
         base.Awake();
     }
 
@@ -408,7 +406,6 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
             base.OnEnable();
             
             target.RecordParent();
-            target.rigidbody = target.GetComponent<Rigidbody>();
         }
 
         public override void OnInspectorGUI()

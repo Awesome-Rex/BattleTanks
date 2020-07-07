@@ -20,8 +20,6 @@ public class CustomGravity : CustomTransform<Vector3>
 
     public AxisOrder offset;  //local
     
-    public LocalRelativity linkTo;
-
     public Vector3 direction
     {
         get 
@@ -74,22 +72,9 @@ public class CustomGravity : CustomTransform<Vector3>
         {
             if (space == Space.Self)
             {
-                Vector3 fallDirection = Vector3.zero;
-
-                if (linkTo == LocalRelativity.Natural || parentGravity == null) //Transform Direction Vector
-                {
-                    ///////////// VALUE IS A DIRECTION VECTOR NOT EULER ANGLES
-                    fallDirection = (offset.ApplyRotation(parent.rotation) * value).normalized;
-                }
-                else if (linkTo == LocalRelativity.Constraint && parentGravity != null) //CustomGravity
-                {
-                    //fallDirection = (offset.ApplyRotation(parentRotation) * value).normalized;
-                    fallDirection = (offset.ApplyRotation(
-                        Quaternion.LookRotation(parentGravity.offset.ApplyRotation(parent.rotation) * parentGravity.value)) * value).normalized * parentGravity.gravity * parentGravity.gravityScale;
-                }
-
-                return fallDirection;
-            } else
+                return (offset.ApplyRotation(parent.rotation) * value).normalized;
+            }
+            else
             {
                 return (offset.ApplyRotation(Quaternion.LookRotation(value)) * Vector3.forward).normalized;
             }
@@ -102,7 +87,6 @@ public class CustomGravity : CustomTransform<Vector3>
 
     //script reference
     private new Rigidbody rigidbody;
-    private CustomGravity parentGravity;
 
     public void Apply()
     {
@@ -273,7 +257,6 @@ public class CustomGravity : CustomTransform<Vector3>
     protected override void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
-        parentGravity = parent.GetComponent<CustomGravity>();
 
         base.Awake();
     }
