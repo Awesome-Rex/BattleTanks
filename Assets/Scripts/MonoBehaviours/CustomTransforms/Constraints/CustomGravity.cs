@@ -30,7 +30,7 @@ public class CustomGravity : CustomTransform<Vector3>
         }
         set
         {
-            this.value = SetDirection(value, Space.World, true);
+            this.value = SetDirection(value, Space.World);
         }
     }
     public Vector3 localDirection
@@ -41,7 +41,7 @@ public class CustomGravity : CustomTransform<Vector3>
         }
         set
         {
-            this.value = SetDirection(value, Space.Self, true);
+            this.value = SetDirection(value, Space.Self);
         }
     }
 
@@ -100,7 +100,6 @@ public class CustomGravity : CustomTransform<Vector3>
     private Vector3 parentPos;
     private Quaternion parentRot;
 
-
     //script reference
     private new Rigidbody rigidbody;
     private CustomGravity parentGravity;
@@ -151,27 +150,15 @@ public class CustomGravity : CustomTransform<Vector3>
             return operationalDirection;
         }
     }
-    public Vector3 SetDirection (Vector3 direction, Space space, bool keepOffset = false) //SHOULD work
+    public Vector3 SetDirection(Vector3 direction, Space space) //SHOULD work
     {
-        if (!keepOffset) {
-            if (space == Space.Self)
-            {
-                return direction;
-            }
-            else
-            {
-                return parent.InverseTransformPoint(parent.position + direction);
-            }
-        } else
+        if (space == Space.Self)
         {
-            if (space == Space.Self)
-            {
-                return offset.ReverseRotation(Quaternion.LookRotation(direction)) * Vector3.forward;
-            }
-            else
-            {
-                return offset.ReverseRotation(Quaternion.LookRotation(parent.InverseTransformPoint(parent.position + direction))) * Vector3.forward;
-            }
+            return offset.ReverseRotation(Quaternion.LookRotation(direction)) * Vector3.forward;
+        }
+        else
+        {
+            return offset.ReverseRotation(Quaternion.LookRotation(parent.InverseTransformPoint(parent.position + direction))) * Vector3.forward;
         }
     }
 
@@ -200,7 +187,7 @@ public class CustomGravity : CustomTransform<Vector3>
         }
     }
 
-    public override void Switch(Space newSpace, Link newLink, bool keepOffset = false) //WORKS!
+    public override void Switch(Space newSpace, Link newLink) //WORKS!
     {
         Vector3 originalDirection = direction;
         Vector3 originalLocalDirection = localDirection;
@@ -211,20 +198,9 @@ public class CustomGravity : CustomTransform<Vector3>
             {
                 space = Space.Self;
 
-                if (!keepOffset) //dont keep offset
-                {
-                    offset = new AxisOrder();
-                    //value = Linking.InverseTransformPoint(originalDirection, parent.position, parent.rotation);
-                    value = originalLocalDirection;
-                }
-                else //keep offset
-                {
-                    value = offset.ReverseRotation(
-                        Linking.InverseTransformEuler(Quaternion.LookRotation(originalDirection), parent.rotation)) * Vector3.forward;
-
-                    //value = offset.ReverseRotation(Quaternion.LookRotation(
-                    //    Linking.InverseTransformPoint(originalDirection, parent.position, parent.rotation))) * Vector3.forward;
-                }
+                //auto keep offset
+                value = offset.ReverseRotation(
+                    Linking.InverseTransformEuler(Quaternion.LookRotation(originalDirection), parent.rotation)) * Vector3.forward;
             }
         }
         else if (space == Space.Self)
@@ -249,6 +225,15 @@ public class CustomGravity : CustomTransform<Vector3>
 
             direction = originalDirection; //Should automatically FACTOR OFFSET, no need for offset.Reverse
         }
+    }
+    public void RemoveOffset()
+    {
+        if (space == Space.Self)
+        {
+            direction = offset.ApplyRotation (Quaternion.LookRotation(direction)) * Vector3.forward;
+        }
+
+        offset = new AxisOrder(null, offset.variety, offset.space);
     }
 
     public override void SetPrevious()

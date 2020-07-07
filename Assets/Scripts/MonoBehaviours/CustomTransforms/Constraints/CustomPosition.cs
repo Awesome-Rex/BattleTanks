@@ -127,7 +127,6 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             }
         }
     }
-
     public override Vector3 GetTarget()
     {
         Vector3 target = Vector3.zero;
@@ -173,35 +172,13 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         return target;
     }
 
-    public override void TargetToCurrent(bool keepOffset = false)
+    public override void TargetToCurrent()
     {
         if (space == Space.Self)
         {
             if (link == Link.Offset)
             {
-                if (!keepOffset)
-                {
-                    offset = new AxisOrder();
-
-                    if (factorScale) {
-                        value = parent.InverseTransformPoint(operationalPosition) / offsetScale;
-                    } else
-                    {
-                        value = Vectors.DivideVector3(parent.InverseTransformPoint(operationalPosition), parent.localScale);
-                    }
-                } else
-                {
-                    if (factorScale)
-                    {
-                        value = parent.InverseTransformPoint(operationalPosition) / offsetScale;
-                        value = offset.ReversePosition(this, value);
-                    }
-                    else
-                    {
-                        value = Vectors.DivideVector3(parent.InverseTransformPoint(operationalPosition), parent.localScale);
-                        value = offset.ReversePosition(this, value);
-                    }
-                }
+                position = operationalPosition;
             } else if (link == Link.Match)
             {
                 //already set!!!
@@ -337,7 +314,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
     }
 
-    public override void Switch(Space newSpace, Link newLink, bool keepOffset = false)
+    public override void Switch(Space newSpace, Link newLink)
     {
         Vector3 originalPositon = position;
         Vector3 originalLocalPosition = localPosition;
@@ -351,39 +328,24 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                     space = Space.Self;
                     link = Link.Offset;
 
-                    if (!keepOffset) //dont keep offset
+                    //auto keep offset
+                    if (factorScale) //factor scale
                     {
-                        offset = new AxisOrder();
+                        SetToTarget();
 
-                        if (factorScale) //factor scale
-                        {
-                            value = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation, parent.localScale * offsetScale);
-                        }
-                        else //dont factor scale
-                        {
-                            value = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation);
-                        }
+                        Vector3 from = Linking.InverseTransformPoint(position, parent.position, parent.rotation, parent.localScale * offsetScale);
+                        Vector3 to = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation, parent.localScale * offsetScale);
+
+                        value += to - from;
                     }
-                    else //keep offset
+                    else //dont factor scale
                     {
-                        if (factorScale) //factor scale
-                        {
-                            SetToTarget();
+                        SetToTarget();
 
-                            Vector3 from = Linking.InverseTransformPoint(position, parent.position, parent.rotation, parent.localScale * offsetScale);
-                            Vector3 to = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation, parent.localScale * offsetScale);
+                        Vector3 from = Linking.InverseTransformPoint(position, parent.position, parent.rotation);
+                        Vector3 to = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation);
 
-                            value += to - from;
-                        }
-                        else //dont factor scale
-                        {
-                            SetToTarget();
-
-                            Vector3 from = Linking.InverseTransformPoint(position, parent.position, parent.rotation);
-                            Vector3 to = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation);
-
-                            value += to - from;
-                        }
+                        value += to - from;
                     }
                 }
                 else if (newLink == Link.Match) //world > match
@@ -423,39 +385,24 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                     {
                         link = Link.Offset;
 
-                        if (!keepOffset) //dont keep offset
+                        //auto keep offset
+                        if (factorScale) //factor scale
                         {
-                            offset = new AxisOrder();
+                            SetToTarget();
 
-                            if (factorScale) //factor scale
-                            {
-                                value = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation, parent.localScale * offsetScale);
-                            }
-                            else //dont factor scale
-                            {
-                                value = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation);
-                            }
+                            Vector3 from = Linking.InverseTransformPoint(position, parent.position, parent.rotation, parent.localScale * offsetScale);
+                            Vector3 to = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation, parent.localScale * offsetScale);
+
+                            value += to - from;
                         }
-                        else //keep offset
+                        else //dont factor scale
                         {
-                            if (factorScale) //factor scale
-                            {
-                                SetToTarget();
+                            SetToTarget();
 
-                                Vector3 from = Linking.InverseTransformPoint(position, parent.position, parent.rotation, parent.localScale * offsetScale);
-                                Vector3 to = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation, parent.localScale * offsetScale);
+                            Vector3 from = Linking.InverseTransformPoint(position, parent.position, parent.rotation);
+                            Vector3 to = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation);
 
-                                value += to - from;
-                            }
-                            else //dont factor scale
-                            {
-                                SetToTarget();
-
-                                Vector3 from = Linking.InverseTransformPoint(position, parent.position, parent.rotation);
-                                Vector3 to = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation);
-
-                                value += to - from;
-                            }
+                            value += to - from;
                         }
                     }
                 }
@@ -485,7 +432,12 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     }
     public override void RemoveOffset()
     {
+        if (space == Space.Self && link == Link.Offset)
+        {
+            position = offset.ApplyPosition(this, position);
+        }
 
+        offset = new AxisOrder(null, offset.variety, offset.space);
     }
 
     protected override void Awake()
@@ -611,7 +563,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                         {
                             Undo.RecordObject(target.gameObject, "Re-Oriented CustomPosition");
 
-                            target.TargetToCurrent(true);
+                            target.TargetToCurrent();
                         }
                     }
                     else

@@ -43,7 +43,7 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
     public abstract void SetToTarget();
     public abstract void MoveToTarget();
 
-    public abstract void TargetToCurrent(bool keepOffset = false);
+    public abstract void TargetToCurrent();
 
     public abstract void RemoveOffset();
 

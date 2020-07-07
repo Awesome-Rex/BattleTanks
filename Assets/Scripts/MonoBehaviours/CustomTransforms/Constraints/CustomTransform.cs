@@ -17,7 +17,7 @@ public abstract class CustomTransform<T> : MonoBehaviour
 
     public abstract void SetPrevious();
 
-    public abstract void Switch(Space newSpace, Link newLink, bool keepOffset = false);
+    public abstract void Switch(Space newSpace, Link newLink);
 
     public abstract void SwitchParent(Transform newParent);
 

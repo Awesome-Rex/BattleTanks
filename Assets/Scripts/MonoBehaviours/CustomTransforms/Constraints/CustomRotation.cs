@@ -200,24 +200,13 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         return target;
     }
 
-    public override void TargetToCurrent(bool keepOffset = false)
+    public override void TargetToCurrent()
     {
         if (space == Space.Self)
         {
             if (link == Link.Offset)
             {
-                if (!keepOffset)
-                {
-                    offset = new AxisOrder();
-
-                    value = Linking.InverseTransformEuler(operationalRotation, parent.rotation);
-                }
-                else
-                {
-                    value = Linking.InverseTransformEuler(operationalRotation, parent.rotation);
-
-                    value = offset.ReverseRotation(this, value);
-                }
+                rotation = operationalRotation;
             }
             else if (link == Link.Match)
             {
@@ -294,7 +283,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         previous = Linking.InverseTransformEuler(operationalRotation, parentRot);
     }
 
-    public override void Switch(Space newSpace, Link newLink, bool keepOffset = false)
+    public override void Switch(Space newSpace, Link newLink)
     {
         Quaternion originalRotation = rotation;
         Quaternion originalLocalRotation = localRotation;
@@ -307,17 +296,10 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 {
                     space = Space.Self;
                     link = Link.Offset;
-
-                    if (!keepOffset) //dont keep offset
-                    {
-                        offset = new AxisOrder();
-                        value = Linking.InverseTransformEuler(originalRotation, parent.rotation);
-                    }
-                    else //keep offset
-                    {
-                        SetToTarget();
-                        value = offset.ReverseRotation(this, Linking.InverseTransformEuler(originalRotation, parent.rotation));
-                    }
+                    
+                    //auto keep offset
+                    SetToTarget();
+                    value = offset.ReverseRotation(this, Linking.InverseTransformEuler(originalRotation, parent.rotation));
                 }
                 else if (newLink == Link.Match) //world > match
                 {
@@ -355,23 +337,11 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                     if (newLink == Link.Offset) //match > offset
                     {
                         link = Link.Offset;
+                        
+                        //auto keep offset
+                        SetToTarget();
 
-                        if (!keepOffset) //dont keep offset
-                        {
-                            offset = new AxisOrder();
-                            value = Linking.InverseTransformEuler(originalRotation, parent.rotation);
-                        }
-                        else //keep offset
-                        {
-                            SetToTarget();
-
-                            /*Quaternion from = Linking.InverseTransformEuler(rotation, parent.rotation);
-                            Quaternion to = Linking.InverseTransformEuler(originalRotation, parent.rotation);
-
-                            value *= (to * Quaternion.Inverse(from));*/
-
-                            value = offset.ReverseRotation(this, Linking.InverseTransformEuler(originalRotation, parent.rotation));
-                        }
+                        value = offset.ReverseRotation(this, Linking.InverseTransformEuler(originalRotation, parent.rotation));
                     }
                 }
             }
@@ -401,7 +371,12 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     }
     public override void RemoveOffset()
     {
-        
+        if (space == Space.Self && link == Link.Offset)
+        {
+            rotation = offset.ApplyRotation(this, rotation);
+        }
+
+        offset = new AxisOrder(null, offset.variety, offset.space);
     }
 
     protected override void Awake()
@@ -518,7 +493,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                         {
                             Undo.RecordObject(target.gameObject, "Re-Oriented CustomRotation");
 
-                            target.TargetToCurrent(true);
+                            target.TargetToCurrent();
                         }
                     }
                     else

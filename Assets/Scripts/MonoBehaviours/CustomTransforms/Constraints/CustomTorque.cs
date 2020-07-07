@@ -76,7 +76,7 @@ public class CustomTorque : CustomTransform<Vector3>
         //parentRot = parent.rotation;
     }
 
-    public override void Switch(Space newSpace, Link newLink, bool keepOffset = false)
+    public override void Switch(Space newSpace, Link newLink)
     {
         throw new System.NotImplementedException();
     }
