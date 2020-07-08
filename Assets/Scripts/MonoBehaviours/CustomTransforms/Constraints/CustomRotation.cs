@@ -80,6 +80,70 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
     }
 
+    public Quaternion rotationRaw
+    {
+        get
+        {
+            if (space == Space.Self && link == Link.Offset)
+            {
+                return GetRotationRaw(Space.World);
+            } else
+            {
+                return GetRotation(Space.World);
+            }
+        }
+
+        set
+        {
+            if (space == Space.Self && link == Link.Offset) {
+                this.value = SetRotationRawLocal(value.eulerAngles, Space.World);
+            }
+        }
+    }
+    public Quaternion localRotationRaw
+    {
+        get
+        {
+            if (space == Space.Self && link == Link.Offset)
+            {
+                return GetRotationRaw(Space.Self);
+            } else
+            {
+                return GetRotation(Space.Self);
+            }
+        }
+        set
+        {
+            if (space == Space.Self && link == Link.Offset)
+            {
+                this.value = SetRotationRawLocal(value.eulerAngles, Space.Self);
+            }
+        }
+    }
+
+    public Vector3 eulerAnglesRaw
+    {
+        get
+        {
+            return rotationRaw.eulerAngles;
+        }
+        set
+        {
+            rotationRaw = Quaternion.Euler(value);
+        }
+    }
+    public Vector3 localEulerAnglesRaw
+    {
+        get
+        {
+            return localRotationRaw.eulerAngles;
+        }
+        set
+        {
+            localRotationRaw = Quaternion.Euler(value);
+        }
+    }
+
     private Quaternion operationalRotation
     {
         get
@@ -278,6 +342,33 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
     }
 
+    public Quaternion SetRotationRaw(Vector3 rotation, Space relativeTo = Space.Self)
+    {
+        return offset.ReverseRotation(this, SetRotation(eulerAngles, relativeTo));
+    }
+    public Quaternion SetRotationRawLocal(Vector3 rotation, Space relativeTo = Space.Self)
+    {
+        return SetRotationLocal(offset.ReverseRotation(this, SetRotation(SetRotationLocal(eulerAngles, relativeTo).eulerAngles, Space.Self)).eulerAngles, Space.World);
+    }
+    public Quaternion GetRotationRaw(Space relativeTo = Space.Self)
+    {
+        if (space == Space.Self && link == Link.Offset)
+        {
+            if (relativeTo == Space.Self)
+            {
+                return Linking.InverseTransformEuler(offset.ReverseRotation(this, rotation), parentRot);
+            }
+            else // relative to world
+            {
+                return offset.ReverseRotation(this, rotation);
+            }
+        }
+        else
+        {
+            return GetRotation(relativeTo);
+        }
+    }
+
     public override void SetPrevious()
     {
         previous = Linking.InverseTransformEuler(operationalRotation, parentRot);
@@ -463,8 +554,16 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 showContextInfo = EditorGUILayout.Foldout(showContextInfo, "Context Info".bold(), EditorStyles.foldout.clone().richText());
                 if (showContextInfo)
                 {
-                    target.eulerAngles = EditorGUILayout.Vector3Field("eulerAngles", target.eulerAngles);
-                    target.localEulerAngles = EditorGUILayout.Vector3Field("localEulerAngles", target.localEulerAngles);
+                    target.eulerAngles = EditorGUILayout.Vector3Field("Euler Angles", target.eulerAngles);
+                    target.localEulerAngles = EditorGUILayout.Vector3Field("Local Euler Angles", target.localEulerAngles);
+                    
+                    if (target.space == Space.Self && target.link == Link.Offset)
+                    {
+                        EditorGUILayout.Space();
+
+                        target.eulerAnglesRaw = EditorGUILayout.Vector3Field("Euler Angles Raw", target.eulerAnglesRaw);
+                        target.localEulerAnglesRaw = EditorGUILayout.Vector3Field("Local Euler Angles Raw", target.localEulerAnglesRaw);
+                    }
                 }
 
                 if (EditorApplication.isPaused || !EditorApplication.isPlaying)

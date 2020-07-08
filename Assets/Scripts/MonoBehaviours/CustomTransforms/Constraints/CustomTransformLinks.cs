@@ -16,7 +16,7 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
     
     public Link link = Link.Offset;
     
-    public AxisOrder offset;  //local
+    public AxisOrder offset = new AxisOrder(null, TransformTools.SpaceVariety.Mixed);  //local
 
     public bool applyInEditor = false;
     public bool editorApply

@@ -59,6 +59,47 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
     }
 
+    public Vector3 positionRaw
+    {
+        get
+        {
+            if (space == Space.Self && link == Link.Offset)
+            {
+                return GetPositionRaw(Space.World);
+            } else
+            {
+                return GetPosition(Space.World);
+            }
+        }
+        set
+        {
+            if (space == Space.Self && link == Link.Offset)
+            {
+                this.value = SetPositionRawLocal(value, Space.World);
+            }
+        }
+    }
+    public Vector3 localPositionRaw
+    {
+        get
+        {
+            if (space == Space.Self && link == Link.Offset)
+            {
+                return GetPositionRaw(Space.Self);
+            } else
+            {
+                return GetPosition(Space.Self);
+            }
+        }
+        set
+        {
+            if (space == Space.Self && link == Link.Offset)
+            {
+                this.value = SetPositionRawLocal(value, Space.Self);
+            }
+        }
+    }
+
     public bool factorScale = true;
     public float offsetScale = 1f;
 
@@ -261,11 +302,11 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         {
             if (factorScale)
             {
-                return Linking.InverseTransformPoint(position, parentPos, parentRot, parentScale * offsetScale); //WORKS!
+                return Linking.InverseTransformPoint(position, parentPos, parentRot, parentScale/* * offsetScale*/) / offsetScale; //WORKS!
             }
             else
             {
-                return Vectors.DivideVector3(Linking.InverseTransformPoint(position, parentPos, parentRot), parentScale); //WORKS!
+                return Vectors.DivideVector3(Linking.InverseTransformPoint(position, parentPos, parentRot, parentScale), parentScale); //WORKS!
             }
         }
     }
@@ -291,6 +332,47 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         else
         {
             return operationalPosition; //WORKS!
+        }
+    }
+
+    public Vector3 SetPositionRaw(Vector3 position, Space relativeTo = Space.Self)
+    {
+        return offset.ReversePosition(this, SetPosition(position, relativeTo));
+    }
+    public Vector3 SetPositionRawLocal(Vector3 position, Space relativeTo = Space.Self)
+    {
+        return SetPositionLocal(offset.ReversePosition(this, SetPosition(SetPositionLocal(position, relativeTo), Space.Self)), Space.World);
+    }
+    public Vector3 GetPositionRaw(Space relativeTo = Space.Self)
+    {
+        if (space == Space.Self && link == Link.Offset)
+        {
+            if (relativeTo == Space.Self)
+            {
+                if (factorScale)
+                {
+                    if (offsetScale != 0f) //ALL WORKS!
+                    {
+                        return Linking.InverseTransformPoint(offset.ReversePosition(this, position), parentPos, parentRot, parentScale) / offsetScale;
+                    }
+                    else
+                    {
+                        return Vector3.zero;
+                    }
+                }
+                else
+                {
+                    return Linking.InverseTransformPoint(offset.ReversePosition(this, position), parentPos, parentRot);
+                }
+            }
+            else // relative to world
+            {
+                return offset.ReversePosition(this, position);
+            }
+        }
+        else
+        {
+            return GetPosition(relativeTo);
         }
     }
 
@@ -533,8 +615,16 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 showContextInfo = EditorGUILayout.Foldout(showContextInfo, "Context Info".bold(), EditorStyles.foldout.clone().richText());
                 if (showContextInfo)
                 {
-                    target.position = EditorGUILayout.Vector3Field("position", target.position);
-                    target.localPosition = EditorGUILayout.Vector3Field("localPosition", target.localPosition);
+                    target.position = EditorGUILayout.Vector3Field("Position", target.position);
+                    target.localPosition = EditorGUILayout.Vector3Field("Local Position", target.localPosition);
+                    
+                    if (target.space == Space.Self && target.link == Link.Offset)
+                    {
+                        EditorGUILayout.Space();
+
+                        target.positionRaw = EditorGUILayout.Vector3Field("Position Raw", target.positionRaw);
+                        target.localPositionRaw = EditorGUILayout.Vector3Field("Local Position Raw", target.localPositionRaw);
+                    }
                 }
 
                 if (EditorApplication.isPaused || !EditorApplication.isPlaying)

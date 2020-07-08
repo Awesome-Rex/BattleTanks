@@ -18,7 +18,7 @@ public class CustomGravity : CustomTransform<Vector3>
     public float gravity = 9.81f;
     public float gravityScale = 1f;
 
-    public AxisOrder offset;  //local
+    public AxisOrder offset = new AxisOrder(null, SpaceVariety.Mixed);  //local
     
     public Vector3 direction
     {
@@ -32,6 +32,29 @@ public class CustomGravity : CustomTransform<Vector3>
         }
     }
     public Vector3 localDirection
+    {
+        get
+        {
+            return GetDirection(Space.Self);
+        }
+        set
+        {
+            this.value = SetDirection(value, Space.Self);
+        }
+    }
+
+    public Vector3 directionRaw
+    {
+        get
+        {
+            return GetDirection(Space.World);
+        }
+        set
+        {
+            this.value = SetDirection(value, Space.World);
+        }
+    }
+    public Vector3 localDirectionRaw
     {
         get
         {
@@ -135,6 +158,29 @@ public class CustomGravity : CustomTransform<Vector3>
         }
     }
     public Vector3 SetDirection(Vector3 direction, Space space) //SHOULD work
+    {
+        if (space == Space.Self)
+        {
+            return offset.ReverseRotation(Quaternion.LookRotation(direction)) * Vector3.forward;
+        }
+        else
+        {
+            return offset.ReverseRotation(Quaternion.LookRotation(parent.InverseTransformPoint(parent.position + direction))) * Vector3.forward;
+        }
+    }
+
+    public Vector3 GetDirectionRaw(Space space)
+    {
+        if (space == Space.Self) // self
+        {
+            return parent.InverseTransformPoint(parent.position + operationalDirection);
+        }
+        else // world
+        {
+            return operationalDirection;
+        }
+    }
+    public Vector3 SetDirectionRaw(Vector3 direction, Space space) //SHOULD work
     {
         if (space == Space.Self)
         {
@@ -300,8 +346,6 @@ public class CustomGravity : CustomTransform<Vector3>
             AddProperty("offset");
             
             AddProperty("space");
-
-            AddProperty("linkTo");
         }
 
         protected override void OnEnable()
@@ -336,8 +380,6 @@ public class CustomGravity : CustomTransform<Vector3>
                     EditorGUILayout.LabelField("Local", EditorStyles.boldLabel);
 
                     EditorGUILayout.PropertyField(FindProperty("offset"));
-
-                    EditorGUILayout.PropertyField(FindProperty("linkTo"));
                 }
 
                 EditorGUILayout.Space();
@@ -348,6 +390,14 @@ public class CustomGravity : CustomTransform<Vector3>
                     //local and global directions
                     target.direction = EditorGUILayout.Vector3Field("Direction", target.direction);
                     target.localDirection = EditorGUILayout.Vector3Field("Local Direction", target.localDirection);
+
+                    if (target.space == Space.Self)
+                    {
+                        EditorGUILayout.Space();
+
+                        target.directionRaw = EditorGUILayout.Vector3Field("Direction Raw", target.directionRaw);
+                        target.localDirectionRaw = EditorGUILayout.Vector3Field("Local Direction Raw", target.localDirectionRaw);
+                    }
 
                     EditorGUILayout.Space();
 
