@@ -351,16 +351,22 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         {
             if (relativeTo == Space.Self)
             {
-                return SetPosition(offset.ReversePosition(this, SetPosition(GetPosition(relativeTo), relativeTo)), Space.Self);
+                return SetPosition(offset.ReversePosition(this, target/*SetPosition(GetPosition(relativeTo), relativeTo)*/), Space.Self);
             }
             else // relative to world
             {
-                return offset.ReversePosition(this, position);
+                return offset.ReversePosition(this, target);
             }
         }
         else
         {
-            return GetPosition(relativeTo);
+            if (space == Space.Self) {
+                //return GetPosition(relativeTo);
+                return SetPositionLocal(target, Space.World);
+            } else // relative to world
+            {
+                return SetPosition(target, Space.World);
+            }
         }
     }
 

@@ -355,15 +355,23 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         if (space == Space.Self && link == Link.Offset)
         {
             if (relativeTo == Space.Self) {
-                return SetRotation(offset.ReverseRotation(this, SetRotation(GetRotation(relativeTo).eulerAngles, relativeTo)).eulerAngles, Space.Self);
+                return SetRotation(offset.ReverseRotation(this, /*SetRotation(GetRotation(relativeTo).eulerAngles, relativeTo)*/ target).eulerAngles, Space.Self);
             } else
             {
-                return offset.ReverseRotation(this, rotation);
+                return offset.ReverseRotation(this, target);
             }
         }
         else
         {
-            return GetRotation(relativeTo);
+            if (space == Space.Self)
+            {
+                //return GetRotation(relativeTo);
+                return SetRotationLocal(target.eulerAngles, Space.World);
+            }
+            else // relative to world
+            {
+                return SetRotation(target.eulerAngles, Space.World);
+            }
         }
     }
 

@@ -1016,7 +1016,7 @@ Transform:
   - {fileID: 579111305}
   m_Father: {fileID: 0}
   m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 45, y: 4.9810004, z: 7.0530005}
 --- !u!114 &452247532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1051,7 +1051,7 @@ MonoBehaviour:
       space: 1
     variety: 1
     space: 0
-  applyInEditor: 0
+  applyInEditor: 1
 --- !u!114 &452247533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1086,7 +1086,7 @@ MonoBehaviour:
       space: 0
     variety: 1
     space: 1
-  applyInEditor: 0
+  applyInEditor: 1
   factorScale: 1
   offsetScale: 1
 --- !u!1 &482072832
