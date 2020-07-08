@@ -291,7 +291,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         {
             return position; //WORKS!
         }
-    }
+    } //returns world
     public Vector3 SetPositionLocal(Vector3 position, Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self)
@@ -309,7 +309,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                 return Vectors.DivideVector3(Linking.InverseTransformPoint(position, parentPos, parentRot, parentScale), parentScale); //WORKS!
             }
         }
-    }
+    } //returns self
     public Vector3 GetPosition(Space relativeTo = Space.Self)
     {
         if (relativeTo == Space.Self)
@@ -337,11 +337,13 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 
     public Vector3 SetPositionRaw(Vector3 position, Space relativeTo = Space.Self)
     {
-        return offset.ReversePosition(this, SetPosition(position, relativeTo));
+        //return offset.ApplyPosition(this, SetPosition(position, relativeTo));
+        return SetPosition(position, relativeTo);
     }
     public Vector3 SetPositionRawLocal(Vector3 position, Space relativeTo = Space.Self)
     {
-        return SetPositionLocal(offset.ReversePosition(this, SetPosition(SetPositionLocal(position, relativeTo), Space.Self)), Space.World);
+        //return SetPositionLocal(offset.ApplyPosition(this, SetPosition(SetPositionLocal(position, relativeTo), Space.Self)), Space.World);
+        return SetPositionLocal(SetPosition(SetPositionLocal(position, relativeTo), Space.Self), Space.World);
     }
     public Vector3 GetPositionRaw(Space relativeTo = Space.Self)
     {
@@ -349,21 +351,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         {
             if (relativeTo == Space.Self)
             {
-                if (factorScale)
-                {
-                    if (offsetScale != 0f) //ALL WORKS!
-                    {
-                        return Linking.InverseTransformPoint(offset.ReversePosition(this, position), parentPos, parentRot, parentScale) / offsetScale;
-                    }
-                    else
-                    {
-                        return Vector3.zero;
-                    }
-                }
-                else
-                {
-                    return Linking.InverseTransformPoint(offset.ReversePosition(this, position), parentPos, parentRot);
-                }
+                return SetPosition(offset.ReversePosition(this, SetPosition(GetPosition(relativeTo), relativeTo)), Space.Self);
             }
             else // relative to world
             {

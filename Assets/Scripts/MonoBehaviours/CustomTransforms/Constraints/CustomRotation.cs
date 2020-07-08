@@ -344,21 +344,19 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
     public Quaternion SetRotationRaw(Vector3 rotation, Space relativeTo = Space.Self)
     {
-        return offset.ReverseRotation(this, SetRotation(eulerAngles, relativeTo));
+        return SetRotation(rotation, relativeTo);
     }
     public Quaternion SetRotationRawLocal(Vector3 rotation, Space relativeTo = Space.Self)
     {
-        return SetRotationLocal(offset.ReverseRotation(this, SetRotation(SetRotationLocal(eulerAngles, relativeTo).eulerAngles, Space.Self)).eulerAngles, Space.World);
+        return SetRotationLocal(SetRotation(SetRotationLocal(rotation, relativeTo).eulerAngles, Space.Self).eulerAngles, Space.World);
     }
     public Quaternion GetRotationRaw(Space relativeTo = Space.Self)
     {
         if (space == Space.Self && link == Link.Offset)
         {
-            if (relativeTo == Space.Self)
-            {
-                return Linking.InverseTransformEuler(offset.ReverseRotation(this, rotation), parentRot);
-            }
-            else // relative to world
+            if (relativeTo == Space.Self) {
+                return SetRotation(offset.ReverseRotation(this, SetRotation(GetRotation(relativeTo).eulerAngles, relativeTo)).eulerAngles, Space.Self);
+            } else
             {
                 return offset.ReverseRotation(this, rotation);
             }
