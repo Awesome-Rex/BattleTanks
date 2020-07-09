@@ -12,6 +12,9 @@ public abstract class CustomTransform<T> : MonoBehaviour
     
     protected T previous;
 
+    //accesse in custom inspector
+    public bool expanded = true;
+
     //methods
     public abstract T GetTarget();
 

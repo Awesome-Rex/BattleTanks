@@ -113,8 +113,6 @@ namespace EditorTools
 
         public static GUIStyle fontStyle(this GUIStyle style, FontStyle fontStyle)
         {
-            //GUIStyle clone = new GUIStyle(style);
-
             style.fontStyle = fontStyle;
 
             return style;
@@ -122,16 +120,12 @@ namespace EditorTools
 
         public static GUIStyle fontSize(this GUIStyle style, float size)
         {
-            //GUIStyle clone = new GUIStyle(style);
-
             style.fontSize = (int)size;
 
             return style;
         }
         public static GUIStyle richText(this GUIStyle style)
         {
-            //GUIStyle clone = new GUIStyle(style);
-
             style.richText = true;
 
             return style;
@@ -139,8 +133,6 @@ namespace EditorTools
 
         public static GUIStyle wordWrap(this GUIStyle style)
         {
-            //GUIStyle clone = new GUIStyle(style);
-
             style.wordWrap = true;
 
             return style;
@@ -148,8 +140,6 @@ namespace EditorTools
 
         public static GUIStyle contentOffset(this GUIStyle style, Vector2 offset)
         {
-            //GUIStyle clone = new GUIStyle(style);
-
             style.contentOffset = offset;
 
             return style;
@@ -157,40 +147,59 @@ namespace EditorTools
 
         public static GUIStyle padding(this GUIStyle style, RectOffset padding)
         {
-            //GUIStyle clone = new GUIStyle(style);
-
             style.padding = padding;
 
             return style;
         }
         public static GUIStyle margin(this GUIStyle style, RectOffset margin)
         {
-            //GUIStyle clone = new GUIStyle(style);
-
             style.margin = margin;
 
             return style;
         }
         public static GUIStyle border(this GUIStyle style, RectOffset border)
         {
-            ///GUIStyle clone = new GUIStyle(style);
-
             style.border = border;
+
+            return style;
+        }
+
+        public static GUIStyle fixedHeight(this GUIStyle style, float val)
+        {
+            style.fixedHeight = val;
+
+            return style;
+        }
+        public static GUIStyle fixedWidth(this GUIStyle style, float val)
+        {
+            style.fixedWidth = val;
+
+            return style;
+        }
+
+        public static GUIStyle stretchHeight(this GUIStyle style)
+        {
+            style.stretchHeight = true;
+
+            return style;
+        }
+        public static GUIStyle stretchWidth(this GUIStyle style)
+        {
+            style.stretchWidth = true;
 
             return style;
         }
 
         public static GUIStyle alignment(this GUIStyle style, TextAnchor anchor)
         {
-            //GUIStyle clone = new GUIStyle(style);
-
             style.alignment = anchor;
 
             return style;
         }
 
+        //<-----------------other layout stuff------------------->
 
-
+        public static readonly RectOffset zero = new RectOffset(0, 0, 0, 0);
 
 
         //<-----------------UNITY HTML TAGS------------------->

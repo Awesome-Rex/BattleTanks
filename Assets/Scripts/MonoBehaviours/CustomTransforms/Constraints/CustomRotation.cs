@@ -488,6 +488,13 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     public class E : EditorPRO<CustomRotation>
     {
         private bool showContextInfo = false;
+        private bool showMethods = false;
+
+        //method parameters
+        private Space P_Switch_Space;
+        private Link P_Switch_Link;
+
+        private Transform P_SwitchParent_Parent;
 
         protected override void DeclareProperties ()
         {
@@ -509,105 +516,179 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         {
             OnInspectorGUIPRO(() =>
             {
-                EditorGUILayout.PropertyField(FindProperty("space"));
+            target.expanded = EditorGUILayout.Foldout(target.expanded, "Expanded".bold(), true, EditorStyles.foldout.clone().richText());
 
-                EditorGUILayout.Space();
-
-                EditorGUILayout.LabelField("Rotation", EditorStyles.boldLabel);
-                if (target.space == Space.Self)
+                //<-----------ACTUAL FIELDS------------>
+                if (target.expanded)
                 {
-                    target.parent = (Transform)EditorGUILayout.ObjectField("Parent", target.parent, typeof(Transform), true);
-                }
-                if (!(target.space == Space.Self && target.link == Link.Match))
-                {
+                    EditorGUILayout.PropertyField(FindProperty("space"));
 
-                    target.value = Quaternion.Euler(EditorGUILayout.Vector3Field("Value", target.value.eulerAngles));
-                }
-
-                EditorGUILayout.Space();
-
-                if (target.space == Space.Self)
-                {
-                    EditorGUILayout.LabelField("Local", EditorStyles.boldLabel);
-
-                    EditorGUILayout.PropertyField(FindProperty("link"));
-
-                    if (target.link == Link.Offset)
-                    {
-                        EditorGUILayout.PropertyField(FindProperty("offset"));
-                    }
-                }
-
-                EditorGUILayout.Space();
-
-                if (target.space == Space.Self && target.link == Link.Offset)
-                {
-                    EditorGUILayout.BeginHorizontal();
-
-                    EditorGUILayout.LabelField("Transition", EditorStyles.boldLabel);
-
-                    target.follow = EditorGUILayout.Toggle(string.Empty, target.follow);
-
-                    EditorGUILayout.EndHorizontal();
-                    if (target.follow)
-                    {
-                        EditorGUILayout.PropertyField(FindProperty("transition"));
-                    }
-                }
-
-                EditorGUILayout.Space();
-
-                showContextInfo = EditorGUILayout.Foldout(showContextInfo, "Context Info".bold(), EditorStyles.foldout.clone().richText());
-                if (showContextInfo)
-                {
-                    target.eulerAngles = EditorGUILayout.Vector3Field("Euler Angles", target.eulerAngles);
-                    target.localEulerAngles = EditorGUILayout.Vector3Field("Local Euler Angles", target.localEulerAngles);
-                    
-                    if (target.space == Space.Self && target.link == Link.Offset)
-                    {
-                        EditorGUILayout.Space();
-
-                        target.eulerAnglesRaw = EditorGUILayout.Vector3Field("Euler Angles Raw", target.eulerAnglesRaw);
-                        target.localEulerAnglesRaw = EditorGUILayout.Vector3Field("Local Euler Angles Raw", target.localEulerAnglesRaw);
-                    }
-                }
-
-                if (EditorApplication.isPaused || !EditorApplication.isPlaying)
-                {
                     EditorGUILayout.Space();
 
-                    if (!target.applyInEditor)
+                    EditorGUILayout.LabelField("Rotation", EditorStyles.boldLabel);
+                    if (target.space == Space.Self)
                     {
-                        if (GUILayout.Button("Apply in Editor", EditorStyles.miniButton))
+                        target.parent = (Transform)EditorGUILayout.ObjectField("Parent", target.parent, typeof(Transform), true);
+                    }
+                    if (!(target.space == Space.Self && target.link == Link.Match))
+                    {
+
+                        target.value = Quaternion.Euler(EditorGUILayout.Vector3Field("Value", target.value.eulerAngles));
+                    }
+
+                    EditorGUILayout.Space();
+
+                    if (target.space == Space.Self)
+                    {
+                        EditorGUILayout.LabelField("Local", EditorStyles.boldLabel);
+
+                        EditorGUILayout.PropertyField(FindProperty("link"));
+
+                        if (target.link == Link.Offset)
                         {
-                            target.SetPrevious();
-                            target.RecordParent();
-
-                            target.applyInEditor = true;
-                        }
-
-                        if (EditorApplication.isPaused)
-                        {
-                            target.EditorApplyCheck();
-                        }
-
-                        if (GUILayout.Button("Set to Current", EditorStyles.miniButton))
-                        {
-                            Undo.RecordObject(target.gameObject, "Re-Oriented CustomRotation");
-
-                            target.TargetToCurrent();
+                            EditorGUILayout.PropertyField(FindProperty("offset"));
                         }
                     }
-                    else
-                    {
-                        if (GUILayout.Button("Don't Apply in Editor".colour(Color.red).bold(), EditorStyles.miniButton.clone().richText()))
-                        {
-                            target.applyInEditor = false;
-                        }
 
-                        if (EditorApplication.isPaused)
+                    EditorGUILayout.Space();
+
+                    if (target.space == Space.Self && target.link == Link.Offset)
+                    {
+                        EditorGUILayout.BeginHorizontal();
+
+                        EditorGUILayout.LabelField("Transition", EditorStyles.boldLabel);
+
+                        target.follow = EditorGUILayout.Toggle(string.Empty, target.follow);
+
+                        EditorGUILayout.EndHorizontal();
+                        if (target.follow)
                         {
-                            target.EditorApplyCheck();
+                            EditorGUILayout.PropertyField(FindProperty("transition"));
+                        }
+                    }
+
+                    EditorGUILayout.Space();
+
+                    showContextInfo = EditorGUILayout.Foldout(showContextInfo, "Context Info".bold(), EditorStyles.foldout.clone().richText());
+                    if (showContextInfo)
+                    {
+                        target.eulerAngles = EditorGUILayout.Vector3Field("Euler Angles", target.eulerAngles);
+                        target.localEulerAngles = EditorGUILayout.Vector3Field("Local Euler Angles", target.localEulerAngles);
+
+                        if (target.space == Space.Self && target.link == Link.Offset)
+                        {
+                            EditorGUILayout.Space();
+
+                            target.eulerAnglesRaw = EditorGUILayout.Vector3Field("Euler Angles Raw", target.eulerAnglesRaw);
+                            target.localEulerAnglesRaw = EditorGUILayout.Vector3Field("Local Euler Angles Raw", target.localEulerAnglesRaw);
+                        }
+                    }
+
+                    Line();
+
+                    if (EditorApplication.isPaused || !EditorApplication.isPlaying)
+                    {
+                        //EditorGUILayout.Space();
+
+                        showMethods = EditorGUILayout.Foldout(showMethods, "Show Methods".bold(), EditorStyles.foldout.clone().richText());
+                        if (target.applyInEditor)
+                        {
+                            GUI.enabled = false;
+                        }
+                        if (showMethods)
+                        {
+                            if (GUILayout.Button("Target to Current"))
+                            {
+                                Undo.RecordObject(target.gameObject, "Re-Oriented CustomRotation");
+
+                                target.TargetToCurrent();
+                            }
+
+                            EditorGUILayout.BeginHorizontal();
+                            {
+                                if (GUILayout.Button("Switch", GUILayout.Width(EditorGUIUtility.labelWidth), GUILayout.ExpandHeight(true), GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)))
+                                {
+                                    Undo.RecordObject(target.gameObject, "Switched CustomRotation Space and/or Link");
+
+                                    target.Switch(P_Switch_Space, P_Switch_Link);
+                                }
+                                EditorGUILayout.BeginVertical();
+                                {
+                                    P_Switch_Space = (Space)EditorGUILayout.EnumPopup("New Space", P_Switch_Space);
+                                    P_Switch_Link = (Link)EditorGUILayout.EnumPopup("New Link", P_Switch_Link);
+                                }
+                                EditorGUILayout.EndVertical();
+                            }
+                            EditorGUILayout.EndHorizontal();
+
+                            EditorGUILayout.BeginHorizontal();
+                            {
+                                if (GUILayout.Button("Switch Parent", GUILayout.Width(EditorGUIUtility.labelWidth)))
+                                {
+                                    Undo.RecordObject(target.gameObject, "Switched CustomRotation Parent");
+
+                                    target.SwitchParent(P_SwitchParent_Parent);
+                                }
+                                EditorGUILayout.BeginVertical();
+                                {
+                                    P_SwitchParent_Parent = (Transform)EditorGUILayout.ObjectField("New Parent", P_SwitchParent_Parent, typeof(Transform), true);
+                                }
+                                EditorGUILayout.EndVertical();
+                            }
+                            EditorGUILayout.EndHorizontal();
+
+                            if (GUILayout.Button("Remove Offset", GUILayout.Width(EditorGUIUtility.labelWidth)))
+                            {
+                                if (EditorUtility.DisplayDialog(
+                                    "Remove Offset?",
+                                    "Are you sure you want to remove the offset of \"CustomRotation?\"",
+                                    "Yes", "Cancel"))
+                                {
+                                    Undo.RecordObject(target.gameObject, "Removed CustomRotation Offset");
+
+                                    target.RemoveOffset();
+                                }
+                            }
+                        }
+                        GUI.enabled = true;
+
+                        EditorGUILayout.Space();
+
+                        //Apply button
+                        if (!target.applyInEditor)
+                        {
+                            if (EditorApplication.isPaused)
+                            {
+                                target.EditorApplyCheck();
+                            }
+
+                            if (GUILayout.Button(
+                                "Apply in Editor".bold(),
+                                EditorStyles.miniButton.clone().richText().fixedHeight(EditorGUIUtility.singleLineHeight * 1.5f)
+                                ))
+                            {
+                                Undo.RecordObject(target.gameObject, "Applied CustomRotation Values in Editor");
+
+                                target.SetPrevious();
+                                target.RecordParent();
+
+                                target.applyInEditor = true;
+                            }
+                        }
+                        else
+                        {
+                            if (GUILayout.Button(
+                                "Don't Apply in Editor".colour(Color.red).bold(),
+                                EditorStyles.miniButton.clone().richText().fixedHeight(EditorGUIUtility.singleLineHeight * 1.5f)
+                                ))
+                            {
+                                target.applyInEditor = false;
+                            }
+
+                            if (EditorApplication.isPaused)
+                            {
+                                target.EditorApplyCheck();
+                            }
                         }
                     }
                 }
