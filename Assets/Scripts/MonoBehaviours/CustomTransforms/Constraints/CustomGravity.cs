@@ -28,7 +28,7 @@ public class CustomGravity : CustomTransform<Vector3>
         }
         set
         {
-            this.value = SetDirection(value, Space.World);
+            this.value = SetDirectionLocal(value, Space.World);
         }
     }
     public Vector3 localDirection
@@ -39,7 +39,7 @@ public class CustomGravity : CustomTransform<Vector3>
         }
         set
         {
-            this.value = SetDirection(value, Space.Self);
+            this.value = SetDirectionLocal(value, Space.Self);
         }
     }
 
@@ -47,22 +47,22 @@ public class CustomGravity : CustomTransform<Vector3>
     {
         get
         {
-            return GetDirection(Space.World);
+            return GetDirectionRaw(Space.World);
         }
         set
         {
-            this.value = SetDirection(value, Space.World);
+            this.value = SetDirectionRawLocal(value, Space.World);
         }
     }
     public Vector3 localDirectionRaw
     {
         get
         {
-            return GetDirection(Space.Self);
+            return GetDirectionRaw(Space.Self);
         }
         set
         {
-            this.value = SetDirection(value, Space.Self);
+            this.value = SetDirectionRawLocal(value, Space.Self);
         }
     }
 
@@ -95,11 +95,11 @@ public class CustomGravity : CustomTransform<Vector3>
         {
             if (space == Space.Self)
             {
-                return (offset.ApplyRotation(parent.rotation) * value).normalized;
+                return (offset.ApplyRotation(parent.rotation) * value);
             }
             else
             {
-                return (offset.ApplyRotation(Quaternion.LookRotation(value)) * Vector3.forward).normalized;
+                return (offset.ApplyRotation(Quaternion.LookRotation(value)) * Vector3.forward);
             }
         }
     } // WORKS!
@@ -124,7 +124,6 @@ public class CustomGravity : CustomTransform<Vector3>
             }
             else if (space == Space.Self)
             {
-                //rigidbody.AddForce((offset.ApplyRotation(Quaternion.LookRotation(parent.TransformPoint(value) - parent.position)) * Vector3.forward).normalized * gravity * gravityScale/* * 0.5f*/, ForceMode.Acceleration);
                 rigidbody.AddForce(operationalDirection * gravity * gravityScale, ForceMode.Acceleration);
             }
         }
@@ -140,15 +139,15 @@ public class CustomGravity : CustomTransform<Vector3>
         }
         else if (space == Space.Self)
         {
-            target = (parent.TransformPoint(Linking.InverseTransformPoint(parentPos + rigidbody.velocity, parentPos, parentRot)) - parent.position).normalized * rigidbody.velocity.magnitude;
+            target = (parent.TransformPoint(Linking.InverseTransformPoint(parentPos + rigidbody.velocity, parentPos, parentRot)) - parent.position)/*.normalized*/ * rigidbody.velocity.magnitude;
         }
 
         return target;
     }
 
-    public Vector3 GetDirection (Space space)
+    public Vector3 GetDirection (Space relativeTo)
     {
-        if (space == Space.Self) // self
+        if (relativeTo == Space.Self) // self
         {
             return parent.InverseTransformPoint(parent.position + operationalDirection);
         }
@@ -157,9 +156,9 @@ public class CustomGravity : CustomTransform<Vector3>
             return operationalDirection;
         }
     }
-    public Vector3 SetDirection(Vector3 direction, Space space) //SHOULD work
+    public Vector3 SetDirectionLocal(Vector3 direction, Space relativeTo) //SHOULD work
     {
-        if (space == Space.Self)
+        if (relativeTo == Space.Self)
         {
             return offset.ReverseRotation(Quaternion.LookRotation(direction)) * Vector3.forward;
         }
@@ -168,33 +167,49 @@ public class CustomGravity : CustomTransform<Vector3>
             return offset.ReverseRotation(Quaternion.LookRotation(parent.InverseTransformPoint(parent.position + direction))) * Vector3.forward;
         }
     }
-
-    public Vector3 GetDirectionRaw(Space space)
-    {
-        if (space == Space.Self) // self
+    /*public Vector3 SetDirection (Vector3 direction, Space relativeTo) {
+        if (relativeTo == Space.Self)
         {
-            return parent.InverseTransformPoint(parent.position + operationalDirection);
+            return offset.ReverseRotation(Quaternion.LookRotation(direction)) * Vector3.forward;
+        }
+        else
+        {
+            return offset.ReverseRotation(Quaternion.LookRotation(parent.InverseTransformPoint(parent.position + direction))) * Vector3.forward;
+        }
+    }*/
+
+    public Vector3 GetDirectionRaw(Space relativeTo)
+    {
+        if (relativeTo == Space.Self) // self
+        {
+            //return parent.InverseTransformPoint(parent.position + operationalDirection);
+            return parent.InverseTransformPoint(parent.position + (offset.ReverseRotation(Quaternion.LookRotation(operationalDirection)) * Vector3.forward));
         }
         else // world
         {
-            return operationalDirection;
+            //return operationalDirection;
+            return offset.ReverseRotation(Quaternion.LookRotation(operationalDirection)) * Vector3.forward;
         }
     }
-    public Vector3 SetDirectionRaw(Vector3 direction, Space space) //SHOULD work
+    public Vector3 SetDirectionRawLocal(Vector3 direction, Space relativeTo) //SHOULD work
     {
-        if (space == Space.Self)
+        if (relativeTo == Space.Self)
         {
-            return offset.ReverseRotation(Quaternion.LookRotation(direction)) * Vector3.forward;
+            return /*offset.ReverseRotation(Quaternion.LookRotation(*/direction/*)) * Vector3.forward*/;
         }
         else
         {
-            return offset.ReverseRotation(Quaternion.LookRotation(parent.InverseTransformPoint(parent.position + direction))) * Vector3.forward;
+            return /*offset.ReverseRotation(Quaternion.LookRotation(*/parent.InverseTransformPoint(parent.position + direction)/*)) * Vector3.forward*/;
         }
     }
-
-    public Vector3 GetVelocity(Space space)
+    /*public Vector3 SetDirectionRaw(Vector3 direction, Space relativeTo)
     {
-        if (space == Space.Self)
+
+    }*/
+
+    public Vector3 GetVelocity(Space relativeTo)
+    {
+        if (relativeTo == Space.Self)
         {
 
             return (parent.InverseTransformPoint(parent.position + rigidbody.velocity));
@@ -205,9 +220,9 @@ public class CustomGravity : CustomTransform<Vector3>
             return rigidbody.velocity;
         }
     }
-    public Vector3 SetVelocity(Vector3 velocity, Space space)
+    public Vector3 SetVelocity(Vector3 velocity, Space relativeTo)
     {
-        if (space == Space.Self)
+        if (relativeTo == Space.Self)
         {
             return parent.TransformPoint(parent.position + velocity);
         }

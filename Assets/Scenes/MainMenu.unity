@@ -891,7 +891,7 @@ MonoBehaviour:
   offset:
     axes:
     - axis: 2
-      units: 0
+      units: 50
       space: 0
     variety: 1
     space: 0
@@ -1031,7 +1031,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   space: 1
   parent: {fileID: 867021773}
-  value: {x: 0.099941745, y: -0.19198383, z: -0.3736138, w: 0.9019792}
+  value: {x: 0, y: 0, z: 0, w: 1}
   follow: 0
   transition:
     type: 1
@@ -1051,7 +1051,7 @@ MonoBehaviour:
       space: 1
     variety: 1
     space: 0
-  applyInEditor: 1
+  applyInEditor: 0
 --- !u!114 &452247533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1086,7 +1086,7 @@ MonoBehaviour:
       space: 0
     variety: 1
     space: 1
-  applyInEditor: 1
+  applyInEditor: 0
   factorScale: 1
   offsetScale: 1
 --- !u!1 &482072832
