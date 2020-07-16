@@ -7,6 +7,11 @@ using UnityEditor;
 using Unity.EditorCoroutines.Editor;
 #endif
 
+public enum ValueLinkType
+{
+    Global, Local, GlobalRaw, LocalRaw
+}
+
 public abstract class CustomTransformLinks<T> : CustomTransform<T>
 {
     protected T target;
@@ -52,7 +57,7 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
     protected override void Awake ()
     {
         //base.Awake();
-        if (editModeLoop != null)
+        if (editModeLoop != null) //stops loop in play mode
         {
             EditorCoroutineUtility.StopCoroutine(editModeLoop);
             editModeLoop = null;
@@ -65,6 +70,8 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
 
     protected override void OnDestroy()
     {
+        Debug.Log("On Destroy");
+
         //base.OnDestroy();
         _ETERNAL.I.earlyRecorder.callbackF -= MoveToTarget;
 
@@ -105,14 +112,14 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
     public void EditorApplyCheck()
     {
         //Starts loop during editor or pause
-        if (editorApply)
+        if (editorApply) // starts loop if not already looping
         {
             if (editModeLoop == null)
             {
                 editModeLoop = EditorCoroutineUtility.StartCoroutineOwnerless(EditModeLoop()/*, this*/);
             }
         }
-        else
+        else //stops loop if exists
         {
             if (editModeLoop != null)
             {
