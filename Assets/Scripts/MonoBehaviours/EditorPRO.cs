@@ -9,8 +9,9 @@ public abstract class EditorPRO<T> : Editor where T : Object
 {
     protected new T target;
 
+    //serialized properties
     protected Dictionary<string, SerializedProperty> props = new Dictionary<string, SerializedProperty>();
-
+    
     protected abstract void DeclareProperties();
 
     protected void AddProperty(string name)
@@ -22,6 +23,7 @@ public abstract class EditorPRO<T> : Editor where T : Object
         return props[name];
     }
 
+    //widgets and components
     public static void Window (string title, System.Action content)
     {
         GUILayout.BeginVertical(title, "window");
@@ -65,6 +67,33 @@ public abstract class EditorPRO<T> : Editor where T : Object
         GUI.enabled = originalValue;
     }
 
+    public static void Function (string name, System.Action action, System.Action[] parameters, string undoMessage = null, Object target = null)
+    {
+        EditorGUILayout.BeginHorizontal();
+        {
+            if (GUILayout.Button(name, GUILayout.Width(EditorGUIUtility.labelWidth), GUILayout.ExpandHeight(true), GUILayout.Height(
+                EditorGUIUtility.singleLineHeight * (parameters.Length > 0 ? parameters.Length : 1)
+                )))
+            {
+                if (undoMessage != null && target != null) {
+                    Undo.RecordObject(target, undoMessage);
+                }
+
+                action();
+            }
+            EditorGUILayout.BeginVertical();
+            {
+                foreach (System.Action i in parameters)
+                {
+                    i();
+                }
+            }
+            EditorGUILayout.EndVertical();
+        }
+        EditorGUILayout.EndHorizontal();
+    }
+
+    //events
     protected virtual void OnEnable()
     {
         target = (T)(base.target);
