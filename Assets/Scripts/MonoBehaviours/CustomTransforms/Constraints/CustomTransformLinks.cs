@@ -7,9 +7,9 @@ using UnityEditor;
 using Unity.EditorCoroutines.Editor;
 #endif
 
-public enum ValueLinkType
+public enum LinkSpace
 {
-    Global, Local, GlobalRaw, LocalRaw
+    World, Self, WorldRaw, SelfRaw
 }
 
 public abstract class CustomTransformLinks<T> : CustomTransform<T>
@@ -70,8 +70,6 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
 
     protected override void OnDestroy()
     {
-        Debug.Log("On Destroy");
-
         //base.OnDestroy();
         _ETERNAL.I.earlyRecorder.callbackF -= MoveToTarget;
 

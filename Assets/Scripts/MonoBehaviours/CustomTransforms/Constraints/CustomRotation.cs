@@ -503,7 +503,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
 
         private Transform P_SwitchParent_Parent;
 
-        private ValueLinkType P_SetContext_Type;
+        private LinkSpace P_SetContext_Type;
         private Vector3 P_SetContext_New;
 
         protected override void DeclareProperties()
@@ -664,19 +664,19 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                             //setContext Function
                             Function("Set Context", () =>
                             {
-                                if (P_SetContext_Type == ValueLinkType.Global)
+                                if (P_SetContext_Type == LinkSpace.World)
                                 {
                                     target.rotation = Quaternion.Euler(P_SetContext_New);
                                 }
-                                else if (P_SetContext_Type == ValueLinkType.Local)
+                                else if (P_SetContext_Type == LinkSpace.Self)
                                 {
                                     target.localRotation = Quaternion.Euler(P_SetContext_New);
                                 }
-                                else if (P_SetContext_Type == ValueLinkType.GlobalRaw)
+                                else if (P_SetContext_Type == LinkSpace.WorldRaw)
                                 {
                                     target.rotationRaw = Quaternion.Euler(P_SetContext_New);
                                 }
-                                else if (P_SetContext_Type == ValueLinkType.LocalRaw)
+                                else if (P_SetContext_Type == LinkSpace.SelfRaw)
                                 {
                                     target.localRotationRaw = Quaternion.Euler(P_SetContext_New);
                                 }
@@ -684,22 +684,22 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                                 new Action[] {
                                     () => {
                                     EditorGUI.BeginChangeCheck();
-                                    P_SetContext_Type = (ValueLinkType)EditorGUILayout.EnumPopup("Type", P_SetContext_Type);
+                                    P_SetContext_Type = (LinkSpace)EditorGUILayout.EnumPopup("Type", P_SetContext_Type);
                                     if (EditorGUI.EndChangeCheck())
                                     {
-                                        if (P_SetContext_Type == ValueLinkType.Global)
+                                        if (P_SetContext_Type == LinkSpace.World)
                                         {
                                             P_SetContext_New = target.rotation.eulerAngles;
                                         }
-                                        else if (P_SetContext_Type == ValueLinkType.Local)
+                                        else if (P_SetContext_Type == LinkSpace.Self)
                                         {
                                             P_SetContext_New = target.localRotation.eulerAngles;
                                         }
-                                        else if (P_SetContext_Type == ValueLinkType.GlobalRaw)
+                                        else if (P_SetContext_Type == LinkSpace.WorldRaw)
                                         {
                                             P_SetContext_New = target.rotationRaw.eulerAngles;
                                         }
-                                        else if (P_SetContext_Type == ValueLinkType.LocalRaw)
+                                        else if (P_SetContext_Type == LinkSpace.SelfRaw)
                                         {
                                             P_SetContext_New = target.localRotationRaw.eulerAngles;
                                             }

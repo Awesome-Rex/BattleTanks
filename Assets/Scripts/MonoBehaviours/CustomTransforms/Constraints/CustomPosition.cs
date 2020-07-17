@@ -522,77 +522,22 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     {
         if (space == Space.Self)
         {
-            if (link == Link.Offset) // offset
-            {
-                Vector3 originalPos = position;
+            Vector3 originalPos = position;
 
-                factorScale = true;
+            factorScale = true;
 
-                position = originalPos;
-
-                /*if (factorScale)
-                {
-                    if (!factor) // true > false
-                    {
-                        factorScale = false;
-
-                        value = Vectors.DivideVector3(value, parent.localScale);
-                    }
-                } else if (!factorScale)
-                {
-                    if (factor) // false > true
-                    {
-                        factorScale = true;
-
-                        value = Vectors.MultiplyVector3(value, parent.localScale);
-                    }
-                }*/
-            } else if (link == Link.Match) //match
-            {
-                if (factorScale)
-                {
-                    if (!factor) //true > false
-                    {
-                        Vector3 originalPos = position;
-
-                        factorScale = false;
-
-                        position = originalPos;
-                    }
-                } else if (!factorScale)
-                {
-                    if (factor) // false > true
-                    {
-                        Vector3 originalPos = position;
-
-                        factorScale = true;
-
-                        position = originalPos;
-                    }
-                }
-            }
+            position = originalPos;
         }
     }
     public void ApplyOffsetScale(float newScale = 1f)
     {
         if (space == Space.Self && factorScale)
         {
-            if (link == Link.Offset)
-            {
-                Vector3 originalPos = position;
+            Vector3 originalPos = position;
 
-                offsetScale = newScale;
+            offsetScale = newScale;
 
-                position = originalPos;
-            }
-            else if (link == Link.Match)
-            {
-                Vector3 originalPos = position;
-
-                offsetScale = newScale;
-
-                position = originalPos;
-            }
+            position = originalPos;
         }
     }
     public override void RemoveOffset()
@@ -626,7 +571,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 
         private Transform P_SwitchParent_Parent;
 
-        private ValueLinkType P_SetContext_Type;
+        private LinkSpace P_SetContext_Type;
         private Vector3 P_SetContext_New;
 
         private bool P_SwitchFactorScale_Factor;
@@ -816,19 +761,19 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 
                             Function("Set Context", () =>
                             {
-                                if (P_SetContext_Type == ValueLinkType.Global)
+                                if (P_SetContext_Type == LinkSpace.World)
                                 {
                                     target.position = P_SetContext_New;
                                 }
-                                else if (P_SetContext_Type == ValueLinkType.Local)
+                                else if (P_SetContext_Type == LinkSpace.Self)
                                 {
                                     target.localPosition = P_SetContext_New;
                                 }
-                                else if (P_SetContext_Type == ValueLinkType.GlobalRaw)
+                                else if (P_SetContext_Type == LinkSpace.WorldRaw)
                                 {
                                     target.positionRaw = P_SetContext_New;
                                 }
-                                else if (P_SetContext_Type == ValueLinkType.LocalRaw)
+                                else if (P_SetContext_Type == LinkSpace.SelfRaw)
                                 {
                                     target.localPositionRaw = P_SetContext_New;
                                 }
@@ -836,22 +781,22 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                                 new Action[] {
                                     () => {
                                     EditorGUI.BeginChangeCheck();
-                                    P_SetContext_Type = (ValueLinkType)EditorGUILayout.EnumPopup("Type", P_SetContext_Type);
+                                    P_SetContext_Type = (LinkSpace)EditorGUILayout.EnumPopup("Type", P_SetContext_Type);
                                     if (EditorGUI.EndChangeCheck())
                                     {
-                                        if (P_SetContext_Type == ValueLinkType.Global)
+                                        if (P_SetContext_Type == LinkSpace.World)
                                         {
                                             P_SetContext_New = target.position;
                                         }
-                                        else if (P_SetContext_Type == ValueLinkType.Local)
+                                        else if (P_SetContext_Type == LinkSpace.Self)
                                         {
                                             P_SetContext_New = target.localPosition;
                                         }
-                                        else if (P_SetContext_Type == ValueLinkType.GlobalRaw)
+                                        else if (P_SetContext_Type == LinkSpace.WorldRaw)
                                         {
                                             P_SetContext_New = target.positionRaw;
                                         }
-                                        else if (P_SetContext_Type == ValueLinkType.LocalRaw)
+                                        else if (P_SetContext_Type == LinkSpace.SelfRaw)
                                         {
                                             P_SetContext_New = target.localPositionRaw;
                                             }
