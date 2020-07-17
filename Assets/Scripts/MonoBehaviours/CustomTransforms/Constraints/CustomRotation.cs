@@ -506,7 +506,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         private ValueLinkType P_SetContext_Type;
         private Vector3 P_SetContext_New;
 
-        protected override void DeclareProperties ()
+        protected override void DeclareProperties()
         {
             AddProperty("value");
 
@@ -528,7 +528,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         {
             OnInspectorGUIPRO(() =>
             {
-            target.expanded = EditorGUILayout.Foldout(target.expanded, "Expanded".bold(), true, EditorStyles.foldout.clone().richText());
+                target.expanded = EditorGUILayout.Foldout(target.expanded, "Expanded".bold(), true, EditorStyles.foldout.clone().richText());
 
                 //<-----------ACTUAL FIELDS------------>
                 if (target.expanded)
@@ -606,7 +606,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                         Line();
 
                         showMethods = EditorGUILayout.Foldout(showMethods, "Show Methods".bold(), EditorStyles.foldout.clone().richText());
-                        
+
                         if (showMethods)
                         {
                             if (target.applyInEditor)
@@ -727,7 +727,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                                 ))
                             {
                                 Undo.RecordObject(target.gameObject, "Applied CustomRotation Values in Editor");
-                                
+
                                 target.RecordParent();
 
                                 target.applyInEditor = true;

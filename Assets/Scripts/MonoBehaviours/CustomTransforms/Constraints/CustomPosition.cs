@@ -398,6 +398,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
     }
 
+    //inspector methods
     public override void Switch(Space newSpace, Link newLink)
     {
         Vector3 originalPositon = position;
@@ -495,23 +496,102 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     }
     public override void SwitchParent(Transform newParent)
     {
+        if (newParent != null) {
+            if (space == Space.Self)
+            {
+                Vector3 originalPosition = position;
+                Vector3 originalLocalPosition = localPosition;
+
+                if (link == Link.Offset)
+                {
+                    parent = newParent;
+
+                    position = offset.ReversePosition(this, originalPosition);
+
+                }
+                else if (link == Link.Match)
+                {
+                    parent = newParent;
+
+                    position = originalPosition;
+                }
+            }
+        }
+    }
+    public void SwitchFactorScale (bool factor)
+    {
         if (space == Space.Self)
         {
-            Vector3 originalPosition = position;
-            Vector3 originalLocalPosition = localPosition;
+            if (link == Link.Offset) // offset
+            {
+                Vector3 originalPos = position;
 
+                factorScale = true;
+
+                position = originalPos;
+
+                /*if (factorScale)
+                {
+                    if (!factor) // true > false
+                    {
+                        factorScale = false;
+
+                        value = Vectors.DivideVector3(value, parent.localScale);
+                    }
+                } else if (!factorScale)
+                {
+                    if (factor) // false > true
+                    {
+                        factorScale = true;
+
+                        value = Vectors.MultiplyVector3(value, parent.localScale);
+                    }
+                }*/
+            } else if (link == Link.Match) //match
+            {
+                if (factorScale)
+                {
+                    if (!factor) //true > false
+                    {
+                        Vector3 originalPos = position;
+
+                        factorScale = false;
+
+                        position = originalPos;
+                    }
+                } else if (!factorScale)
+                {
+                    if (factor) // false > true
+                    {
+                        Vector3 originalPos = position;
+
+                        factorScale = true;
+
+                        position = originalPos;
+                    }
+                }
+            }
+        }
+    }
+    public void ApplyOffsetScale(float newScale = 1f)
+    {
+        if (space == Space.Self && factorScale)
+        {
             if (link == Link.Offset)
             {
-                parent = newParent;
+                Vector3 originalPos = position;
 
-                position = offset.ReversePosition(this, originalPosition);
+                offsetScale = newScale;
 
+                position = originalPos;
             }
             else if (link == Link.Match)
             {
-                parent = newParent;
+                Vector3 originalPos = position;
 
-                position = originalPosition;
+                offsetScale = newScale;
+
+                position = originalPos;
             }
         }
     }
@@ -548,6 +628,10 @@ public class CustomPosition : CustomTransformLinks<Vector3>
 
         private ValueLinkType P_SetContext_Type;
         private Vector3 P_SetContext_New;
+
+        private bool P_SwitchFactorScale_Factor;
+
+        private float P_ApplyOffsetScale_NewScale = 1f;
 
         protected override void DeclareProperties()
         {
@@ -611,7 +695,6 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                         DisableGroup(target.factorScale, () =>
                         {
                             target.offsetScale = EditorGUILayout.FloatField("Offset Scale", target.offsetScale);
-
                         });
                     }
 
@@ -693,6 +776,22 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                             new Action[] {
                                     () => P_SwitchParent_Parent = (Transform)EditorGUILayout.ObjectField("New Parent", P_SwitchParent_Parent, typeof(Transform), true)
                             }, "Switched CustomPosition Parent", target.gameObject);
+
+                            Function("Switch Factor Scale", () =>
+                            {
+                                target.SwitchFactorScale(P_SwitchFactorScale_Factor);
+                            },
+                            new Action[] {
+                                    () => P_SwitchFactorScale_Factor = EditorGUILayout.Toggle("Factor", P_SwitchFactorScale_Factor)
+                            }, "Switched CustomPosition FactorScale", target.gameObject);
+
+                            Function("Apply Offset Scale", () =>
+                            {
+                                target.ApplyOffsetScale(P_ApplyOffsetScale_NewScale);
+                            },
+                            new Action[] {
+                                () => P_ApplyOffsetScale_NewScale = EditorGUILayout.FloatField("New Offset Scale", P_ApplyOffsetScale_NewScale)
+                            }, "Applied CustomPosition OffsetScale", target.gameObject);
 
                             Function("Remove Offset", () =>
                             {

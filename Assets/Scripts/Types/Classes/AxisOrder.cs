@@ -144,7 +144,7 @@ public class AxisOrder
         return newRot;
     } //works probably
 
-    public Vector3 ApplyPosition(CustomPosition relative, Vector3? current = null) 
+    public Vector3 ApplyPosition(CustomPosition relative, Vector3? current = null, float scale = 1f) 
     {
         Vector3 newPos;
         if (current != null) {
@@ -158,14 +158,14 @@ public class AxisOrder
         {
             foreach (AxisApplied i in axes)
             {
-                newPos = relative.Translate(newPos, (Vectors.axisDirections[i.axis] * i.units), space);
+                newPos = relative.Translate(newPos, (Vectors.axisDirections[i.axis] * i.units) * scale, space);
             }
         }
         else if (variety == SpaceVariety.Mixed)
         {
             foreach (AxisApplied i in axes)
             {
-                newPos = relative.Translate(newPos, (Vectors.axisDirections[i.axis] * i.units), i.space);
+                newPos = relative.Translate(newPos, (Vectors.axisDirections[i.axis] * i.units) * scale, i.space);
             }
         }
         return newPos;
@@ -277,7 +277,7 @@ public class AxisOrder
         return newRot;
     } //works
 
-    public Vector3 ReversePosition(CustomPosition relative, Vector3? current = null) //takes and return GLOBAL
+    public Vector3 ReversePosition(CustomPosition relative, Vector3? current = null, float scale = 1f) //takes and return GLOBAL
     {
         Vector3 newPos;
         if (current != null)
@@ -295,7 +295,7 @@ public class AxisOrder
             {
                 AxisApplied i = axes[j - 1];
 
-                newPos = relative.Translate(newPos, -(Vectors.axisDirections[i.axis] * i.units), space);
+                newPos = relative.Translate(newPos, -(Vectors.axisDirections[i.axis] * i.units) * scale, space);
             }
         }
         else if (variety == SpaceVariety.Mixed)
@@ -304,9 +304,43 @@ public class AxisOrder
             {
                 AxisApplied i = axes[j - 1];
 
-                newPos = relative.Translate(newPos, -(Vectors.axisDirections[i.axis] * i.units), i.space);
+                newPos = relative.Translate(newPos, -(Vectors.axisDirections[i.axis] * i.units) * scale, i.space);
             }
         }
         return newPos;
     } //WORKS!
+    public Vector3 ReversePosition(Transform relative)
+    {
+        Vector3 newPos = relative.position;
+
+        if (variety == SpaceVariety.OneSided)
+        {
+            foreach (AxisApplied i in axes)
+            {
+                if (space == Space.Self)
+                {
+                    newPos += relative.parent.TransformPoint(-(Vectors.axisDirections[i.axis] * i.units));
+                }
+                else
+                {
+                    newPos += -(Vectors.axisDirections[i.axis] * i.units);
+                }
+            }
+        }
+        else if (variety == SpaceVariety.Mixed)
+        {
+            foreach (AxisApplied i in axes)
+            {
+                if (i.space == Space.Self)
+                {
+                    newPos += relative.parent.TransformPoint(-(Vectors.axisDirections[i.axis] * i.units));
+                }
+                else
+                {
+                    newPos += -(Vectors.axisDirections[i.axis] * i.units);
+                }
+            }
+        }
+        return newPos;
+    } //works probably
 }
