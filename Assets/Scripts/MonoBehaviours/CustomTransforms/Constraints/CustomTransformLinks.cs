@@ -12,6 +12,7 @@ public enum LinkSpace
     World, Self, WorldRaw, SelfRaw
 }
 
+[RequireComponent(typeof(CustomTransformEditorExecuter))]
 public abstract class CustomTransformLinks<T> : CustomTransform<T>
 {
     protected T target;
@@ -114,6 +115,10 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
         {
             if (editModeLoop == null)
             {
+                SetPrevious();
+
+                RecordParent();
+
                 editModeLoop = EditorCoroutineUtility.StartCoroutineOwnerless(EditModeLoop()/*, this*/);
             }
         }
@@ -125,10 +130,5 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
                 editModeLoop = null;
             }
         }
-    }
-
-    protected virtual void OnDrawGizmos()
-    {
-        EditorApplyCheck();
     }
 }

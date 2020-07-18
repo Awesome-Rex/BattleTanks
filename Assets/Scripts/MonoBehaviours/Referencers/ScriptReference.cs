@@ -10,6 +10,13 @@ public class ScriptReference : MonoBehaviour
 
     public TYPE Get<TYPE>()
     {
+        if (components == null)
+        {
+            components = new Dictionary<System.Type, dynamic>();
+
+            T = GetComponent<Tagged>();
+        }
+
         if (!Viable<TYPE>())
         {
             Remove<TYPE>();
@@ -54,7 +61,5 @@ public class ScriptReference : MonoBehaviour
     private void Awake()
     {
         T = GetComponent<Tagged>();
-
-        components = new Dictionary<System.Type, dynamic>();
     }
 }

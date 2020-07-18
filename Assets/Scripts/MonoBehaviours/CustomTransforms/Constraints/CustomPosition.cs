@@ -193,10 +193,9 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             {
                 Vector3 newTarget;
 
-                if (!editorApply)
-                {
-                    SetPrevious();
-                }
+                //if (!editorApply) // (Cannot change position while applying to parent) {
+                SetPrevious();
+                //}
 
                 if (factorScale)
                 {
@@ -825,8 +824,6 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                             {
                                 Undo.RecordObject(target.gameObject, "Applied CustomRotation Values in Editor");
                                 
-                                target.RecordParent();
-
                                 target.applyInEditor = true;
 
                                 target.EditorApplyCheck();
@@ -849,5 +846,16 @@ public class CustomPosition : CustomTransformLinks<Vector3>
             });
         }
     }
+
+    //[CustomEditor(typeof(GameObject))]
+    //public class GE : Editor
+    //{
+    //    private void OnSceneGUI()
+    //    {
+    //        Debug.Log("SceneUpdate");
+
+
+    //    }
+    //}
 #endif
 }

@@ -13,7 +13,6 @@ using UnityEditor;
 using UnityEditorInternal;
 #endif
 
-[System.Serializable]
 public class CustomRotation : CustomTransformLinks<Quaternion>
 {
     public Quaternion rotation
@@ -261,7 +260,9 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                 target = offset.ApplyRotation(this, target);
             } else if (link == Link.Match)
             {
+                //if (!editorApply) {
                 SetPrevious();
+                //}
 
                 //target = parentRot * previous; //WORKS!
                 target = Linking.TransformEuler(previous, parent.rotation);
@@ -727,9 +728,7 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
                                 ))
                             {
                                 Undo.RecordObject(target.gameObject, "Applied CustomRotation Values in Editor");
-
-                                target.RecordParent();
-
+                                
                                 target.applyInEditor = true;
 
                                 target.EditorApplyCheck();
