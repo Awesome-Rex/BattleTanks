@@ -12,9 +12,6 @@ public abstract class CustomTransform<T> : MonoBehaviour
     
     protected T previous;
 
-    //accesse in custom inspector
-    public bool expanded = true;
-
     //methods
     public abstract T GetTarget();
 
@@ -35,4 +32,8 @@ public abstract class CustomTransform<T> : MonoBehaviour
     {
         _ETERNAL.I.lateRecorder.callbackF -= SetPrevious;
     }
+
+    //Accessed in editor
+    protected bool showContextInfo = false;
+    protected bool showMethods = false;
 }

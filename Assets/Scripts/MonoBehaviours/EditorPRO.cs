@@ -72,8 +72,8 @@ public abstract class EditorPRO<T> : Editor where T : Object
         EditorGUILayout.BeginHorizontal();
         {
             if (GUILayout.Button(name, GUILayout.Width(EditorGUIUtility.labelWidth), GUILayout.ExpandHeight(true), GUILayout.Height(
-                EditorGUIUtility.singleLineHeight * (parameters.Length > 0 ? parameters.Length : 1)
-                )))
+                ((EditorGUIUtility.standardVerticalSpacing + EditorGUIUtility.singleLineHeight) * parameters.Length)/* - EditorGUIUtility.standardVerticalSpacing*/), GUILayout.MinHeight(EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing)
+                ))
             {
                 if (undoMessage != null && target != null) {
                     Undo.RecordObject(target, undoMessage);
@@ -86,6 +86,11 @@ public abstract class EditorPRO<T> : Editor where T : Object
                 foreach (System.Action i in parameters)
                 {
                     i();
+                }
+
+                if (parameters.Length == 0)
+                {
+                    EditorGUILayout.LabelField(GUIContent.none);
                 }
             }
             EditorGUILayout.EndVertical();

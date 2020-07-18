@@ -12,7 +12,8 @@ public enum LinkSpace
     World, Self, WorldRaw, SelfRaw
 }
 
-[RequireComponent(typeof(CustomTransformEditorExecuter))]
+[ExecuteAlways]
+//[RequireComponent(typeof(CustomTransformEditorExecuter))]
 public abstract class CustomTransformLinks<T> : CustomTransform<T>
 {
     protected T target;
@@ -29,14 +30,12 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
     {
         get
         {
+#if UNITY_EDITOR
             if (EditorApplication.isPaused || !EditorApplication.isPlaying)
             {
                 return applyInEditor;
             }
-            else if (Application.isPlaying)
-            {
-                return false;
-            }
+#endif
 
             return false;
         }
@@ -55,26 +54,62 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
 
     public abstract void RecordParent();
 
-    protected override void Awake ()
+#if UNITY_EDITOR
+    private void EditorStateChanged (PlayModeStateChange n)
     {
-        //base.Awake();
-        if (editModeLoop != null) //stops loop in play mode
+        EditorApplyCheck();
+    }
+    private void EditorStateChanged(PauseState n)
+    {
+        EditorApplyCheck();
+    }
+#endif
+
+    protected override void Awake()
+    {
+        if (!inEditor)
         {
-            EditorCoroutineUtility.StopCoroutine(editModeLoop);
-            editModeLoop = null;
+            //base.Awake();
+            if (editModeLoop != null) //stops loop in play mode
+            {
+                EditorCoroutineUtility.StopCoroutine(editModeLoop);
+                editModeLoop = null;
+            }
+
+            _ETERNAL.I.earlyRecorder.callbackF += MoveToTarget;
+
+            RecordParent();
         }
+    }
 
-        _ETERNAL.I.earlyRecorder.callbackF += MoveToTarget;
+    protected virtual void OnEnable()
+    {
+#if UNITY_EDITOR
+        EditorApplication.playModeStateChanged += EditorStateChanged;
+        EditorApplication.pauseStateChanged += EditorStateChanged;
+#endif
 
-        RecordParent();
+#if UNITY_EDITOR
+        EditorApplyCheck();
+#endif
     }
 
     protected override void OnDestroy()
     {
-        //base.OnDestroy();
-        _ETERNAL.I.earlyRecorder.callbackF -= MoveToTarget;
+#if UNITY_EDITOR
+        //removes subscribed methods
+        EditorApplication.playModeStateChanged -= EditorStateChanged;
+        EditorApplication.pauseStateChanged -= EditorStateChanged;
+#endif
 
-        if (editModeLoop != null) {
+        if (!inEditor) {
+            //base.OnDestroy();
+            _ETERNAL.I.earlyRecorder.callbackF -= MoveToTarget;
+        }
+
+        //removes coroutines
+        if (editModeLoop != null)
+        {
             EditorCoroutineUtility.StopCoroutine(editModeLoop);
             editModeLoop = null;
         }
@@ -98,6 +133,7 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
         }
     }
 
+#if UNITY_EDITOR
     private IEnumerator EditModeLoop ()
     {
         while (true)
@@ -107,7 +143,9 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
             yield return new EditorWaitForSeconds(Time.fixedDeltaTime/* * 2f*/);
         }
     }
+#endif
     private EditorCoroutine editModeLoop;
+#if UNITY_EDITOR
     public void EditorApplyCheck()
     {
         //Starts loop during editor or pause
@@ -129,6 +167,23 @@ public abstract class CustomTransformLinks<T> : CustomTransform<T>
                 EditorCoroutineUtility.StopCoroutine(editModeLoop);
                 editModeLoop = null;
             }
+        }
+    }
+#endif
+
+    private bool inEditor
+    {
+        get
+        {
+            bool temp = false;
+
+#if UNITY_EDITOR
+            if (!EditorApplication.isPlaying || EditorApplication.isPaused)
+            {
+                temp = true;
+            }
+#endif
+            return temp;
         }
     }
 }

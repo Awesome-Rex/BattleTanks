@@ -41,17 +41,20 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         }
         set
         {
-            if (!(space == Space.Self && link == Link.Offset))
+            if (space == Space.Self)
             {
-                //if (space == Space.World)
-                //{
-                //    this.value = SetPosition(value, Space.Self);
-                //}
-                operationalPosition = SetPosition(value, Space.Self);
+                if (link != Link.Offset)
+                {
+                    operationalPosition = SetPosition(value, Space.Self);
+                }
+                else
+                {
+                    this.value = SetPositionLocal(offset.ReversePosition(this, SetPosition(value, Space.Self)), Space.World);
+                }
             }
             else
             {
-                this.value = SetPositionLocal(offset.ReversePosition(this, SetPosition(value, Space.Self)), Space.World);
+                position = value;
             }
         }
     }
@@ -60,18 +63,23 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     {
         get
         {
-            //if (space == Space.Self && link == Link.Offset) {
-            return GetPositionRaw(Space.World);
-            //} else
-            //{
-            //    return GetPosition(Space.World);
-            //}
+            if (space == Space.Self && link == Link.Offset)
+            {
+                return GetPositionRaw(Space.World);
+            }
+            else
+            {
+                return position;
+            }
         }
         set
         {
             if (space == Space.Self && link == Link.Offset)
             {
                 this.value = SetPositionRawLocal(value, Space.World);
+            } else
+            {
+                position = value;
             }
         }
     }
@@ -79,18 +87,23 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     {
         get
         {
-            //if (space == Space.Self && link == Link.Offset) {
-            return GetPositionRaw(Space.Self);
-            //} else
-            //{
-            //    //return GetPosition(Space.Self);
-            //}
+            if (space == Space.Self && link == Link.Offset)
+            {
+                return GetPositionRaw(Space.Self);
+            }
+            else
+            {
+                return localPosition;
+            }
         }
         set
         {
             if (space == Space.Self && link == Link.Offset)
             {
                 this.value = SetPositionRawLocal(value, Space.Self);
+            } else
+            {
+                localPosition = value;
             }
         }
     }
@@ -549,10 +562,7 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         offset = new AxisOrder(null, offset.variety, offset.space);
     }
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
+    //events
 
     private void Start() { }
 
@@ -561,9 +571,6 @@ public class CustomPosition : CustomTransformLinks<Vector3>
     [CustomEditor(typeof(CustomPosition))]
     public class E : EditorPRO<CustomPosition>
     {
-        private bool showContextInfo = false;
-        private bool showMethods = false;
-
         //method parameters
         private Space P_Switch_Space;
         private Link P_Switch_Link;
@@ -599,185 +606,186 @@ public class CustomPosition : CustomTransformLinks<Vector3>
         {
             OnInspectorGUIPRO(() =>
             {
-                target.expanded = EditorGUILayout.Foldout(target.expanded, "Expanded".bold(), true, EditorStyles.foldout.clone().richText());
+                EditorGUILayout.PropertyField(FindProperty("space"));
 
-                //<-----------ACTUAL FIELDS------------>
-                if (target.expanded)
+                EditorGUILayout.Space();
+
+                EditorGUILayout.LabelField("Position", EditorStyles.boldLabel);
+                if (target.space == Space.Self)
                 {
-                    EditorGUILayout.PropertyField(FindProperty("space"));
+                    target.parent = (Transform)EditorGUILayout.ObjectField("Parent", target.parent, typeof(Transform), true);
+                }
+                if (!(target.space == Space.Self && target.link == Link.Match))
+                {
 
-                    EditorGUILayout.Space();
+                    //target.value = EditorGUILayout.Vector3Field("Value", target.value);
+                    EditorGUILayout.PropertyField(FindProperty("value"));
+                }
 
-                    EditorGUILayout.LabelField("Position", EditorStyles.boldLabel);
-                    if (target.space == Space.Self)
+                EditorGUILayout.Space();
+
+                //Local
+                if (target.space == Space.Self)
+                {
+                    EditorGUILayout.LabelField("Local", EditorStyles.boldLabel);
+
+                    EditorGUILayout.PropertyField(FindProperty("link"));
+
+                    if (target.link == Link.Offset)
                     {
-                        target.parent = (Transform)EditorGUILayout.ObjectField("Parent", target.parent, typeof(Transform), true);
-                    }
-                    if (!(target.space == Space.Self && target.link == Link.Match))
-                    {
-
-                        //target.value = EditorGUILayout.Vector3Field("Value", target.value);
-                        EditorGUILayout.PropertyField(FindProperty("value"));
-                    }
-
-                    EditorGUILayout.Space();
-
-                    //Local
-                    if (target.space == Space.Self)
-                    {
-                        EditorGUILayout.LabelField("Local", EditorStyles.boldLabel);
-
-                        EditorGUILayout.PropertyField(FindProperty("link"));
-
-                        if (target.link == Link.Offset)
-                        {
-                            EditorGUILayout.PropertyField(FindProperty("offset"));
-                        }
-
-                        target.factorScale = EditorGUILayout.Toggle("Factor Scale?", target.factorScale);
-
-                        DisableGroup(target.factorScale, () =>
-                        {
-                            target.offsetScale = EditorGUILayout.FloatField("Offset Scale", target.offsetScale);
-                        });
+                        EditorGUILayout.PropertyField(FindProperty("offset"));
                     }
 
+                    target.factorScale = EditorGUILayout.Toggle("Factor Scale?", target.factorScale);
+
+                    DisableGroup(target.factorScale, () =>
+                    {
+                        target.offsetScale = EditorGUILayout.FloatField("Offset Scale", target.offsetScale);
+                    });
+
                     EditorGUILayout.Space();
+                }
+
+                if (target.space == Space.Self && target.link == Link.Offset)
+                {
+                    EditorGUILayout.BeginHorizontal();
+
+                    EditorGUILayout.LabelField("Transition", EditorStyles.boldLabel);
+
+                    target.follow = EditorGUILayout.Toggle(string.Empty, target.follow);
+
+                    EditorGUILayout.EndHorizontal();
+                    if (target.follow)
+                    {
+                        EditorGUILayout.PropertyField(FindProperty("transition"));
+                    }
+
+                    EditorGUILayout.Space();
+                }
+
+                target.showContextInfo = EditorGUILayout.Foldout(target.showContextInfo, "Info", true, EditorStyles.foldout.clone().richText());
+                if (target.showContextInfo)
+                {
+                    GUI.enabled = false;
+
+                    EditorGUILayout.Vector3Field("Position", target.position);
+                    if (target.space == Space.Self) {
+                        EditorGUILayout.Vector3Field("Local Position", target.localPosition);
+                    }
 
                     if (target.space == Space.Self && target.link == Link.Offset)
                     {
-                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.Space();
 
-                        EditorGUILayout.LabelField("Transition", EditorStyles.boldLabel);
-
-                        target.follow = EditorGUILayout.Toggle(string.Empty, target.follow);
-
-                        EditorGUILayout.EndHorizontal();
-                        if (target.follow)
+                        EditorGUILayout.Vector3Field("Position Raw", target.positionRaw);
+                        if (target.space == Space.Self)
                         {
-                            EditorGUILayout.PropertyField(FindProperty("transition"));
-                        }
-                    }
-
-                    EditorGUILayout.Space();
-
-                    showContextInfo = EditorGUILayout.Foldout(showContextInfo, "Context Info".bold(), EditorStyles.foldout.clone().richText());
-                    if (showContextInfo)
-                    {
-                        GUI.enabled = false;
-
-                        EditorGUILayout.Vector3Field("Position", target.position);
-                        EditorGUILayout.Vector3Field("Local Position", target.localPosition);
-
-                        if (target.space == Space.Self && target.link == Link.Offset)
-                        {
-                            EditorGUILayout.Space();
-
-                            EditorGUILayout.Vector3Field("Position Raw", target.positionRaw);
                             EditorGUILayout.Vector3Field("Local Position Raw", target.localPositionRaw);
                         }
-
-                        GUI.enabled = true;
                     }
 
-                    //Editor methods!
+                    GUI.enabled = true;
 
-                    if (EditorApplication.isPaused || !EditorApplication.isPlaying)
+                    EditorGUILayout.Space();
+                }
+
+                //Editor methods!
+
+                if (EditorApplication.isPaused || !EditorApplication.isPlaying)
+                {
+                    //Line();
+
+                    target.showMethods = EditorGUILayout.Foldout(target.showMethods, "Methods", true, EditorStyles.foldout.clone().richText());
+
+                    if (target.showMethods)
                     {
-                        //EditorGUILayout.Space();
-                        Line();
-
-                        showMethods = EditorGUILayout.Foldout(showMethods, "Show Methods".bold(), EditorStyles.foldout.clone().richText());
-
-                        if (showMethods)
+                        if (target.applyInEditor)
                         {
-                            if (target.applyInEditor)
+                            GUI.enabled = false;
+                        }
+
+
+                        if (GUILayout.Button("Target to Current"))
+                        {
+                            Undo.RecordObject(target.gameObject, "Re-Oriented CustomPosition");
+
+                            target.TargetToCurrent();
+                        }
+
+                        Function("Switch", () =>
+                        {
+                            target.Switch(P_Switch_Space, P_Switch_Link);
+                        },
+                        new Action[] {
+                                    () => P_Switch_Space = (Space)EditorGUILayout.EnumPopup(GUIContent.none, P_Switch_Space),
+                                    () => P_Switch_Link = (Link)EditorGUILayout.EnumPopup(GUIContent.none, P_Switch_Link)
+                        }, "Switched CustomPosition Space and/or Link", target.gameObject);
+
+                        Function("Switch Parent", () =>
+                        {
+                            target.Switch(P_Switch_Space, P_Switch_Link);
+                        },
+                        new Action[] {
+                                    () => P_SwitchParent_Parent = (Transform)EditorGUILayout.ObjectField(GUIContent.none, P_SwitchParent_Parent, typeof(Transform), true)
+                        }, "Switched CustomPosition Parent", target.gameObject);
+
+                        Function("Switch Factor Scale", () =>
+                        {
+                            target.SwitchFactorScale(P_SwitchFactorScale_Factor);
+                        },
+                        new Action[] {
+                                    () => P_SwitchFactorScale_Factor = EditorGUILayout.Toggle(GUIContent.none, P_SwitchFactorScale_Factor)
+                        }, "Switched CustomPosition FactorScale", target.gameObject);
+
+                        Function("Apply Offset Scale", () =>
+                        {
+                            target.ApplyOffsetScale(P_ApplyOffsetScale_NewScale);
+                        },
+                        new Action[] {
+                                () => P_ApplyOffsetScale_NewScale = EditorGUILayout.FloatField(GUIContent.none, P_ApplyOffsetScale_NewScale)
+                        }, "Applied CustomPosition OffsetScale", target.gameObject);
+
+                        Function("Remove Offset", () =>
+                        {
+                            if (EditorUtility.DisplayDialog(
+                                "Remove Offset?",
+                                "Are you sure you want to remove the offset of \"CustomPosition?\"",
+                                "Yes", "Cancel"))
                             {
-                                GUI.enabled = false;
+                                Undo.RecordObject(target.gameObject, "Removed CustomPosition Offset");
+
+                                target.RemoveOffset();
                             }
+                        },
+                        new Action[] { });
 
+                        GUI.enabled = true;
 
-                            if (GUILayout.Button("Target to Current"))
+                        if (!target.applyInEditor)
+                        {
+                            GUI.enabled = false;
+                        }
+
+                        Function("Set Property", () =>
+                        {
+                            if (P_SetContext_Type == LinkSpace.World)
                             {
-                                Undo.RecordObject(target.gameObject, "Re-Oriented CustomPosition");
-
-                                target.TargetToCurrent();
+                                target.position = P_SetContext_New;
                             }
-
-                            Function("Switch", () =>
+                            else if (P_SetContext_Type == LinkSpace.Self)
                             {
-                                target.Switch(P_Switch_Space, P_Switch_Link);
-                            },
-                            new Action[] {
-                                    () => P_Switch_Space = (Space)EditorGUILayout.EnumPopup("New Space", P_Switch_Space),
-                                    () => P_Switch_Link = (Link)EditorGUILayout.EnumPopup("New Link", P_Switch_Link)
-                            }, "Switched CustomPosition Space and/or Link", target.gameObject);
-
-                            Function("Switch Parent", () =>
-                            {
-                                target.Switch(P_Switch_Space, P_Switch_Link);
-                            },
-                            new Action[] {
-                                    () => P_SwitchParent_Parent = (Transform)EditorGUILayout.ObjectField("New Parent", P_SwitchParent_Parent, typeof(Transform), true)
-                            }, "Switched CustomPosition Parent", target.gameObject);
-
-                            Function("Switch Factor Scale", () =>
-                            {
-                                target.SwitchFactorScale(P_SwitchFactorScale_Factor);
-                            },
-                            new Action[] {
-                                    () => P_SwitchFactorScale_Factor = EditorGUILayout.Toggle("Factor", P_SwitchFactorScale_Factor)
-                            }, "Switched CustomPosition FactorScale", target.gameObject);
-
-                            Function("Apply Offset Scale", () =>
-                            {
-                                target.ApplyOffsetScale(P_ApplyOffsetScale_NewScale);
-                            },
-                            new Action[] {
-                                () => P_ApplyOffsetScale_NewScale = EditorGUILayout.FloatField("New Offset Scale", P_ApplyOffsetScale_NewScale)
-                            }, "Applied CustomPosition OffsetScale", target.gameObject);
-
-                            Function("Remove Offset", () =>
-                            {
-                                if (EditorUtility.DisplayDialog(
-                                    "Remove Offset?",
-                                    "Are you sure you want to remove the offset of \"CustomPosition?\"",
-                                    "Yes", "Cancel"))
-                                {
-                                    Undo.RecordObject(target.gameObject, "Removed CustomPosition Offset");
-
-                                    target.RemoveOffset();
-                                }
-                            },
-                            new Action[] { });
-                            
-                            GUI.enabled = true;
-
-                            if (!target.applyInEditor)
-                            {
-                                GUI.enabled = false;
+                                target.localPosition = P_SetContext_New;
                             }
-
-                            Function("Set Context", () =>
+                            else if (P_SetContext_Type == LinkSpace.WorldRaw)
                             {
-                                if (P_SetContext_Type == LinkSpace.World)
-                                {
-                                    target.position = P_SetContext_New;
-                                }
-                                else if (P_SetContext_Type == LinkSpace.Self)
-                                {
-                                    target.localPosition = P_SetContext_New;
-                                }
-                                else if (P_SetContext_Type == LinkSpace.WorldRaw)
-                                {
-                                    target.positionRaw = P_SetContext_New;
-                                }
-                                else if (P_SetContext_Type == LinkSpace.SelfRaw)
-                                {
-                                    target.localPositionRaw = P_SetContext_New;
-                                }
-                            },
-                                new Action[] {
+                                target.positionRaw = P_SetContext_New;
+                            }
+                            else if (P_SetContext_Type == LinkSpace.SelfRaw)
+                            {
+                                target.localPositionRaw = P_SetContext_New;
+                            }
+                        },
+                            new Action[] {
                                     () => {
                                     EditorGUI.BeginChangeCheck();
                                     P_SetContext_Type = (LinkSpace)EditorGUILayout.EnumPopup("Type", P_SetContext_Type);
@@ -802,60 +810,48 @@ public class CustomPosition : CustomTransformLinks<Vector3>
                                         }
                                     },
                                     () => P_SetContext_New = EditorGUILayout.Vector3Field(GUIContent.none, P_SetContext_New)
-                                }, "Changed Context Value of CustomPosition", target.gameObject);
+                            }, "Changed Context Value of CustomPosition", target.gameObject);
 
-                            GUI.enabled = true;
+                        GUI.enabled = true;
+                    }
+
+                    EditorGUILayout.Space();
+
+                    //Apply button
+                    if (!target.applyInEditor)
+                    {
+                        if (EditorApplication.isPaused)
+                        {
+                            target.EditorApplyCheck();
                         }
 
-                        EditorGUILayout.Space();
-
-                        //Apply button
-                        if (!target.applyInEditor)
+                        if (GUILayout.Button(
+                            "Apply in Editor".bold(),
+                            EditorStyles.miniButton.clone().richText().fixedHeight(EditorGUIUtility.singleLineHeight * 1.5f)
+                            ))
                         {
-                            if (EditorApplication.isPaused)
-                            {
-                                target.EditorApplyCheck();
-                            }
+                            Undo.RecordObject(target.gameObject, "Applied CustomRotation Values in Editor");
 
-                            if (GUILayout.Button(
-                                "Apply in Editor".bold(),
-                                EditorStyles.miniButton.clone().richText().fixedHeight(EditorGUIUtility.singleLineHeight * 1.5f)
-                                ))
-                            {
-                                Undo.RecordObject(target.gameObject, "Applied CustomRotation Values in Editor");
-                                
-                                target.applyInEditor = true;
+                            target.applyInEditor = true;
 
-                                target.EditorApplyCheck();
-                            }
+                            target.EditorApplyCheck();
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (GUILayout.Button(
+                            "Don't Apply in Editor".colour(Color.red).bold(),
+                            EditorStyles.miniButton.clone().richText().fixedHeight(EditorGUIUtility.singleLineHeight * 1.5f)
+                            ))
                         {
-                            if (GUILayout.Button(
-                                "Don't Apply in Editor".colour(Color.red).bold(),
-                                EditorStyles.miniButton.clone().richText().fixedHeight(EditorGUIUtility.singleLineHeight * 1.5f)
-                                ))
-                            {
-                                target.applyInEditor = false;
+                            target.applyInEditor = false;
 
-                                target.EditorApplyCheck();
-                            }
+                            target.EditorApplyCheck();
                         }
                     }
                 }
             });
         }
     }
-
-    //[CustomEditor(typeof(GameObject))]
-    //public class GE : Editor
-    //{
-    //    private void OnSceneGUI()
-    //    {
-    //        Debug.Log("SceneUpdate");
-
-
-    //    }
-    //}
 #endif
 }

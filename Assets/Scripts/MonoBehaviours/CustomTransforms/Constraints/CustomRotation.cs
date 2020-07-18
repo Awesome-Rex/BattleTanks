@@ -46,17 +46,18 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         }
         set
         {
-            if (!(space == Space.Self && link == Link.Offset))
+            if (space == Space.Self) {
+                if (link != Link.Offset)
+                {
+                    operationalRotation = SetRotation(value.eulerAngles, Space.Self);
+                }
+                else
+                {
+                    this.value = SetRotationLocal(offset.ReverseRotation(SetRotation(value.eulerAngles, Space.Self)).eulerAngles, Space.World);
+                }
+            } else
             {
-                //if (space == Space.World)
-                //{
-                //    this.value = SetRotation(value.eulerAngles, Space.Self);
-                //}
-                operationalRotation = SetRotation(value.eulerAngles, Space.Self);
-            }
-            else
-            {
-                this.value = SetRotationLocal(offset.ReverseRotation(SetRotation(value.eulerAngles, Space.Self)).eulerAngles, Space.World);
+                rotation = value;
             }
         }
     }
@@ -88,19 +89,23 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         get
         {
-            //if (space == Space.Self && link == Link.Offset)
-            //{
+            if (space == Space.Self && link == Link.Offset)
+            {
                 return GetRotationRaw(Space.World);
-            //} else
-            //{
-            //    return GetRotation(Space.World);
-            //}
+            }
+            else
+            {
+                return rotation;
+            }
         }
 
         set
         {
             if (space == Space.Self && link == Link.Offset) {
                 this.value = SetRotationRawLocal(value.eulerAngles, Space.World);
+            } else
+            {
+                rotation = value;
             }
         }
     }
@@ -108,19 +113,23 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
     {
         get
         {
-            //if (space == Space.Self && link == Link.Offset)
-            //{
+            if (space == Space.Self && link == Link.Offset)
+            {
                 return GetRotationRaw(Space.Self);
-            //} else
-            //{
-            //    return GetRotation(Space.Self);
-            //}
+            }
+            else
+            {
+                return localRotation;
+            }
         }
         set
         {
             if (space == Space.Self && link == Link.Offset)
             {
                 this.value = SetRotationRawLocal(value.eulerAngles, Space.Self);
+            } else
+            {
+                localRotation = value;
             }
         }
     }
@@ -484,20 +493,12 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         offset = new AxisOrder(null, offset.variety, offset.space);
     }
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
     private void Start() { }
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(CustomRotation))]
     public class E : EditorPRO<CustomRotation>
     {
-        private bool showContextInfo = false;
-        private bool showMethods = false;
-
         //method parameters
         private Space P_Switch_Space;
         private Link P_Switch_Link;
@@ -529,222 +530,222 @@ public class CustomRotation : CustomTransformLinks<Quaternion>
         {
             OnInspectorGUIPRO(() =>
             {
-                target.expanded = EditorGUILayout.Foldout(target.expanded, "Expanded".bold(), true, EditorStyles.foldout.clone().richText());
+                EditorGUILayout.PropertyField(FindProperty("space"));
 
-                //<-----------ACTUAL FIELDS------------>
-                if (target.expanded)
+                EditorGUILayout.Space();
+
+                EditorGUILayout.LabelField("Rotation", EditorStyles.boldLabel);
+                if (target.space == Space.Self)
                 {
-                    EditorGUILayout.PropertyField(FindProperty("space"));
+                    target.parent = (Transform)EditorGUILayout.ObjectField("Parent", target.parent, typeof(Transform), true);
+                }
+                if (!(target.space == Space.Self && target.link == Link.Match))
+                {
+                    //target.value = Quaternion.Euler(EditorGUILayout.Vector3Field("Value", target.value.eulerAngles));
+                    EditorGUILayout.PropertyField(FindProperty("value"));
+                }
+
+                EditorGUILayout.Space();
+
+                if (target.space == Space.Self)
+                {
+                    EditorGUILayout.LabelField("Local", EditorStyles.boldLabel);
+
+                    EditorGUILayout.PropertyField(FindProperty("link"));
+
+                    if (target.link == Link.Offset)
+                    {
+                        EditorGUILayout.PropertyField(FindProperty("offset"));
+                    }
 
                     EditorGUILayout.Space();
+                }
 
-                    EditorGUILayout.LabelField("Rotation", EditorStyles.boldLabel);
+                if (target.space == Space.Self && target.link == Link.Offset)
+                {
+                    EditorGUILayout.BeginHorizontal();
+
+                    EditorGUILayout.LabelField("Transition", EditorStyles.boldLabel);
+
+                    target.follow = EditorGUILayout.Toggle(string.Empty, target.follow);
+
+                    EditorGUILayout.EndHorizontal();
+                    if (target.follow)
+                    {
+                        EditorGUILayout.PropertyField(FindProperty("transition"));
+                    }
+
+                    EditorGUILayout.Space();
+                }
+
+                target.showContextInfo = EditorGUILayout.Foldout(target.showContextInfo, "Info", true, EditorStyles.foldout.clone().richText());
+                if (target.showContextInfo)
+                {
+                    GUI.enabled = false;
+
+                    EditorGUILayout.Vector3Field("Euler Angles", target.eulerAngles);
                     if (target.space == Space.Self)
                     {
-                        target.parent = (Transform)EditorGUILayout.ObjectField("Parent", target.parent, typeof(Transform), true);
+                        EditorGUILayout.Vector3Field("Local Euler Angles", target.localEulerAngles);
                     }
-                    if (!(target.space == Space.Self && target.link == Link.Match))
-                    {
-                        //target.value = Quaternion.Euler(EditorGUILayout.Vector3Field("Value", target.value.eulerAngles));
-                        EditorGUILayout.PropertyField(FindProperty("value"));
-                    }
-
-                    EditorGUILayout.Space();
-
-                    if (target.space == Space.Self)
-                    {
-                        EditorGUILayout.LabelField("Local", EditorStyles.boldLabel);
-
-                        EditorGUILayout.PropertyField(FindProperty("link"));
-
-                        if (target.link == Link.Offset)
-                        {
-                            EditorGUILayout.PropertyField(FindProperty("offset"));
-                        }
-                    }
-
-                    EditorGUILayout.Space();
 
                     if (target.space == Space.Self && target.link == Link.Offset)
                     {
-                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.Space();
 
-                        EditorGUILayout.LabelField("Transition", EditorStyles.boldLabel);
-
-                        target.follow = EditorGUILayout.Toggle(string.Empty, target.follow);
-
-                        EditorGUILayout.EndHorizontal();
-                        if (target.follow)
+                        EditorGUILayout.Vector3Field("Euler Angles Raw", target.eulerAnglesRaw);
+                        if (target.space == Space.Self)
                         {
-                            EditorGUILayout.PropertyField(FindProperty("transition"));
+                            EditorGUILayout.Vector3Field("Local Euler Angles Raw", target.localEulerAnglesRaw);
                         }
                     }
 
+                    GUI.enabled = true;
+
                     EditorGUILayout.Space();
+                }
 
-                    showContextInfo = EditorGUILayout.Foldout(showContextInfo, "Context Info".bold(), EditorStyles.foldout.clone().richText());
-                    if (showContextInfo)
+                if (EditorApplication.isPaused || !EditorApplication.isPlaying)
+                {
+                    //Line();
+
+                    target.showMethods = EditorGUILayout.Foldout(target.showMethods, "Methods", true, EditorStyles.foldout.clone().richText());
+
+                    if (target.showMethods)
                     {
-                        GUI.enabled = false;
-
-                        EditorGUILayout.Vector3Field("Euler Angles", target.eulerAngles);
-                        EditorGUILayout.Vector3Field("Local Euler Angles", target.localEulerAngles);
-
-                        if (target.space == Space.Self && target.link == Link.Offset)
+                        if (target.applyInEditor)
                         {
-                            EditorGUILayout.Space();
-
-                            EditorGUILayout.Vector3Field("Euler Angles Raw", target.eulerAnglesRaw);
-                            EditorGUILayout.Vector3Field("Local Euler Angles Raw", target.localEulerAnglesRaw);
+                            GUI.enabled = false;
                         }
+
+                        if (GUILayout.Button("Target to Current"))
+                        {
+                            Undo.RecordObject(target.gameObject, "Re-Oriented CustomRotation");
+
+                            target.TargetToCurrent();
+                        }
+
+                        Function("Switch", () =>
+                        {
+                            target.Switch(P_Switch_Space, P_Switch_Link);
+                        },
+                        new Action[] {
+                                    () => P_Switch_Space = (Space)EditorGUILayout.EnumPopup(GUIContent.none, P_Switch_Space),
+                                    () => P_Switch_Link = (Link)EditorGUILayout.EnumPopup(GUIContent.none, P_Switch_Link)
+                        }, "Switched CustomRotation Space and/or Link", target.gameObject);
+
+                        Function("Switch Parent", () =>
+                        {
+                            target.Switch(P_Switch_Space, P_Switch_Link);
+                        },
+                    new Action[] {
+                                    () => P_SwitchParent_Parent = (Transform)EditorGUILayout.ObjectField(GUIContent.none, P_SwitchParent_Parent, typeof(Transform), true)
+                    }, "Switched CustomRotation Parent", target.gameObject);
+
+                        Function("Remove Offset", () =>
+                        {
+                            if (EditorUtility.DisplayDialog(
+                                "Remove Offset?",
+                                "Are you sure you want to remove the offset of \"CustomRotation?\"",
+                                "Yes", "Cancel"))
+                            {
+                                Undo.RecordObject(target.gameObject, "Removed CustomRotation Offset");
+
+                                target.RemoveOffset();
+                            }
+                        },
+                    new Action[] { });
+
+
+                        GUI.enabled = true;
+
+                        if (!target.applyInEditor)
+                        {
+                            GUI.enabled = false;
+                        }
+
+                        //setContext Function
+                        Function("Set Property", () =>
+                        {
+                            if (P_SetContext_Type == LinkSpace.World)
+                            {
+                                target.rotation = Quaternion.Euler(P_SetContext_New);
+                            }
+                            else if (P_SetContext_Type == LinkSpace.Self)
+                            {
+                                target.localRotation = Quaternion.Euler(P_SetContext_New);
+                            }
+                            else if (P_SetContext_Type == LinkSpace.WorldRaw)
+                            {
+                                target.rotationRaw = Quaternion.Euler(P_SetContext_New);
+                            }
+                            else if (P_SetContext_Type == LinkSpace.SelfRaw)
+                            {
+                                target.localRotationRaw = Quaternion.Euler(P_SetContext_New);
+                            }
+                        },
+                            new Action[] {
+                            () => {
+                                EditorGUI.BeginChangeCheck();
+                                P_SetContext_Type = (LinkSpace)EditorGUILayout.EnumPopup("Type", P_SetContext_Type);
+                                if (EditorGUI.EndChangeCheck())
+                                {
+                                    if (P_SetContext_Type == LinkSpace.World)
+                                    {
+                                        P_SetContext_New = target.rotation.eulerAngles;
+                                    }
+                                    else if (P_SetContext_Type == LinkSpace.Self)
+                                    {
+                                        P_SetContext_New = target.localRotation.eulerAngles;
+                                    }
+                                    else if (P_SetContext_Type == LinkSpace.WorldRaw)
+                                    {
+                                        P_SetContext_New = target.rotationRaw.eulerAngles;
+                                    }
+                                    else if (P_SetContext_Type == LinkSpace.SelfRaw)
+                                    {
+                                        P_SetContext_New = target.localRotationRaw.eulerAngles;
+                                        }
+                                    }
+                            },
+                                    () => P_SetContext_New = EditorGUILayout.Vector3Field(GUIContent.none, P_SetContext_New)
+                            }, "Changed Context Value of CustomRotation", target.gameObject);
 
                         GUI.enabled = true;
                     }
 
-                    if (EditorApplication.isPaused || !EditorApplication.isPlaying)
+                    EditorGUILayout.Space();
+
+                    //Apply button
+                    if (!target.applyInEditor)
                     {
-                        //EditorGUILayout.Space();
-                        Line();
-
-                        showMethods = EditorGUILayout.Foldout(showMethods, "Show Methods".bold(), EditorStyles.foldout.clone().richText());
-
-                        if (showMethods)
+                        if (EditorApplication.isPaused)
                         {
-                            if (target.applyInEditor)
-                            {
-                                GUI.enabled = false;
-                            }
-
-                            {
-                                if (GUILayout.Button("Target to Current"))
-                                {
-                                    Undo.RecordObject(target.gameObject, "Re-Oriented CustomRotation");
-
-                                    target.TargetToCurrent();
-                                }
-
-                                Function("Switch", () =>
-                                {
-                                    target.Switch(P_Switch_Space, P_Switch_Link);
-                                },
-                                new Action[] {
-                                    () => P_Switch_Space = (Space)EditorGUILayout.EnumPopup("New Space", P_Switch_Space),
-                                    () => P_Switch_Link = (Link)EditorGUILayout.EnumPopup("New Link", P_Switch_Link)
-                                }, "Switched CustomRotation Space and/or Link", target.gameObject);
-
-                                Function("Switch Parent", () =>
-                                {
-                                    target.Switch(P_Switch_Space, P_Switch_Link);
-                                },
-                            new Action[] {
-                                    () => P_SwitchParent_Parent = (Transform)EditorGUILayout.ObjectField("New Parent", P_SwitchParent_Parent, typeof(Transform), true)
-                            }, "Switched CustomRotation Parent", target.gameObject);
-
-                                Function("Remove Offset", () =>
-                                {
-                                    if (EditorUtility.DisplayDialog(
-                                        "Remove Offset?",
-                                        "Are you sure you want to remove the offset of \"CustomRotation?\"",
-                                        "Yes", "Cancel"))
-                                    {
-                                        Undo.RecordObject(target.gameObject, "Removed CustomRotation Offset");
-
-                                        target.RemoveOffset();
-                                    }
-                                },
-                            new Action[] { });
-                            }
-
-                            GUI.enabled = true;
-
-                            if (!target.applyInEditor)
-                            {
-                                GUI.enabled = false;
-                            }
-
-                            //setContext Function
-                            Function("Set Context", () =>
-                            {
-                                if (P_SetContext_Type == LinkSpace.World)
-                                {
-                                    target.rotation = Quaternion.Euler(P_SetContext_New);
-                                }
-                                else if (P_SetContext_Type == LinkSpace.Self)
-                                {
-                                    target.localRotation = Quaternion.Euler(P_SetContext_New);
-                                }
-                                else if (P_SetContext_Type == LinkSpace.WorldRaw)
-                                {
-                                    target.rotationRaw = Quaternion.Euler(P_SetContext_New);
-                                }
-                                else if (P_SetContext_Type == LinkSpace.SelfRaw)
-                                {
-                                    target.localRotationRaw = Quaternion.Euler(P_SetContext_New);
-                                }
-                            },
-                                new Action[] {
-                                    () => {
-                                    EditorGUI.BeginChangeCheck();
-                                    P_SetContext_Type = (LinkSpace)EditorGUILayout.EnumPopup("Type", P_SetContext_Type);
-                                    if (EditorGUI.EndChangeCheck())
-                                    {
-                                        if (P_SetContext_Type == LinkSpace.World)
-                                        {
-                                            P_SetContext_New = target.rotation.eulerAngles;
-                                        }
-                                        else if (P_SetContext_Type == LinkSpace.Self)
-                                        {
-                                            P_SetContext_New = target.localRotation.eulerAngles;
-                                        }
-                                        else if (P_SetContext_Type == LinkSpace.WorldRaw)
-                                        {
-                                            P_SetContext_New = target.rotationRaw.eulerAngles;
-                                        }
-                                        else if (P_SetContext_Type == LinkSpace.SelfRaw)
-                                        {
-                                            P_SetContext_New = target.localRotationRaw.eulerAngles;
-                                            }
-                                        }
-                                    },
-                                    () => P_SetContext_New = EditorGUILayout.Vector3Field(GUIContent.none, P_SetContext_New)
-                                }, "Changed Context Value of CustomRotation", target.gameObject);
-
-                            GUI.enabled = true;
+                            target.EditorApplyCheck();
                         }
 
-                        EditorGUILayout.Space();
-
-                        //Apply button
-                        if (!target.applyInEditor)
+                        if (GUILayout.Button(
+                            "Apply in Editor".bold(),
+                            EditorStyles.miniButton.clone().richText().fixedHeight(EditorGUIUtility.singleLineHeight * 1.5f)
+                            ))
                         {
-                            if (EditorApplication.isPaused)
-                            {
-                                target.EditorApplyCheck();
-                            }
+                            Undo.RecordObject(target.gameObject, "Applied CustomRotation Values in Editor");
 
-                            if (GUILayout.Button(
-                                "Apply in Editor".bold(),
-                                EditorStyles.miniButton.clone().richText().fixedHeight(EditorGUIUtility.singleLineHeight * 1.5f)
-                                ))
-                            {
-                                Undo.RecordObject(target.gameObject, "Applied CustomRotation Values in Editor");
-                                
-                                target.applyInEditor = true;
+                            target.applyInEditor = true;
 
-                                target.EditorApplyCheck();
-                            }
+                            target.EditorApplyCheck();
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (GUILayout.Button(
+                            "Don't Apply in Editor".colour(Color.red).bold(),
+                            EditorStyles.miniButton.clone().richText().fixedHeight(EditorGUIUtility.singleLineHeight * 1.5f)
+                            ))
                         {
-                            if (GUILayout.Button(
-                                "Don't Apply in Editor".colour(Color.red).bold(),
-                                EditorStyles.miniButton.clone().richText().fixedHeight(EditorGUIUtility.singleLineHeight * 1.5f)
-                                ))
-                            {
-                                target.applyInEditor = false;
+                            target.applyInEditor = false;
 
-                                target.EditorApplyCheck();
-                            }
+                            target.EditorApplyCheck();
                         }
                     }
                 }

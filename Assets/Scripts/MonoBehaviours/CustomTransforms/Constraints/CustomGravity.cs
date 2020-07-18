@@ -35,11 +35,21 @@ public class CustomGravity : CustomTransform<Vector3>
     {
         get
         {
-            return GetDirection(Space.Self);
+            if (space == Space.Self) {
+                return GetDirection(Space.Self);
+            } else
+            {
+                return direction;
+            }
         }
         set
         {
-            this.value = SetDirectionLocal(value, Space.Self);
+            if (space == Space.Self) {
+                this.value = SetDirectionLocal(value, Space.Self);
+            } else
+            {
+                direction = value;
+            }
         }
     }
 
@@ -47,22 +57,43 @@ public class CustomGravity : CustomTransform<Vector3>
     {
         get
         {
-            return GetDirectionRaw(Space.World);
+            if (space == Space.Self) {
+                return GetDirectionRaw(Space.World);
+            } else
+            {
+                return direction;
+            }
         }
         set
         {
-            this.value = SetDirectionRawLocal(value, Space.World);
+            if (space == Space.Self) {
+                this.value = SetDirectionRawLocal(value, Space.World);
+            } else
+            {
+                direction = value;
+            }
         }
     }
     public Vector3 localDirectionRaw
     {
         get
         {
-            return GetDirectionRaw(Space.Self);
+            if (space == Space.Self) {
+                return GetDirectionRaw(Space.Self);
+            } else
+            {
+                return localDirection;
+            }
         }
         set
         {
-            this.value = SetDirectionRawLocal(value, Space.Self);
+            if (space == Space.Self)
+            {
+                this.value = SetDirectionRawLocal(value, Space.Self);
+            } else
+            {
+                localDirection = value;
+            }
         }
     }
 
@@ -81,11 +112,25 @@ public class CustomGravity : CustomTransform<Vector3>
     {
         get
         {
-            return GetVelocity(Space.Self);
+            if (space == Space.Self)
+            {
+                return GetVelocity(Space.Self);
+            }
+            else
+            {
+                return velocity;
+            }
         }
         set
         {
-            rigidbody.velocity = SetVelocity(value, Space.Self);
+            if (space == Space.Self)
+            {
+                rigidbody.velocity = SetVelocity(value, Space.Self);
+            }
+            else
+            {
+                velocity = value;
+            }
         }
     }
 
@@ -102,7 +147,7 @@ public class CustomGravity : CustomTransform<Vector3>
                 return (offset.ApplyRotation(Quaternion.LookRotation(value)) * Vector3.forward);
             }
         }
-    } // WORKS!
+    }
 
     //previous
     private Vector3 parentPos;
@@ -340,8 +385,7 @@ public class CustomGravity : CustomTransform<Vector3>
     [CustomEditor(typeof(CustomGravity))]
     public class E : EditorPRO<CustomGravity>
     {
-        private bool showContextInfo = false;
-        private bool showMethods = false;
+        
 
         //method parameters
         private Space P_Switch_Space;
@@ -371,18 +415,12 @@ public class CustomGravity : CustomTransform<Vector3>
 
         public override void OnInspectorGUI()
         {
-            OnInspectorGUIPRO(() =>
-            {
-            target.expanded = EditorGUILayout.Foldout(target.expanded, "Expanded".bold(), true, EditorStyles.foldout.clone().richText());
-
-                //<-----------ACTUAL FIELDS------------>
-                if (target.expanded)
-                {
+            OnInspectorGUIPRO(() => {
                     EditorGUILayout.PropertyField(FindProperty("space"));
 
                     EditorGUILayout.Space();
 
-                    EditorGUILayout.LabelField("Gravity Direction", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField("Direction", EditorStyles.boldLabel);
                     if (target.space == Space.Self)
                     {
                         target.parent = (Transform)EditorGUILayout.ObjectField("Parent", target.parent, typeof(Transform), true);
@@ -399,93 +437,106 @@ public class CustomGravity : CustomTransform<Vector3>
                         EditorGUILayout.LabelField("Local", EditorStyles.boldLabel);
 
                         EditorGUILayout.PropertyField(FindProperty("offset"));
-                    }
 
                     EditorGUILayout.Space();
+                }
 
-                    showContextInfo = EditorGUILayout.Foldout(showContextInfo, "Context Info".bold(), EditorStyles.foldout.clone().richText());
-                    if (showContextInfo)
+                    target.showContextInfo = EditorGUILayout.Foldout(target.showContextInfo, "Info", true, EditorStyles.foldout.clone().richText());
+                if (target.showContextInfo)
+                {
+                    GUI.enabled = false;
+
+                    //local and global directions
+                    EditorGUILayout.Vector3Field("Direction", target.direction);
+                    if (target.space == Space.Self)
                     {
-                        GUI.enabled = false;
-
-                        //local and global directions
-                        EditorGUILayout.Vector3Field("Direction", target.direction);
                         EditorGUILayout.Vector3Field("Local Direction", target.localDirection);
-
-                        if (target.space == Space.Self)
-                        {
-                            EditorGUILayout.Space();
-
-                            EditorGUILayout.Vector3Field("Direction Raw", target.directionRaw);
-                            EditorGUILayout.Vector3Field("Local Direction Raw", target.localDirectionRaw);
-                        }
-
-                        EditorGUILayout.Space();
-
-                        //local and global velocity
-                        EditorGUILayout.Vector3Field("Velocity", target.velocity);
-                        EditorGUILayout.Vector3Field("Local Velocity", target.localVelocity);
-
-                        GUI.enabled = true;
                     }
 
-                    //Editor methods!
-                    Line();
-
-                    if (EditorApplication.isPaused || !EditorApplication.isPlaying)
+                    if (target.space == Space.Self)
                     {
-                        showMethods = EditorGUILayout.Foldout(showMethods, "Show Methods".bold(), EditorStyles.foldout.clone().richText());
-                        if (showMethods)
+                        EditorGUILayout.Space();
+
+                        EditorGUILayout.Vector3Field("Direction Raw", target.directionRaw);
+                        if (target.space == Space.Self)
                         {
-                            Function("Switch", () =>
+                            EditorGUILayout.Vector3Field("Local Direction Raw", target.localDirectionRaw);
+                        }
+                    }
+
+                    if (target.space == Space.Self) {
+                        EditorGUILayout.Space();
+                    }
+
+                    //local and global velocity
+                    EditorGUILayout.Vector3Field("Velocity", target.velocity);
+                    if (target.space == Space.Self)
+                    {
+                        EditorGUILayout.Vector3Field("Local Velocity", target.localVelocity);
+                    }
+
+                    GUI.enabled = true;
+
+                    EditorGUILayout.Space();
+                }
+
+                //Editor methods!
+                //Line();
+
+                if (EditorApplication.isPaused || !EditorApplication.isPlaying)
+                {
+                    target.showMethods = EditorGUILayout.Foldout(target.showMethods, "Methods", true, EditorStyles.foldout.clone().richText());
+                    if (target.showMethods)
+                    {
+                        Function("Switch", () =>
+                        {
+                            target.Switch(P_Switch_Space, P_Switch_Link);
+                        }, new Action[] {
+                                () => P_Switch_Space = (Space)EditorGUILayout.EnumPopup(GUIContent.none, P_Switch_Space),
+                                () => P_Switch_Link = (Link)EditorGUILayout.EnumPopup(GUIContent.none, P_Switch_Link)
+                        }, "Switched CustomGravity Space and/or Link", target.gameObject);
+
+                        Function("Switch Parent", () =>
+                        {
+                            target.SwitchParent(P_SwitchParent_Parent);
+                        }, new Action[] {
+                                () => P_SwitchParent_Parent = (Transform)EditorGUILayout.ObjectField(GUIContent.none, P_SwitchParent_Parent, typeof(Transform), true)
+                        }, "Switched CustomGravity Parent", target.gameObject);
+
+                        Function("Remove Offset", () =>
+                        {
+                            if (EditorUtility.DisplayDialog(
+                                "Remove Offset?",
+                                "Are you sure you want to remove the offset of \"CustomGravity?\"",
+                                "Yes", "Cancel"))
                             {
-                                target.Switch(P_Switch_Space, P_Switch_Link);
-                            }, new Action[] {
-                                () => P_Switch_Space = (Space)EditorGUILayout.EnumPopup("New Space", P_Switch_Space),
-                                () => P_Switch_Link = (Link)EditorGUILayout.EnumPopup("New Link", P_Switch_Link)
-                            }, "Switched CustomGravity Space and/or Link", target.gameObject);
+                                Undo.RecordObject(target.gameObject, "Removed CustomGravity Offset");
 
-                            Function("Switch Parent", () =>
+                                target.RemoveOffset();
+                            }
+                        }, new Action[] { });
+
+
+                        Function("Set Context", () =>
+                        {
+                            if (P_SetContext_Type == LinkSpace.World)
                             {
-                                target.SwitchParent(P_SwitchParent_Parent);
-                            }, new Action[] {
-                                () => P_SwitchParent_Parent = (Transform)EditorGUILayout.ObjectField("New Parent", P_SwitchParent_Parent, typeof(Transform), true)
-                            }, "Switched CustomGravity Parent", target.gameObject);
-
-                            Function("Remove Offset", () =>
+                                target.direction = P_SetContext_New;
+                            }
+                            else if (P_SetContext_Type == LinkSpace.Self)
                             {
-                                if (EditorUtility.DisplayDialog(
-                                    "Remove Offset?",
-                                    "Are you sure you want to remove the offset of \"CustomGravity?\"",
-                                    "Yes", "Cancel"))
-                                {
-                                    Undo.RecordObject(target.gameObject, "Removed CustomGravity Offset");
-
-                                    target.RemoveOffset();
-                                }
-                            }, new Action[] {});
-
-
-                            Function("Set Context", () =>
+                                target.localDirection = P_SetContext_New;
+                            }
+                            else if (P_SetContext_Type == LinkSpace.WorldRaw)
                             {
-                                if (P_SetContext_Type == LinkSpace.World)
-                                {
-                                    target.direction = P_SetContext_New;
-                                }
-                                else if (P_SetContext_Type == LinkSpace.Self)
-                                {
-                                    target.localDirection = P_SetContext_New;
-                                }
-                                else if (P_SetContext_Type == LinkSpace.WorldRaw)
-                                {
-                                    target.directionRaw = P_SetContext_New;
-                                }
-                                else if (P_SetContext_Type == LinkSpace.SelfRaw)
-                                {
-                                    target.localDirectionRaw = P_SetContext_New;
-                                }
-                            },
-                                new Action[] {
+                                target.directionRaw = P_SetContext_New;
+                            }
+                            else if (P_SetContext_Type == LinkSpace.SelfRaw)
+                            {
+                                target.localDirectionRaw = P_SetContext_New;
+                            }
+                        },
+                            new Action[] {
                                     () => {
                                     EditorGUI.BeginChangeCheck();
                                     P_SetContext_Type = (LinkSpace)EditorGUILayout.EnumPopup("Type", P_SetContext_Type);
@@ -510,21 +561,21 @@ public class CustomGravity : CustomTransform<Vector3>
                                     }
                                     },
                                     () => P_SetContext_New = EditorGUILayout.Vector3Field(GUIContent.none, P_SetContext_New)
-                                }, "Changed Context Value of CustomGravity", target.gameObject);
+                            }, "Changed Context Value of CustomGravity", target.gameObject);
 
-                            //
-                            Function("Set Velocity", () =>
+                        //
+                        Function("Set Velocity", () =>
+                        {
+                            if (P_SetVelocity_Type == Space.World)
                             {
-                                if (P_SetVelocity_Type == Space.World)
-                                {
-                                    target.velocity = P_SetVelocity_New;
-                                }
-                                else if (P_SetVelocity_Type == Space.Self)
-                                {
-                                    target.localVelocity = P_SetVelocity_New;
-                                }
-                            },
-                                new Action[] {
+                                target.velocity = P_SetVelocity_New;
+                            }
+                            else if (P_SetVelocity_Type == Space.Self)
+                            {
+                                target.localVelocity = P_SetVelocity_New;
+                            }
+                        },
+                            new Action[] {
                                     () => {
                                     EditorGUI.BeginChangeCheck();
                                     P_SetVelocity_Type = (Space)EditorGUILayout.EnumPopup("Type", P_SetVelocity_Type);
@@ -541,9 +592,9 @@ public class CustomGravity : CustomTransform<Vector3>
                                     }
                                     },
                                     () => P_SetVelocity_New = EditorGUILayout.Vector3Field(GUIContent.none, P_SetVelocity_New)
-                                }, "Changed Rigidbody Velocity from CustomGravity", target.gameObject);
-                        }
+                            }, "Changed Rigidbody Velocity from CustomGravity", target.gameObject);
                     }
+
                 }
             });
         }
