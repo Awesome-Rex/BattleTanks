@@ -1030,7 +1030,7 @@ MonoBehaviour:
       space: 1
     variety: 1
     space: 0
-  applyInEditor: 1
+  applyInEditor: 0
 --- !u!114 &452247533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1065,7 +1065,7 @@ MonoBehaviour:
       space: 0
     variety: 1
     space: 1
-  applyInEditor: 1
+  applyInEditor: 0
   factorScale: 1
   offsetScale: 1
 --- !u!1 &482072832
