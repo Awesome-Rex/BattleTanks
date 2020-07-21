@@ -1,0 +1,29 @@
+{
+	"name": "com.awesomusrex.editor-tools",
+	"version": "1.0.0",
+	"displayName": "REX Editor Tools",
+
+	"description": 
+		"A collection of classes containing extension methods that make it easier create custom editors without bloated code.
+		This package can be used to make HTML style tags around strings and temporarily create GUIStyles without the need to create temporary variables.",
+
+	"dependencies": {}
+	"keywords": [
+		"editor", 
+		"rex", 
+		"awesomus", 
+		"tools", 
+		"gui",
+		"GUI",
+		"style",
+		"HTML",
+		"colour",
+		"bold",
+		"italic",
+		"texture",
+		"change"
+	],
+	"author": {
+		"name": "John Raja O. Esguerra"
+	}
+}

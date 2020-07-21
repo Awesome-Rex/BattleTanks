@@ -1,0 +1,27 @@
+{
+	"name": "com.awesomusrex.child-grouping",
+	"version": "0.0.1",
+	"displayName": "REX Child Grouping",
+
+	"description": 
+		"A system for managing relationships between child and parent scripts that helps group together multiple scripts for modification.",
+
+	"dependencies": {
+		"com.awesomusrex.rex-core": "0.0.1"
+	}
+	"keywords": [
+		"child",
+		"parent",
+		"rex", 
+		"awesomus", 
+		"tools", 
+		"point",
+		"group",
+		"get",
+		"collection",
+		"hierarchy"
+	],
+	"author": {
+		"name": "John Raja O. Esguerra"
+	}
+}

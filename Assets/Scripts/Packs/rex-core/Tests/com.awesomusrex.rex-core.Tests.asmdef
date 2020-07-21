@@ -1,0 +1,21 @@
+{
+    "name": "com.awesomusrex.rex-core.Editor",
+    "references": [
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:cd05bb3454858084eb2b228dab114a15",
+        "GUID:658d1f6619d92fe4c810381d8224d550",
+        "GUID:eb6b7bdce797d374480bceb6d4f2978a"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

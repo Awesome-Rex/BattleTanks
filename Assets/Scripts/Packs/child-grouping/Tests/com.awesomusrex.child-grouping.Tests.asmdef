@@ -1,0 +1,20 @@
+{
+    "name": "com.awesomusrex.child-grouping.Editor",
+    "references": [
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:175e40d2d1a3cb0469a25815f10a0ca6",
+        "GUID:cd05bb3454858084eb2b228dab114a15"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

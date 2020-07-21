@@ -1,0 +1,16 @@
+{
+    "name": "com.awesomusrex.transform-tools",
+    "references": [
+        "GUID:658d1f6619d92fe4c810381d8224d550",
+        "GUID:cd05bb3454858084eb2b228dab114a15"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

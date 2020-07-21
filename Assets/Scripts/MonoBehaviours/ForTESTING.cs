@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using REXTools.Referencing;
+using REXTools.TransformTools;
+
 public class ForTESTING : MonoBehaviour
 {
     public bool boolean;

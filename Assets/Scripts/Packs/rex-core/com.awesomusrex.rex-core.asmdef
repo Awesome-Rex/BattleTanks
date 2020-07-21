@@ -1,0 +1,16 @@
+{
+    "name": "com.awesomusrex.rex-core",
+    "references": [
+        "GUID:658d1f6619d92fe4c810381d8224d550",
+        "GUID:eb6b7bdce797d374480bceb6d4f2978a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

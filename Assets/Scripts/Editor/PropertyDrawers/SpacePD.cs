@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using UnityEditor;
+using REXTools.REXCore;
 
 [CustomPropertyDrawer(typeof(Space))]
 public class SpacePD : PropertyDrawerPRO

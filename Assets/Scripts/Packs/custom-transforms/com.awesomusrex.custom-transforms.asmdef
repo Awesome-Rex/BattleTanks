@@ -1,0 +1,18 @@
+{
+    "name": "com.awesomusrex.custom-transforms",
+    "references": [
+        "GUID:478a2357cc57436488a56e564b08d223",
+        "GUID:cd05bb3454858084eb2b228dab114a15",
+        "GUID:02bf91a6703b2824d9463259a5cff33c",
+        "GUID:658d1f6619d92fe4c810381d8224d550"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

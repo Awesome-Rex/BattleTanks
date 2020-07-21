@@ -1,0 +1,15 @@
+{
+    "name": "com.awesomusrex.child-grouping",
+    "references": [
+        "GUID:cd05bb3454858084eb2b228dab114a15"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
