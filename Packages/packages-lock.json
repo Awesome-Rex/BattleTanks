@@ -1,5 +1,54 @@
 {
   "dependencies": {
+    "com.awesomusrex.child-grouping": {
+      "version": "file:child-grouping",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.awesomusrex.rex-core": "0.0.1"
+      }
+    },
+    "com.awesomusrex.custom-transforms": {
+      "version": "file:custom-transforms",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.awesomusrex.rex-core": "1.0.0",
+        "com.unity.editorcoroutines": "0.2.6",
+        "com.awesomusrex.transform-tools": "1.0.0",
+        "com.awesomusrex.editor-tools": "1.0.0"
+      }
+    },
+    "com.awesomusrex.editor-tools": {
+      "version": "file:editor-tools",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.awesomusrex.referencing": {
+      "version": "file:referencing",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.awesomusrex.rex-core": {
+      "version": "file:rex-core",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.awesomusrex.editor-tools": "0.0.1",
+        "com.awesomusrex.referencing": "1.0.0"
+      }
+    },
+    "com.awesomusrex.transform-tools": {
+      "version": "file:transform-tools",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.awesomusrex.editor-tools": "0.0.1",
+        "com.awesomusrex.rex-core": "0.0.1"
+      }
+    },
     "com.unity.animation.rigging": {
       "version": "0.2.6-preview",
       "depth": 0,

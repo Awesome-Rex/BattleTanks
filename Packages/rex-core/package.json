@@ -1,0 +1,22 @@
+{
+	"name": "com.awesomusrex.rex-core",
+	"version": "0.0.1",
+	"displayName": "REX Core",
+
+	"description": "Collection of many essential tools that are used in games produced by Awesomus Rex. \n\nThis package's features:\n- an eternal object\n- transformables\n- early and late recorders\n- PRO overrides\n- Renter class\n- SceneControl script\n- GameSettings and GameEditorSettings template\n- tag support",
+
+	"dependencies": {
+		"com.awesomusrex.editor-tools": "0.0.1",
+		"com.awesomusrex.referencing": "1.0.0"
+	},
+	"keywords": [
+		"core", 
+		"rex", 
+		"awesomus", 
+		"tools", 
+		"collection"
+	],
+	"author": {
+		"name": "John Raja O. Esguerra"
+	}
+}

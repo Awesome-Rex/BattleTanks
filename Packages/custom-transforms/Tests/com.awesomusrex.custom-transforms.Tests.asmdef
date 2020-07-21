@@ -1,0 +1,22 @@
+{
+    "name": "com.awesomusrex.custom-transforms.Editor",
+    "references": [
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:96d99a3db4aa2fe46bd75fadd9e84291",
+        "GUID:658d1f6619d92fe4c810381d8224d550",
+        "GUID:cd05bb3454858084eb2b228dab114a15",
+        "GUID:984543fd1d26a5741936a6f8841691f5"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
