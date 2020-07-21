@@ -7,7 +7,7 @@
 		"A system for managing relationships between child and parent scripts that helps group together multiple scripts for modification.",
 
 	"dependencies": {
-		"com.awesomusrex.rex-core": "0.0.1"
+		"com.awesomusrex.rex-core": "https://github.com/Awesome-Rex/rex-core.git"
 	},
 	"keywords": [
 		"child",

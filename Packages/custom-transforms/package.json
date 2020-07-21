@@ -7,10 +7,10 @@
 		"A package containing scripts for restricting gameobject orientation to fit desired results. \nScripts can be used to ignore parent position, rotation and scale or be used to create parent-child links between disconnected gameobjects. This may come in useful for creating connections to MOVING PLATFORMS, VEHICLES and SPACESHIPS without the need to parent objects while sacrificing child physics.",
 
 	"dependencies": {
-		"com.awesomusrex.rex-core": "1.0.0",
+		"com.awesomusrex.rex-core": "https://github.com/Awesome-Rex/rex-core.git",
 		"com.unity.editorcoroutines": "0.2.6",
-		"com.awesomusrex.transform-tools": "1.0.0",
-		"com.awesomusrex.editor-tools": "1.0.0"
+		"com.awesomusrex.transform-tools": "https://github.com/Awesome-Rex/transform-tools.git",
+		"com.awesomusrex.editor-tools": "https://github.com/Awesome-Rex/editor-tools.git"
 	},
 	"keywords": [
 		"custom", 

@@ -6,8 +6,8 @@
 	"description": "Collection of many essential tools that are used in games produced by Awesomus Rex. \n\nThis package's features:\n- an eternal object\n- transformables\n- early and late recorders\n- PRO overrides\n- Renter class\n- SceneControl script\n- GameSettings and GameEditorSettings template\n- tag support",
 
 	"dependencies": {
-		"com.awesomusrex.editor-tools": "0.0.1",
-		"com.awesomusrex.referencing": "1.0.0"
+		"com.awesomusrex.editor-tools": "https://github.com/Awesome-Rex/editor-tools.git",
+		"com.awesomusrex.referencing": "https://github.com/Awesome-Rex/referencing.git"
 	},
 	"keywords": [
 		"core", 

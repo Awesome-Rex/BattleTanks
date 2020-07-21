@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.awesomusrex.rex-core": "0.0.1"
+        "com.awesomusrex.rex-core": "https://github.com/Awesome-Rex/rex-core.git"
       }
     },
     "com.awesomusrex.custom-transforms": {
@@ -13,10 +13,10 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.awesomusrex.rex-core": "1.0.0",
+        "com.awesomusrex.rex-core": "https://github.com/Awesome-Rex/rex-core.git",
         "com.unity.editorcoroutines": "0.2.6",
-        "com.awesomusrex.transform-tools": "1.0.0",
-        "com.awesomusrex.editor-tools": "1.0.0"
+        "com.awesomusrex.transform-tools": "https://github.com/Awesome-Rex/transform-tools.git",
+        "com.awesomusrex.editor-tools": "https://github.com/Awesome-Rex/editor-tools.git"
       }
     },
     "com.awesomusrex.editor-tools": {
@@ -36,8 +36,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.awesomusrex.editor-tools": "0.0.1",
-        "com.awesomusrex.referencing": "1.0.0"
+        "com.awesomusrex.editor-tools": "https://github.com/Awesome-Rex/editor-tools.git",
+        "com.awesomusrex.referencing": "https://github.com/Awesome-Rex/referencing.git"
       }
     },
     "com.awesomusrex.transform-tools": {
@@ -45,8 +45,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.awesomusrex.editor-tools": "0.0.1",
-        "com.awesomusrex.rex-core": "0.0.1"
+        "com.awesomusrex.editor-tools": "https://github.com/Awesome-Rex/editor-tools.git",
+        "com.awesomusrex.rex-core": "https://github.com/Awesome-Rex/rex-core.git"
       }
     },
     "com.unity.animation.rigging": {

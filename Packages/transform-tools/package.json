@@ -7,8 +7,8 @@
 		"Contains many classes suitable for advanced Vector3 and Quaternion calculations. Can store complex linear and lerp transitions plus offsets involving local AND global space.",
 
 	"dependencies": {
-		"com.awesomusrex.editor-tools": "0.0.1",
-		"com.awesomusrex.rex-core": "0.0.1"
+		"com.awesomusrex.editor-tools": "https://github.com/Awesome-Rex/editor-tools.git",
+		"com.awesomusrex.rex-core": "https://github.com/Awesome-Rex/rex-core.git"
 	},
 	"keywords": [
 		"transform", 
