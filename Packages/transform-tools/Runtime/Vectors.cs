@@ -58,7 +58,15 @@ namespace REXTools.TransformTools
         {
             return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
         }
-
+	   public static Vector2 MultiplyVector2(Vector2 a, Vector2 b)
+        {
+            return new Vector2(a.x * b.x, a.y * b.y);
+        }
+        public static Vector2 DivideVector2(Vector2 a, Vector2 b)
+        {
+            return new Vector2(a.x / b.x, a.y / b.y);
+        }
+	   
         public static Vector3 Rad2Deg(Vector3 rad)
         {
             return new Vector3(rad.x * Mathf.Rad2Deg, rad.y * Mathf.Rad2Deg, rad.z * Mathf.Rad2Deg);

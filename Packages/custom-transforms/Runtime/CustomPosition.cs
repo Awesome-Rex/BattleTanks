@@ -566,26 +566,5 @@ namespace REXTools.CustomTransforms
         //events
 
         private void Start() { }
-
-        //private void OnDrawGizmos()
-        //{
-        //    if (space == Space.Self) {
-        //        Gizmos.color = new Color(0f, 174f / 255f, 250f / 255f, 0.25f);
-        //        Gizmos.DrawLine(transform.position, parent.position);
-        //    }
-
-        //    Gizmos.color = new Color(255f / 255f, 0f / 255f, 78f / 255f, 0.1f);
-        //    Gizmos.DrawWireCube(transform.position, Vector3.one * 0.75f);
-        //}
-
-        //private void OnDrawGizmosSelected()
-        //{
-        //    if (space == Space.Self)
-        //    {
-        //        Gizmos.color = new Color(0f, 174f / 255f, 250f / 255f, 0.25f);
-
-        //        Gizmos.DrawWireSphere(parent.position, 0.75f);
-        //    }
-        //}
     }
 }

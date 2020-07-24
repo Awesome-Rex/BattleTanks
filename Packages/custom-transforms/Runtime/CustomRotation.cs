@@ -209,8 +209,6 @@ namespace REXTools.CustomTransforms
 
         public override void SetToTarget()
         {
-            //Debug.Log("Rotation - " + value.eulerAngles);
-
             target = GetTarget();
 
             if (enabled)

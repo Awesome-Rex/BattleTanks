@@ -16,6 +16,11 @@ namespace REXTools.CustomTransforms
         World, Self, WorldRaw, SelfRaw
     }
 
+    public enum LinkSpaceRotation
+    {
+        Self, Parent, World
+    }
+
     [ExecuteAlways]
     public abstract class CustomTransformLinks<T> : CustomTransform<T>
     {

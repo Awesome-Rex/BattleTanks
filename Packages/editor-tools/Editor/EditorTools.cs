@@ -177,15 +177,15 @@ namespace REXTools.EditorTools
             return style;
         }
 
-        public static GUIStyle stretchHeight(this GUIStyle style)
+        public static GUIStyle stretchHeight(this GUIStyle style, bool val = true)
         {
-            style.stretchHeight = true;
+            style.stretchHeight = val;
 
             return style;
         }
-        public static GUIStyle stretchWidth(this GUIStyle style)
+        public static GUIStyle stretchWidth(this GUIStyle style, bool val = true)
         {
-            style.stretchWidth = true;
+            style.stretchWidth = val;
 
             return style;
         }
