@@ -151,7 +151,7 @@ namespace REXTools.CustomTransforms
             {
                 SetToTarget();
 
-                yield return new EditorWaitForSeconds(Time.fixedDeltaTime/* * 2f*/);
+                yield return new EditorWaitForSeconds(Time.fixedDeltaTime * 2f);
             }
         }
 #endif

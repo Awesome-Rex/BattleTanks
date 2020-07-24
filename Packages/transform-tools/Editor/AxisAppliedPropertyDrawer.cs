@@ -8,12 +8,21 @@ using REXTools.EditorTools;
 namespace REXTools.TransformTools
 {
     [CustomPropertyDrawer(typeof(AxisApplied))]
-    public class P : PropertyDrawerPRO
+    public class AxisAppliedPropertyDrawer : PropertyDrawerPRO
     {
         private static bool showSpace = false;
 
+        private GUIStyle axisButtonStyle;
+        private GUIStyle selectedAxisButtonStyle;
+        
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            if (axisButtonStyle == null || selectedAxisButtonStyle == null)
+            {
+                axisButtonStyle = EditorStyles.miniButton.clone().richText();
+                selectedAxisButtonStyle = EditorStyles.miniButton.clone().richText().fontSize(lineHeight * 0.9f);
+            }
+
             if (!property.serializedObject.isEditingMultipleObjects)
             {
                 OnGUIPRO(position, property, label, () =>
@@ -40,7 +49,7 @@ namespace REXTools.TransformTools
                         {
                         //GUI.backgroundColor *= 1.5f;
 
-                        if (GUI.Button(newPosition, "X".colour(GUI.backgroundColor * 1.5f), EditorStyles.miniButton.clone().richText()))
+                        if (GUI.Button(newPosition, "X".colour(GUI.backgroundColor * 1.5f), axisButtonStyle))
                             {
                                 property.FindPropertyRelative("axis").enumValueIndex = (int)Axis.X;
                             }
@@ -57,7 +66,7 @@ namespace REXTools.TransformTools
 
                         if (property.FindPropertyRelative("axis").enumValueIndex == (int)Axis.Y)
                         {
-                            if (GUI.Button(newPosition, "Y".colour(Color.white).bold(), EditorStyles.miniButton.clone().richText().fontSize(lineHeight * 0.9f)))
+                            if (GUI.Button(newPosition, "Y".colour(Color.white).bold(), selectedAxisButtonStyle))
                             {
                                 property.FindPropertyRelative("axis").enumValueIndex = (int)Axis.Y;
                             }
@@ -66,7 +75,7 @@ namespace REXTools.TransformTools
                         {
                         //GUI.backgroundColor *= 1.5f;
 
-                        if (GUI.Button(newPosition, "Y".colour(GUI.backgroundColor * 1.5f), EditorStyles.miniButton.clone().richText()))
+                        if (GUI.Button(newPosition, "Y".colour(GUI.backgroundColor * 1.5f), axisButtonStyle))
                             {
                                 property.FindPropertyRelative("axis").enumValueIndex = (int)Axis.Y;
                             }
@@ -80,7 +89,7 @@ namespace REXTools.TransformTools
 
                         if (property.FindPropertyRelative("axis").enumValueIndex == (int)Axis.Z)
                         {
-                            if (GUI.Button(newPosition, "Z".colour(Color.white).bold(), EditorStyles.miniButton.clone().richText().fontSize(lineHeight * 0.9f)))
+                            if (GUI.Button(newPosition, "Z".colour(Color.white).bold(), selectedAxisButtonStyle))
                             {
                                 property.FindPropertyRelative("axis").enumValueIndex = (int)Axis.Z;
                             }
@@ -89,7 +98,7 @@ namespace REXTools.TransformTools
                         {
                         //GUI.backgroundColor *= 1.5f;
 
-                        if (GUI.Button(newPosition, "Z".colour(GUI.backgroundColor * 1.5f), EditorStyles.miniButton.clone().richText()))
+                        if (GUI.Button(newPosition, "Z".colour(GUI.backgroundColor * 1.5f), axisButtonStyle))
                             {
                                 property.FindPropertyRelative("axis").enumValueIndex = (int)Axis.Z;
                             }

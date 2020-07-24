@@ -1081,8 +1081,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 452247522}
-  m_LocalRotation: {x: -0.14823733, y: 0.12516555, z: -0.21961224, w: 0.95610136}
-  m_LocalPosition: {x: 2.6463294, y: 3.4928446, z: -0.5629134}
+  m_LocalRotation: {x: 0.1497826, y: 0.658255, z: 0.5113954, w: -0.53173333}
+  m_LocalPosition: {x: 2.6463299, y: 3.4928446, z: -0.5629134}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 88419806}
@@ -1104,9 +1104,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   space: 1
   parent: {fileID: 867021773}
-  value: {x: -0.11079103, y: 0.15926726, z: -0.45958635, w: 0.8666831}
-  showContextInfo: 1
-  showMethods: 1
+  value: {x: 0.3150478, y: 0.5970589, z: 0.63159275, w: -0.38125607}
+  showContextInfo: 0
+  showMethods: 0
   follow: 0
   transition:
     type: 1
@@ -1126,7 +1126,7 @@ MonoBehaviour:
       space: 1
     variety: 1
     space: 0
-  applyInEditor: 1
+  applyInEditor: 0
 --- !u!114 &452247533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1141,9 +1141,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   space: 1
   parent: {fileID: 867021773}
-  value: {x: -2.3536706, y: 3.4928446, z: -0.5629134}
-  showContextInfo: 1
-  showMethods: 1
+  value: {x: -2.3536701, y: 3.4928446, z: -0.5629134}
+  showContextInfo: 0
+  showMethods: 0
   follow: 0
   transition:
     type: 0
@@ -1157,7 +1157,7 @@ MonoBehaviour:
       space: 0
     variety: 1
     space: 1
-  applyInEditor: 1
+  applyInEditor: 0
   factorScale: 1
   offsetScale: 1
 --- !u!1 &482072832

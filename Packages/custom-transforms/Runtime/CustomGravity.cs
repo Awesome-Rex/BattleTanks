@@ -377,12 +377,6 @@ namespace REXTools.CustomTransforms
 
         private void OnDrawGizmos()
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, transform.position + (operationalDirection.normalized * 2f));
-
-            Gizmos.color = new Color(1f, 0.5f, 0f);
-            Gizmos.DrawLine(transform.position, transform.position + (localDirection.normalized * 2f));
-
             Gizmos.color = Color.yellow;
             Gizmos.DrawLine(transform.position, transform.position + (direction.normalized * 2f));
         }

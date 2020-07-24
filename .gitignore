@@ -205,3 +205,12 @@ Packages/custom-transforms/Tests/Editor/CustomGravityEditor.cs
 Packages/custom-transforms/Runtime/CustomTransformLinks.cs
 Packages/custom-transforms/Runtime/CustomRotation.cs
 Packages/custom-transforms/Runtime/CustomPosition.cs
+Packages/custom-transforms/Runtime/CustomGravity.cs
+Packages/custom-transforms/Runtime/CustomTransformLinks.cs
+Packages/custom-transforms/Textures/Gravity.png.meta
+Packages/custom-transforms/Textures/Parent.png.meta
+Packages/custom-transforms/Textures/Pin.png.meta
+Packages/custom-transforms/Textures/Position.png.meta
+Packages/custom-transforms/Textures/Rotation.png.meta
+Packages/custom-transforms/Textures/Scale.png.meta
+Packages/transform-tools/Editor/AxisAppliedPropertyDrawer.cs
