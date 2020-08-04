@@ -66,6 +66,7 @@ namespace REXTools.CustomTransforms
             }
             return newPos;
         }
+        
         public static Quaternion ReverseRotation(this AxisOrder target, CustomRotation relative, Quaternion? current = null) //WORKS!
         {
             Quaternion newRot;
@@ -132,5 +133,15 @@ namespace REXTools.CustomTransforms
             }
             return newPos;
         } //WORKS!
+
+        //different paramters (dont need current position)
+        public static Vector3 ApplyPosition(this AxisOrder target, CustomPosition relative, float scale = 1f)
+        {
+            return target.ApplyPosition(relative, null, scale);
+        }
+        public static Vector3 ReversePosition(this AxisOrder target, CustomPosition relative, float scale = 1f)
+        {
+            return target.ReversePosition(relative, null, scale);
+        }
     }
 }

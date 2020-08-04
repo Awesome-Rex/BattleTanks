@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace REXTools.REXCore
 {
-    [CreateAssetMenu(fileName = "GameEditorSettings", menuName = "Project/Game Editor Settings")]
+    [CreateAssetMenu(fileName = "GameEditorSettings", menuName = "REX/Game Editor Settings")]
     [System.Serializable]
     public class GameEditorSettings : ScriptableObject
     {

@@ -50,6 +50,69 @@ namespace REXTools.TransformTools
             return 0f;
         }
 
+        public static Vector3 OperateVector3(Vector3 a, System.Func<float, float> operation)
+        {
+            return new Vector3(
+                operation(a.x),
+                operation(a.y),
+                operation(a.z)
+            );
+        }
+        public static Vector2 OperateVector2(Vector2 a, System.Func<float, float> operation)
+        {
+            return new Vector2(
+                operation(a.x),
+                operation(a.y)
+            );
+        }
+        public static Vector3 OperateVector3 (Vector3 a, Vector3 b, System.Func<float, float, float> operation)
+        {
+            return new Vector3(
+                operation(a.x, b.x),
+                operation(a.y, b.y),
+                operation(a.z, b.z)
+            );
+        }
+        public static Vector2 OperateVector2(Vector2 a, Vector2 b, System.Func<float, float, float> operation)
+        {
+            return new Vector2(
+                operation(a.x, b.x),
+                operation(a.y, b.y)
+            );
+        }
+
+        public static Vector3Int OperateVector3Int(Vector3Int a, System.Func<int, int> operation)
+        {
+            return new Vector3Int(
+                operation(a.x),
+                operation(a.y),
+                operation(a.z)
+            );
+        }
+        public static Vector2Int OperateVector2Int(Vector2Int a, System.Func<int, int> operation)
+        {
+            return new Vector2Int(
+                operation(a.x),
+                operation(a.y)
+            );
+        }
+        public static Vector3Int OperateVector3(Vector3Int a, Vector3Int b, System.Func<int, int, int> operation)
+        {
+            return new Vector3Int(
+                operation(a.x, b.x),
+                operation(a.y, b.y),
+                operation(a.z, b.z)
+            );
+        }
+        public static Vector2Int OperateVector2(Vector2Int a, Vector2Int b, System.Func<int, int, int> operation)
+        {
+            return new Vector2Int(
+                operation(a.x, b.x),
+                operation(a.y, b.y)
+            );
+        }
+
+
         public static Vector3 MultiplyVector3(Vector3 a, Vector3 b)
         {
             return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
@@ -58,7 +121,7 @@ namespace REXTools.TransformTools
         {
             return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
         }
-	   public static Vector2 MultiplyVector2(Vector2 a, Vector2 b)
+	    public static Vector2 MultiplyVector2(Vector2 a, Vector2 b)
         {
             return new Vector2(a.x * b.x, a.y * b.y);
         }
@@ -74,6 +137,69 @@ namespace REXTools.TransformTools
         public static Vector3 Deg2Rad(Vector3 deg)
         {
             return new Vector3(deg.x * Mathf.Deg2Rad, deg.y * Mathf.Deg2Rad, deg.z * Mathf.Deg2Rad);
+        }
+
+        public static float SignZeroed(float f)
+        {
+            if (f > 0f)
+            {
+                return 1f;
+            }
+            else if (f < 0f)
+            {
+                return -1f;
+            }
+            else
+            {
+                return 0f;
+            }
+        }
+
+        public static float SignCeil (float f, bool includeZero = false)
+        {
+            if (f < 0)
+            {
+                return Mathf.Floor(f);
+            }
+            else if (f > 0)
+            {
+                return Mathf.Ceil(f);
+            }
+            else
+            {
+                if (includeZero)
+                {
+                    return 0f;
+                }
+                else
+                {
+                    return 1f;
+                }
+            }
+        }
+        public static float SignFloor(float f/*, bool includeZero = false*/)
+        {
+            if (f < 0)
+            {
+                return Mathf.Ceil(f);
+            }
+            else if (f > 0)
+            {
+                return Mathf.Floor(f);
+            }
+            else
+            {
+                return 0f;
+
+                //if (includeZero)
+                //{
+                //    return 0f;
+                //}
+                //else
+                //{
+
+                //}
+            }
         }
         //END
     }

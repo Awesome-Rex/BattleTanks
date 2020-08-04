@@ -8,7 +8,7 @@ using UnityEditor;
 
 namespace REXTools.REXCore
 {
-    [CreateAssetMenu(fileName = "GameSettings", menuName = "Project/Game Settings")]
+    [CreateAssetMenu(fileName = "GameSettings", menuName = "REX/Game Settings")]
     [System.Serializable]
     public class GameSettings : ScriptableObject
     {

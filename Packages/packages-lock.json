@@ -49,6 +49,12 @@
         "com.awesomusrex.rex-core": "https://github.com/Awesome-Rex/rex-core.git"
       }
     },
+    "com.unity.2d.tilemap": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
     "com.unity.animation.rigging": {
       "version": "0.2.6-preview",
       "depth": 0,
