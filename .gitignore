@@ -230,3 +230,5 @@ Packages/rex-core/Runtime/GameEditorSettings.cs
 Packages/packages-lock.json
 Packages/manifest.json
 Packages/custom-transforms/Runtime/AxisOrderExtensions.cs
+Packages/transform-tools/Runtime/Vectors.cs
+Packages/transform-tools/Runtime/AxisOrder.cs

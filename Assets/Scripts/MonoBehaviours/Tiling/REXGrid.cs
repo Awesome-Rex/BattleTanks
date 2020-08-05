@@ -10,5 +10,6 @@ namespace REXTools.Tiling
     {
         public Vector3 size = Vector3.one;
         public Vector3 spacing = Vector3.zero;
+        public Vector3 scale = Vector3.one;
     }
 }

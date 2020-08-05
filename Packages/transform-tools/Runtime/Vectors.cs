@@ -47,7 +47,24 @@ namespace REXTools.TransformTools
                 return from.z;
             }
 
-            return 0f;
+            return default;
+        }
+        public static Vector3 SetAxis (Axis axis, float value, Vector3 from)
+        {
+            if (axis == Axis.X)
+            {
+                return new Vector3(value, from.y, from.z);
+            }
+            else if (axis == Axis.Y)
+            {
+                return new Vector3(from.x, value, from.z);
+            }
+            else if (axis == Axis.Z)
+            {
+                return new Vector3(from.x, from.y, value);
+            }
+
+            return default;
         }
 
         public static Vector3 OperateVector3(Vector3 a, System.Func<float, float> operation)
@@ -130,6 +147,15 @@ namespace REXTools.TransformTools
             return new Vector2(a.x / b.x, a.y / b.y);
         }
 	   
+        public static Vector3 ReciprocolVector3 (Vector3 a)
+        {
+            return new Vector3(1f / a.x, 1f / a.y, 1f / a.z);
+        }
+        public static Vector2 ReciprocolVector2(Vector2 a)
+        {
+            return new Vector2(1f / a.x, 1f / a.y);
+        }
+
         public static Vector3 Rad2Deg(Vector3 rad)
         {
             return new Vector3(rad.x * Mathf.Rad2Deg, rad.y * Mathf.Rad2Deg, rad.z * Mathf.Rad2Deg);
@@ -137,6 +163,28 @@ namespace REXTools.TransformTools
         public static Vector3 Deg2Rad(Vector3 deg)
         {
             return new Vector3(deg.x * Mathf.Deg2Rad, deg.y * Mathf.Deg2Rad, deg.z * Mathf.Deg2Rad);
+        }
+
+        public static bool SignGreater (float a, float b)
+        {
+            if (a >= 0)
+            {
+                return a > b;
+            } else
+            {
+                return a < b;
+            }
+        }
+        public static bool SignLess(float a, float b)
+        {
+            if (a >= 0)
+            {
+                return a < b;
+            }
+            else
+            {
+                return a > b;
+            }
         }
 
         public static float SignZeroed(float f)
