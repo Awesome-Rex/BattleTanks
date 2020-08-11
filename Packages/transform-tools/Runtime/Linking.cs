@@ -21,14 +21,14 @@ namespace REXTools.TransformTools
         {
             // *ALTERNATE* return Matrix4x4.TRS(position, rotation, scale).inverse.MultiplyPoint3x4(point);
             return Vector3.Scale(
-                Vectors.DivideVector3(Vector3.one, scale),
+                Vector3.one.Divide(scale),
                 (Quaternion.Inverse(rotation) * (point - position))
             );
         }
         public static Vector3 InverseTransformPoint(Vector3 point, Vector3 position, Quaternion rotation)
         {
             return Vector3.Scale(
-                Vectors.DivideVector3(Vector3.one, Vector3.one/**/),
+                Vector3.one.Divide(Vector3.one/**/),
                 (Quaternion.Inverse(rotation) * (point - position))
             );
         }

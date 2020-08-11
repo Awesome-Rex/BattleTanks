@@ -323,7 +323,7 @@ namespace REXTools.CustomTransforms
                 }
                 else
                 {
-                    return Vectors.DivideVector3(Linking.InverseTransformPoint(position, parentPos, parentRot, parentScale), parentScale); //WORKS!
+                    return Linking.InverseTransformPoint(position, parentPos, parentRot, parentScale).Divide(parentScale); //WORKS!
                 }
             }
         } //returns self

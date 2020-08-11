@@ -32,7 +32,8 @@ namespace REXTools.TransformTools
             { Axis.Z, new Vector3(0f, 0f, 1f) }
         };
 
-        public static float GetAxis(Axis axis, Vector3 from)
+        //methods
+        public static float GetAxis(this Vector3 from, Axis axis)
         {
             if (axis == Axis.X)
             {
@@ -49,7 +50,7 @@ namespace REXTools.TransformTools
 
             return default;
         }
-        public static Vector3 SetAxis (Axis axis, float value, Vector3 from)
+        public static Vector3 SetAxis(this Vector3 from, Axis axis, float value)
         {
             if (axis == Axis.X)
             {
@@ -66,188 +67,222 @@ namespace REXTools.TransformTools
 
             return default;
         }
+        public static float GetAxis(this Vector2 from, Axis axis)
+        {
+            if (axis == Axis.X)
+            {
+                return from.x;
+            }
+            else if (axis == Axis.Y)
+            {
+                return from.y;
+            }
 
-        public static Vector3 OperateVector3(Vector3 a, System.Func<float, float> operation)
+            return default;
+        }
+        public static Vector2 SetAxis(this Vector2 from, Axis axis, float value)
+        {
+            if (axis == Axis.X)
+            {
+                return new Vector2(value, from.y);
+            }
+            else if (axis == Axis.Y)
+            {
+                return new Vector2(from.x, value);
+            }
+
+            return default;
+        }
+        public static int GetAxis(this Vector3Int from, Axis axis)
+        {
+            if (axis == Axis.X)
+            {
+                return from.x;
+            }
+            else if (axis == Axis.Y)
+            {
+                return from.y;
+            }
+            else if (axis == Axis.Z)
+            {
+                return from.z;
+            }
+
+            return default;
+        }
+        public static Vector3Int SetAxis(this Vector3Int from, Axis axis, int value)
+        {
+            if (axis == Axis.X)
+            {
+                return new Vector3Int(value, from.y, from.z);
+            }
+            else if (axis == Axis.Y)
+            {
+                return new Vector3Int(from.x, value, from.z);
+            }
+            else if (axis == Axis.Z)
+            {
+                return new Vector3Int(from.x, from.y, value);
+            }
+
+            return default;
+        }
+        public static int GetAxis(this Vector2Int from, Axis axis)
+        {
+            if (axis == Axis.X)
+            {
+                return from.x;
+            }
+            else if (axis == Axis.Y)
+            {
+                return from.y;
+            }
+
+            return default;
+        }
+        public static Vector2Int SetAxis(this Vector2Int from, Axis axis, int value)
+        {
+            if (axis == Axis.X)
+            {
+                return new Vector2Int(value, from.y);
+            }
+            else if (axis == Axis.Y)
+            {
+                return new Vector2Int(from.x, value);
+            }
+
+            return default;
+        }
+        
+        public static Vector3 Operate(this Vector3 a, System.Func<Axis, float, float> operation)
         {
             return new Vector3(
-                operation(a.x),
-                operation(a.y),
-                operation(a.z)
+                operation(Axis.X, a.x),
+                operation(Axis.Y, a.y),
+                operation(Axis.Z, a.z)
             );
         }
-        public static Vector2 OperateVector2(Vector2 a, System.Func<float, float> operation)
+        public static Vector2 Operate(this Vector2 a, System.Func<Axis, float, float> operation)
         {
             return new Vector2(
-                operation(a.x),
-                operation(a.y)
+                operation(Axis.X, a.x),
+                operation(Axis.Y, a.y)
             );
         }
-        public static Vector3 OperateVector3 (Vector3 a, Vector3 b, System.Func<float, float, float> operation)
+        public static Vector3 Operate(this Vector3 a, Vector3 b, System.Func<Axis, float, float, float> operation)
         {
             return new Vector3(
-                operation(a.x, b.x),
-                operation(a.y, b.y),
-                operation(a.z, b.z)
+                operation(Axis.X, a.x, b.x),
+                operation(Axis.Y, a.y, b.y),
+                operation(Axis.Z, a.z, b.z)
             );
         }
-        public static Vector2 OperateVector2(Vector2 a, Vector2 b, System.Func<float, float, float> operation)
+        public static Vector2 Operate(this Vector2 a, Vector2 b, System.Func<Axis, float, float, float> operation)
         {
             return new Vector2(
-                operation(a.x, b.x),
-                operation(a.y, b.y)
+                operation(Axis.X, a.x, b.x),
+                operation(Axis.Y, a.y, b.y)
             );
         }
 
-        public static Vector3Int OperateVector3Int(Vector3Int a, System.Func<int, int> operation)
+        public static Vector3Int Operate(this Vector3Int a, System.Func<Axis, int, int> operation)
         {
             return new Vector3Int(
-                operation(a.x),
-                operation(a.y),
-                operation(a.z)
+                operation(Axis.X, a.x),
+                operation(Axis.Y, a.y),
+                operation(Axis.Z, a.z)
             );
         }
-        public static Vector2Int OperateVector2Int(Vector2Int a, System.Func<int, int> operation)
+        public static Vector2Int Operate(this Vector2Int a, System.Func<Axis, int, int> operation)
         {
             return new Vector2Int(
-                operation(a.x),
-                operation(a.y)
+                operation(Axis.X, a.x),
+                operation(Axis.Y, a.y)
             );
         }
-        public static Vector3Int OperateVector3(Vector3Int a, Vector3Int b, System.Func<int, int, int> operation)
+        public static Vector3Int Operate(this Vector3Int a, Vector3Int b, System.Func<Axis, int, int, int> operation)
         {
             return new Vector3Int(
-                operation(a.x, b.x),
-                operation(a.y, b.y),
-                operation(a.z, b.z)
+                operation(Axis.X, a.x, b.x),
+                operation(Axis.Y, a.y, b.y),
+                operation(Axis.Z, a.z, b.z)
             );
         }
-        public static Vector2Int OperateVector2(Vector2Int a, Vector2Int b, System.Func<int, int, int> operation)
+        public static Vector2Int Operate(this Vector2Int a, Vector2Int b, System.Func<Axis, int, int, int> operation)
         {
             return new Vector2Int(
-                operation(a.x, b.x),
-                operation(a.y, b.y)
+                operation(Axis.X, a.x, b.x),
+                operation(Axis.Y, a.y, b.y)
             );
         }
-
-
-        public static Vector3 MultiplyVector3(Vector3 a, Vector3 b)
+        
+        public static Vector3 Multiply(this Vector3 a, Vector3 b)
         {
             return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
         }
-        public static Vector3 DivideVector3(Vector3 a, Vector3 b)
-        {
-            return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
-        }
-	    public static Vector2 MultiplyVector2(Vector2 a, Vector2 b)
+        public static Vector2 Multiply(this Vector2 a, Vector2 b)
         {
             return new Vector2(a.x * b.x, a.y * b.y);
         }
-        public static Vector2 DivideVector2(Vector2 a, Vector2 b)
+        public static Vector3 Divide(this Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
+        }
+        public static Vector2 Divide(this Vector2 a, Vector2 b)
         {
             return new Vector2(a.x / b.x, a.y / b.y);
         }
-	   
-        public static Vector3 ReciprocolVector3 (Vector3 a)
+
+        public static Vector3Int Multiply(this Vector3Int a, Vector3Int b)
+        {
+            return new Vector3Int(a.x * b.x, a.y * b.y, a.z * b.z);
+        }
+        public static Vector2Int Multiply(this Vector2Int a, Vector2Int b)
+        {
+            return new Vector2Int(a.x * b.x, a.y * b.y);
+        }
+        public static Vector3Int Divide(this Vector3Int a, Vector3Int b)
+        {
+            return new Vector3Int(a.x / b.x, a.y / b.y, a.z / b.z);
+        }
+        public static Vector2Int Divide(this Vector2Int a, Vector2Int b)
+        {
+            return new Vector2Int(a.x / b.x, a.y / b.y);
+        }
+
+        public static Vector3 Reciprocol(this Vector3 a)
         {
             return new Vector3(1f / a.x, 1f / a.y, 1f / a.z);
         }
-        public static Vector2 ReciprocolVector2(Vector2 a)
+        public static Vector2 Reciprocol(this Vector2 a)
         {
             return new Vector2(1f / a.x, 1f / a.y);
         }
 
-        public static Vector3 Rad2Deg(Vector3 rad)
+        public static Vector3 Rad2Deg(this Vector3 rad)
         {
             return new Vector3(rad.x * Mathf.Rad2Deg, rad.y * Mathf.Rad2Deg, rad.z * Mathf.Rad2Deg);
         }
-        public static Vector3 Deg2Rad(Vector3 deg)
+        public static Vector3 Deg2Rad(this Vector3 deg)
         {
             return new Vector3(deg.x * Mathf.Deg2Rad, deg.y * Mathf.Deg2Rad, deg.z * Mathf.Deg2Rad);
         }
 
-        public static bool SignGreater (float a, float b)
+        public static Vector3 CustomRoundVector3(Vector3 f, Vector3 increment, Vector3 offset)
         {
-            if (a >= 0)
-            {
-                return a > b;
-            } else
-            {
-                return a < b;
-            }
+            return f.Operate(offset, (s, a, b) => a - b).Operate(increment, (s, a, b) => Mathf.Round(a / b) * b).Operate(offset, (s, a, b) => a + b); ;
         }
-        public static bool SignLess(float a, float b)
+        public static Vector3 CustomRoundVector3(Vector3 f, Vector3 increment)
         {
-            if (a >= 0)
-            {
-                return a < b;
-            }
-            else
-            {
-                return a > b;
-            }
+            return CustomRoundVector3(f, increment, Vector3.zero);
         }
-
-        public static float SignZeroed(float f)
+        public static Vector3 CustomRound(this Vector3 f, Vector3 increment, Vector3 offset)
         {
-            if (f > 0f)
-            {
-                return 1f;
-            }
-            else if (f < 0f)
-            {
-                return -1f;
-            }
-            else
-            {
-                return 0f;
-            }
+            return CustomRoundVector3(f, increment, offset);
         }
-
-        public static float SignCeil (float f, bool includeZero = false)
+        public static Vector3 CustomRound(this Vector3 f, Vector3 increment)
         {
-            if (f < 0)
-            {
-                return Mathf.Floor(f);
-            }
-            else if (f > 0)
-            {
-                return Mathf.Ceil(f);
-            }
-            else
-            {
-                if (includeZero)
-                {
-                    return 0f;
-                }
-                else
-                {
-                    return 1f;
-                }
-            }
-        }
-        public static float SignFloor(float f/*, bool includeZero = false*/)
-        {
-            if (f < 0)
-            {
-                return Mathf.Ceil(f);
-            }
-            else if (f > 0)
-            {
-                return Mathf.Floor(f);
-            }
-            else
-            {
-                return 0f;
-
-                //if (includeZero)
-                //{
-                //    return 0f;
-                //}
-                //else
-                //{
-
-                //}
-            }
+            return CustomRoundVector3(f, increment, Vector3.zero);
         }
         //END
     }

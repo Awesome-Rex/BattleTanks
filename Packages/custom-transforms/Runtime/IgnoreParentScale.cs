@@ -16,7 +16,7 @@ namespace REXTools.CustomTransforms
         {
             if (enabled)
             {
-                transform.localScale = Vectors.DivideVector3(transform.localScale, Vectors.DivideVector3(transform.parent.localScale, parentScale));
+                transform.localScale = transform.localScale.Divide(transform.parent.localScale.Divide(parentScale));
             }
         }
 

@@ -1,9 +1,11 @@
 fileFormatVersion: 2
-guid: 13dee307f42d40e4da6921f819e8b66e
+guid: 5e3c6292126a4b2439204157c3167624
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - grid: {instanceID: 0}
+  - plane: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

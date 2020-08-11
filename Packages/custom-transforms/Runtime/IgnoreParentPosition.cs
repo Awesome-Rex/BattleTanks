@@ -28,7 +28,7 @@ namespace REXTools.CustomTransforms
                 if (!factorScale)
                 {
                     transform.localPosition =
-                        Vectors.DivideVector3(transform.localPosition, Vectors.DivideVector3(parentScale, transform.parent.localScale));
+                        transform.localPosition.Divide(parentScale.Divide(transform.parent.localScale));
                 }
             }
         }
