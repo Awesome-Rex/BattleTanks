@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -16,6 +17,8 @@ namespace REXTools.Tiling
         public Grid grid;
 
         //orientation (for world or self)
+        public Vector3 offsetCenterPoint = Vector3.zero;
+        [Space]
         public AxisOrder offsetPosition;
         public AxisOrder offsetRotation;
         public Vector3 offsetScale = Vector3.one;
@@ -23,6 +26,7 @@ namespace REXTools.Tiling
 
         //space
         public Space space = Space.Self;
+
 
         [Space]
         [Header("Scene View Settings")]
@@ -39,7 +43,11 @@ namespace REXTools.Tiling
         public bool showX = false;
         public bool showY = true;
         public bool showZ = false;
-        
+
+        public Vector3Bool showAxis = new Vector3Bool(true, true, true);
+
+
+
         //private
         private Dictionary<Axis, Color> axisColours = new Dictionary<Axis, Color>
         {
@@ -131,6 +139,52 @@ namespace REXTools.Tiling
             }
         }
 
+        public int maxSubdivisions
+        {
+            get
+            {
+                int subdivisions = 1;
+                bool packed = false;
+
+                while (!packed)
+                {
+                    ((subdivisions - 1) * spaceSize).OperateBool(tileSize, (s, ASubdivisions, ASize) =>
+                    {
+                        if (ASubdivisions >= ASize)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    });
+
+                    subdivisions++;
+                }
+
+                return subdivisions;
+            }
+        }
+        public Vector3 subdividedTileSize(int subdivisions)
+        {
+            return tileSize - (spaceSize * (subdivisions - 1));
+        }
+
+        //directions
+        public Vector3 x
+        {
+            get => finalRotation * Vector3.right;
+        }
+        public Vector3 y
+        {
+            get => finalRotation * Vector3.up;
+        }
+        public Vector3 z
+        {
+            get => finalRotation * Vector3.forward;
+        }
+
         //gismos
         private Dictionary<Axis, bool> showGridAxis
         {
@@ -144,7 +198,9 @@ namespace REXTools.Tiling
             }
         }
 
-        //methods
+
+
+        //TILES
 
         //creates new tile
         public TileState CreateTile(Tile tile)
@@ -157,47 +213,54 @@ namespace REXTools.Tiling
             return tileState;
         }
         //moves existing tile
-        public void SetPosition(TileState tile, Vector3 position)
-        {
-
-        }
-        public void SetPosition(TileState tile, Vector3 position, Vector3Int rotation)
+        public void SetPosition(TileState tile, Vector3 position, Vector3Int rotation, bool centerOnSpace)
         {
 
         }
 
-        public Vector3 GridToWorld(Vector3 position)
+        //SPACE CONVERSION
+
+        public Vector3 GridToWorld(Vector3 position, int subdiviisons = 1, bool centerOnSpace = false)
         {
-            if (grid.centerPoint == TileOrigin.Intersect)
-            {
-                position -= Vector3.one / 2f;
-            }
+            //if (grid.centerPoint == TileOrigin.Intersect)
+            //{
+            //    position -= Vector3.one * 0.5f;
+            //}
+            position -= offsetCenterPoint;
+
             //multiplies position
             Vector3 localPos = position.Multiply(tileSize);
 
             //total spacing
             Vector3 spaceCount = position.Operate((s, a) => Mathf.Round(a));
             Vector3 totalSpacing = spaceCount.Multiply(spaceSize);
-            totalSpacing.Operate(tileSize, (s, a, b) =>
-            {
-                return a + ((b / 2f) * RMath.SignZeroed(a));
-            });
+            //adds half tilesize offset
+            //totalSpacing = totalSpacing.Operate(tileSize, (s, ATotalSpacing, ATileSize) =>
+            //{
+            //    return ATotalSpacing + ((ATileSize / 2f) * RMath.SignZeroed(ATotalSpacing));
+            //});
 
-            localPos.Operate(totalSpacing, (s, ALocalPos, ATotalSpacing) =>
+            localPos = localPos.Operate(totalSpacing, (s, ALocalPos, ATotalSpacing) =>
             {
-                if (grid.centerOnSpace && position.GetAxis(s) % 1f == 0.5f) //centers position on space
+                if (centerOnSpace) //centers position on space
                 {
+                    if (position.GetAxis(s) % 1f == 0.5f || position.GetAxis(s) % 1f == -0.5f)
+                    {
+                        //gets closest tile to the right (Ceil)
+                        float snapPos = Mathf.Ceil(localPos.Divide(tileSize + spaceSize).GetAxis(s))
+                        * (tileSize + spaceSize).GetAxis(s);
 
-                    //gets closest tile to the right (Ceil)
-                    float snapPos = Mathf.Ceil(localPos.Divide(tileSize + spaceSize).GetAxis(s))
-                    * (tileSize + spaceSize).GetAxis(s);
+                        float up = snapPos - (tileSize / 2f).GetAxis(s);
+                        float down = snapPos - ((tileSize / 2f) + spaceSize).GetAxis(s);
 
-                    float up = snapPos - (tileSize / 2f).GetAxis(s);
-                    float down = snapPos - ((tileSize / 2f) + spaceSize).GetAxis(s);
-
-                    //checks if in between spaces
-                    //make sure goes in center of space
-                    return Mathf.Lerp(up, down, 0.5f);
+                        //checks if in between spaces
+                        //make sure goes in center of space
+                        return Mathf.Lerp(up, down, 0.5f);
+                    }
+                    else
+                    {
+                        return ALocalPos + ATotalSpacing;
+                    }
                 }
                 else //if position doesnt need to be centered on space
                 {
@@ -210,18 +273,19 @@ namespace REXTools.Tiling
 
             return worldPos;
         }
-        public Vector3 WorldToGrid(Vector3 position)
+        public Vector3 WorldToGrid(Vector3 position, int subdivisions = 1)
         {
-            position = WorldEdgeSnap(position/*, grid.centerOnSpace*/);
+            position = WorldEdgeSweep(position);
 
             //local position
             Vector3 localPos = Linking.InverseTransformPoint(position, initialPosition(finalPosition), initialRotation(finalRotation));
 
             //adds to position if located on center
-            if (grid.centerPoint == TileOrigin.Intersect)
-            {
-                localPos += Vector3.one / 2f;
-            }
+            //if (grid.centerPoint == TileOrigin.Intersect)
+            //{
+            //    localPos += Vector3.one / 2f;
+            //}
+            localPos += offsetCenterPoint;
 
             //below: gets local position relative to closest tile
             // then divides them into grid units
@@ -235,15 +299,17 @@ namespace REXTools.Tiling
             Vector3 gridPos = snapPos + difference;
             return gridPos;
         }
+        
 
-        public bool WorldOnEdge(Vector3 position)
+        public bool WorldOnEdge(Vector3 position, int subdivisions = 1)
         {
             Vector3 localPos = Linking.InverseTransformPoint(position, initialPosition(finalPosition), initialRotation(finalRotation));
 
-            if (grid.centerPoint == TileOrigin.Intersect)
-            {
-                position -= Vector3.one / 2f;
-            }
+            //if (grid.centerPoint == TileOrigin.Intersect)
+            //{
+            //    position -= Vector3.one / 2f;
+            //}
+            position -= offsetCenterPoint;
 
             foreach (Axis i in Vectors.axisDefaultOrder)
             {
@@ -266,51 +332,147 @@ namespace REXTools.Tiling
         }
 
         //returns world position
-        public Vector3 WorldEdgeSnap(Vector3 position, bool centerOnEdge = false)
+        public Vector3 WorldEdgeSweep(Vector3 position, int subdivisions = 1, bool centerOnSpace = false)
         {
             Vector3 localPos = Linking.InverseTransformPoint(position, initialPosition(finalPosition), initialRotation(finalRotation));
 
-            if (grid.centerPoint == TileOrigin.Intersect)
-            {
-                position -= Vector3.one / 2f;
-            }
+            position -= offsetCenterPoint;
 
             Vector3 newPos = position;
 
-            foreach (Axis i in Vectors.axisDefaultOrder)
+            newPos = newPos.Operate(localPos, (s, ANewPos, ALocalPos) =>
             {
-                float snapPos = Mathf.Ceil(localPos.Divide(tileSize + spaceSize).GetAxis(i))
-                    * (tileSize + spaceSize).GetAxis(i);
+                float snapPos = Mathf.Ceil(localPos.Divide(tileSize + spaceSize).GetAxis(s))
+                    * (tileSize + spaceSize).GetAxis(s);
 
-                float up = snapPos - (tileSize / 2f).GetAxis(i);
-                float down = snapPos - ((tileSize / 2f) + spaceSize).GetAxis(i);
+                float up = snapPos - (tileSize / 2f).GetAxis(s);
+                float down = snapPos - ((tileSize / 2f) + spaceSize).GetAxis(s);
 
                 //checks if in between spaces
                 if (
-                    localPos.GetAxis(i) < up &&
-                    localPos.GetAxis(i) > down
+                    ALocalPos < up &&
+                    ALocalPos > down
                 )
                 {
-                    if (!centerOnEdge)
+                    if (!centerOnSpace)
                     {
-                        if (Mathf.Abs(up - localPos.GetAxis(i)) < Mathf.Abs(down - localPos.GetAxis(i)))
+                        if (Mathf.Abs(up - ALocalPos) < Mathf.Abs(down - ALocalPos))
                         {
-                            newPos = newPos.SetAxis(i, up);
+                            return up;
                         }
                         else
                         {
-                            newPos = newPos.SetAxis(i, down);
+                            return down;
                         }
                     }
                     else
                     {
-                        newPos = newPos.SetAxis(i, Mathf.Lerp(up, down, 0.5f));
+                        return Mathf.Lerp(up, down, 0.5f);
                     }
                 }
-            }
+                else
+                {
+                    return ANewPos;
+                }
+            });
 
             return newPos;
         }
+
+        //snaps ANY world position to tile edge
+        public Vector3 WorldEdgeSnap(Vector3 position, int subdivisions = 1, bool centerOnSpace = false)
+        {
+            Vector3 localPos = Linking.InverseTransformPoint(position, initialPosition(finalPosition), initialRotation(finalRotation));
+
+            position -= offsetCenterPoint;
+
+            Vector3 newPos = position;
+
+            newPos = newPos.Operate(localPos, (s, ANewPos, ALocalPos) =>
+            {
+                if (!centerOnSpace)
+                {
+                    //snaps to center of tile
+                    float snapPosSpace = localPos.Divide(tileSize + spaceSize).Ceil().Multiply(
+                        (tileSize + spaceSize)).GetAxis(s);
+                    float upSpace = snapPosSpace - (tileSize / 2f).GetAxis(s);
+                    float downSpace = snapPosSpace - ((tileSize / 2f) + spaceSize).GetAxis(s);
+                    
+                    float snapPosTile = localPos.Divide(tileSize + spaceSize).Round().Multiply(
+                        (tileSize + spaceSize)).GetAxis(s);
+                    float upTile = snapPosTile + (tileSize / 2f).GetAxis(s);
+                    float downTile = snapPosTile - (tileSize / 2f).GetAxis(s);
+
+                    List<float> snapPoints = new List<float>
+                    {
+                        upSpace, downSpace,
+                        upTile, downTile
+                    };
+
+                    return snapPoints.Aggregate((oldPoint, newPoint) =>
+                    {
+                        if (Mathf.Abs(ALocalPos - oldPoint) < Mathf.Abs(ALocalPos - newPoint))
+                        {
+                            return oldPoint;
+                        }
+                        else
+                        {
+                            return newPoint;
+                        }
+                    });
+                }
+                else
+                {
+                    //not center on space
+                    float snapPosSpace = localPos.Divide(tileSize + spaceSize).Ceil().Multiply(
+                        (tileSize + spaceSize) -
+                        ((tileSize + spaceSize) / 2f)).GetAxis(s);
+
+                    return snapPosSpace;
+                }
+            });
+
+            return newPos;
+        }
+
+        //takes world position
+        public bool TileCast(Ray ray, out GridCastHit hitInfo, float maxDistance = Mathf.Infinity, int subdivisions = 1, int AxisMask = 000)
+        {
+            hitInfo.point =
+            hitInfo.worldPoint =
+
+            hitInfo.distance =
+            hitInfo.worldDistance =
+
+
+
+
+
+        }
+
+        //public bool TileCastAll(Ray ray, out GridCastHit[] hitInfo, float maxDistance = Mathf.Infinity, int subdivions = 1, int AxisMask = 000)
+        //{
+
+        //}
+
+        //public bool EdgeCast (Ray ray, out GridCastHit hitInfo, float maxDistance = Mathf.Infinity, int subdivisions = 1, bool centerOnSpace = false, int AxisMask = 000)
+        //{
+        //    //hitInfo.point = 
+        //    //hitInfo.worldPoint = 
+
+        //    //hitInfo.distance = 
+        //    //hitInfo.worldDistance = 
+
+        //    //hitInfo.axis  =
+
+
+        //}
+
+        //public bool EdgeCastAll(Ray ray, out GridCastHit[] hitInfo, float maxDistance = Mathf.Infinity, int subdivisions = 1, bool centerOnSpace = false, int AxisMask = 000)
+        //{
+
+        //}
+        //GIZMOS
 
         //takes in grid position
         private void DrawTileFill(Vector3 position, Axis axis, int subdividisions = 1)
@@ -328,21 +490,21 @@ namespace REXTools.Tiling
                 Gizmos.color.r,
                 Gizmos.color.g,
                 Gizmos.color.b,
-                0.3f
+                0.1f
             );
-            
+
             Vector3 fillSize =
                 (Vectors.axisDirections[drawAxes[0]] * tileSize.GetAxis(drawAxes[0])) +
                 (Vectors.axisDirections[drawAxes[1]] * tileSize.GetAxis(drawAxes[1]));
 
             Gizmos.matrix = Matrix4x4.TRS(
-                GridToWorld(position),
+                GridToWorld(position, true),
                 finalRotation,
                 fillSize.Multiply(totalScale)
             );
 
             Gizmos.DrawCube(Vector3.zero, Vector3.one);
-            
+
             //resets
             Gizmos.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(Vector3.zero), Vector3.one);
         }
@@ -360,9 +522,9 @@ namespace REXTools.Tiling
             Vector3 fillSize =
                 (Vectors.axisDirections[drawAxes[0]] * tileSize.GetAxis(drawAxes[0])) +
                 (Vectors.axisDirections[drawAxes[1]] * tileSize.GetAxis(drawAxes[1]));
-            
+
             Gizmos.matrix = Matrix4x4.TRS(
-                GridToWorld(position),
+                GridToWorld(position, true),
                 finalRotation,
                 fillSize.Multiply(totalScale)
             );
@@ -391,97 +553,6 @@ namespace REXTools.Tiling
 
             Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
         }
-
-        //takes in grid position
-        //private void DrawTileOutline(Vector3 position, Axis axis, int subdividisions = 1)
-        //{
-        //    //Gizmos.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(Vector3.zero), Vector3.one);
-
-        //    List<Axis> drawAxes = new List<Axis>();
-        //    foreach (Axis i in Vectors.axisIterate)
-        //    {
-        //        if (i != axis)
-        //        {
-        //            drawAxes.Add(i);
-        //        }
-        //    }
-
-        //    //points
-        //    //List<Vector3> points = new List<Vector3>()
-        //    //{
-        //    //    Vectors.axisDirections[drawAxes[0]] * (grid.size.GetAxis(drawAxes[0]) / 2f) +
-        //    //    Vectors.axisDirections[drawAxes[1]] * (grid.size.GetAxis(drawAxes[0]) / 2f),
-
-        //    //    Vectors.axisDirections[drawAxes[0]] * (grid.size.GetAxis(drawAxes[0]) / 2f) +
-        //    //    -Vectors.axisDirections[drawAxes[1]] * (grid.size.GetAxis(drawAxes[0]) / 2f),
-
-        //    //    -Vectors.axisDirections[drawAxes[0]] * (grid.size.GetAxis(drawAxes[0]) / 2f) +
-        //    //    -Vectors.axisDirections[drawAxes[1]] * (grid.size.GetAxis(drawAxes[0]) / 2f),
-
-        //    //    -Vectors.axisDirections[drawAxes[0]] * (grid.size.GetAxis(drawAxes[0]) / 2f) +
-        //    //    Vectors.axisDirections[drawAxes[1]] * (grid.size.GetAxis(drawAxes[0]) / 2f),
-        //    //};
-        //    List<Vector3> points = new List<Vector3>()
-        //    {
-        //        Vectors.axisDirections[drawAxes[0]] / 2f +
-        //        Vectors.axisDirections[drawAxes[1]] / 2f,
-
-        //        Vectors.axisDirections[drawAxes[0]] / 2f +
-        //        -Vectors.axisDirections[drawAxes[1]] / 2f,
-
-        //        -Vectors.axisDirections[drawAxes[0]] / 2f +
-        //        -Vectors.axisDirections[drawAxes[1]] / 2f,
-
-        //        -Vectors.axisDirections[drawAxes[0]] / 2f +
-        //        Vectors.axisDirections[drawAxes[1]] / 2f,
-        //    };
-
-        //    //making it local
-        //    for (int i = 0; i < 4; i++)
-        //    {
-        //        points[i] = GridToWorld(position + points[i])/*.SetAxis(axis, position.GetAxis(axis))*/;
-        //    }
-
-        //    //connects points to draw gizmos
-        //    for (int i = 0; i < 4; i++)
-        //    {
-        //        Vector3[] linePoints;
-
-        //        if (i != 3)
-        //        {
-        //            linePoints = new Vector3[] { points[i], points[i + 1] };
-        //        }
-        //        else
-        //        {
-        //            linePoints = new Vector3[] { points[i], points[0] };
-        //        }
-
-        //        //local to camera
-        //        Vector3 localPoint = SceneView.lastActiveSceneView.camera.transform.InverseTransformPoint(Vector3.Lerp(linePoints[0], linePoints[1], 0.5f));
-        //        localPoint = new Vector3(localPoint.x, localPoint.y, 0f);
-
-        //        if (localPoint.magnitude <= 10f)
-        //        {
-        //            Gizmos.color = new Color(
-        //                Gizmos.color.r,
-        //                Gizmos.color.g,
-        //                Gizmos.color.b,
-        //                0.8f
-        //            );
-        //        }
-        //        else
-        //        {
-        //            Gizmos.color = new Color(
-        //                Gizmos.color.r,
-        //                Gizmos.color.g,
-        //                Gizmos.color.b,
-        //                0.1f
-        //            );
-        //        }
-                
-        //        Gizmos.DrawLine(GridToWorld(linePoints[0]), GridToWorld(linePoints[1]));
-        //    }
-        //}
         private void DrawTile(Vector3 position, Axis axis, int subdividisions = 1)
         {
             DrawTileFill(position, axis, subdividisions);
@@ -503,11 +574,13 @@ namespace REXTools.Tiling
 
                 Vector3 direction = Vectors.axisDirections[axis];
 
-                bool inter = grid.centerPoint == TileOrigin.Intersect;
-                
-                for (float x = -radius.x; x <= radius.x + (inter ? 1f : 0f); x++)
+                //bool inter = grid.centerPoint == TileOrigin.Intersect;
+
+                float inter1 = Mathf.Abs(offsetCenterPoint.GetAxis(drawAxes[0]) % 1f);
+                float inter2 = Mathf.Abs(offsetCenterPoint.GetAxis(drawAxes[1]) % 1f);
+                for (float x = -radius.x; x <= radius.x + (inter1 >= 0.5f ? 1f : 0f); x++)
                 {
-                    for (float y = -radius.y; y <= radius.y + (inter ? 1f : 0f); y++)
+                    for (float y = -radius.y; y <= radius.y + (inter2 >= 0.5f ? 1f : 0f); y++)
                     {
                         /*Gizmos.color = new Color(
                             (x + radius.x) / ((radius.x * 2f) + 1f),
@@ -518,14 +591,15 @@ namespace REXTools.Tiling
                         Gizmos.color = axisColours[axis];
 
                         DrawTile(/*GridToWorld(*/(Vectors.axisDirections[drawAxes[0]] * x) + (Vectors.axisDirections[drawAxes[1]] * y) + (direction * offset)/*)*/, axis);
-
-                        //Gizmos.DrawSphere(GridToWorld((Vectors.axisDirections[drawAxes[0]] * x) + (Vectors.axisDirections[drawAxes[1]] * y) + (direction * offset)), 0.5f);
                     }
                 }
             }
         }
         private void DrawGrids()
         {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(finalPosition, 0.2f);
+
             foreach (KeyValuePair<Axis, bool> i in showGridAxis)
             {
                 if (i.Value)

@@ -13,9 +13,6 @@ namespace REXTools.Tiling
         public Vector3 spacing = Vector3.zero;
         public Vector3 scale = Vector3.one;
 
-        public TileOrigin centerPoint = TileOrigin.Inside;
-        public bool centerOnSpace = false;
-
         //properties
         public Dictionary<Axis, TileOrigin> center = new Dictionary<Axis, TileOrigin>
         {
@@ -36,15 +33,15 @@ namespace REXTools.Tiling
             get => spacing.x == spacing.y && spacing.x == spacing.z;
         }
 
-        public Dictionary<Axis, bool> canPivot
+        public Vector3Bool canPivot
         {
             get
             {
-                return new Dictionary<Axis, bool> {
-                    {Axis.X, size.y == size.z},
-                    {Axis.Y, size.x == size.z},
-                    {Axis.Z, size.x == size.y}
-                };
+                return new Vector3Bool(
+                    size.y == size.z,
+                    size.x == size.z,
+                    size.x == size.y
+                );
             }
         }
 
@@ -52,5 +49,78 @@ namespace REXTools.Tiling
         {
             get => spacing == Vector3.zero;
         }
+
+
+        public int maxSubdivisions
+        {
+            get
+            {
+                int subdivisions = 1;
+                bool packed = false;
+                
+                while (!packed)
+                {
+                    ((subdivisions - 1) * spacing).OperateBool(size, (s, ASubdivisions, ASize) =>
+                    {
+                        if (ASubdivisions >= ASize)
+                        {
+                            return true;
+                        } else
+                        {
+                            return false;
+                        }
+                    });
+
+                    subdivisions++;
+                }
+
+                return subdivisions;
+            }
+        }
+        public Vector3 subdividedTileSize (int subdivisions)
+        {
+            return size - (spacing * (subdivisions - 1));
+        }
+
+        //STILL NEEDS TO FACTOR SPACING
+        public Vector3 GridToGridUnspaced(Vector3 position, int subdivisions = 1, int newSubdivisions = 1)
+        {
+            return position * (subdivisions / newSubdivisions);
+        }
+
+        //multiple subdivisions to one subdivision
+        public Vector3 GridToOne(Vector3 position, int subdivisions = 1)
+        {
+            Vector3 newPosition = position;
+            newPosition /= subdivisions;
+
+            Vector3 totalSpaces;
+            if (subdivisions.Even())
+            {
+                totalSpaces = Vector3.one / 2f;
+                totalSpaces += position.Operate((s, a) => a.SignFloor() - a.SignFloor());
+            }
+            else
+            {
+                totalSpaces = position.Operate((s, a) => a.SignFloor());
+            }
+
+            Vector3 totalSpacing = spacing.Multiply(totalSpaces);
+            newPosition += totalSpacing;
+
+            return newPosition;
+        }
+        //one subidivion to multiple subdivisions
+        public Vector3 OneToGrid (Vector3 position, int subdivisions = 1)
+        {
+            Vector3 totalSpacing;
+        }
+        public Vector3 GridToGrid(Vector3 position, int subdivisions = 1, int newSubdivisions = 1)
+        {
+            //converts 
+            //Position => One
+            //One => Position
+        }
+
     }
 }

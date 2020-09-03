@@ -47,8 +47,14 @@ namespace REXTools.REXCore
 
         protected Rect newPosition;
 
-
         public void OnGUIPRO(Rect position, SerializedProperty property, GUIContent label, System.Action action)
+        {
+            start(position, property, label);
+            action();
+            end();
+        }
+
+        private void start (Rect position, SerializedProperty property, GUIContent label)
         {
             _lineHeight = base.GetPropertyHeight(property, label);
 
@@ -60,12 +66,7 @@ namespace REXTools.REXCore
             originalIndentLevel = EditorGUI.indentLevel;
 
             EditorGUI.BeginProperty(indentedPosition, label, property);
-
-            action();
-
-            end();
         }
-
         private void end()
         {
             EditorGUI.EndProperty();
@@ -79,6 +80,19 @@ namespace REXTools.REXCore
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             return base.GetPropertyHeight(property, label) * lines;
+        }
+    }
+
+    public static class GUITextTools
+    {
+        public static string Titalized(this string text)
+        {
+            //capitalizes first character
+            string newText = text;
+            newText = text.Substring(1, text.Length - 1);
+            newText = text.Substring(0, 1).ToUpper() + newText;
+
+            return newText;
         }
     }
 }

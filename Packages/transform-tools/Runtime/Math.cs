@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace REXTools.TransformTools
 {
-    public class RMath
+    public static class RMath
     {
-        public static bool SignGreater(float a, float b)
+        public static bool SignGreater(this float a, float b)
         {
             if (a >= 0)
             {
@@ -17,7 +17,7 @@ namespace REXTools.TransformTools
                 return a < b;
             }
         }
-        public static bool SignLess(float a, float b)
+        public static bool SignLess(this float a, float b)
         {
             if (a >= 0)
             {
@@ -29,7 +29,7 @@ namespace REXTools.TransformTools
             }
         }
 
-        public static float SignZeroed(float f)
+        public static float SignZeroed(this float f)
         {
             if (f > 0f)
             {
@@ -45,7 +45,7 @@ namespace REXTools.TransformTools
             }
         }
 
-        public static float SignCeil(float f, bool includeZero = false)
+        public static float SignCeil(this float f, bool includeZero = false)
         {
             if (f < 0)
             {
@@ -67,7 +67,7 @@ namespace REXTools.TransformTools
                 }
             }
         }
-        public static float SignFloor(float f/*, bool includeZero = false*/)
+        public static float SignFloor(this float f/*, bool includeZero = false*/)
         {
             if (f < 0)
             {
@@ -92,13 +92,22 @@ namespace REXTools.TransformTools
             }
         }
 
-        public static float CustomRound(float f, float increment, float offset)
+        public static float CustomRound(this float f, float increment, float offset)
         {
             return (Mathf.Round((f - offset) / increment) * increment) + offset;
         }
-        public static float CustomRound(float f, float increment)
+        public static float CustomRound(this float f, float increment)
         {
             return CustomRound(f, increment, 0f);
+        }
+
+        public static bool Even (this int f)
+        {
+            return f % 2 == 0;
+        }
+        public static bool Odd(this int f)
+        {
+            return f % 2 == 1;
         }
     }
 }

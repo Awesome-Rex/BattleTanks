@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace REXTools.TransformTools
 {
@@ -32,7 +33,9 @@ namespace REXTools.TransformTools
             { Axis.Z, new Vector3(0f, 0f, 1f) }
         };
 
-        //methods
+        //METHODS
+
+        //axis
         public static float GetAxis(this Vector3 from, Axis axis)
         {
             if (axis == Axis.X)
@@ -154,6 +157,7 @@ namespace REXTools.TransformTools
             return default;
         }
         
+        //operation
         public static Vector3 Operate(this Vector3 a, System.Func<Axis, float, float> operation)
         {
             return new Vector3(
@@ -215,7 +219,70 @@ namespace REXTools.TransformTools
                 operation(Axis.Y, a.y, b.y)
             );
         }
+
+        public static Vector3Bool OperateBool(this Vector3 a, System.Func<Axis, float, bool> operation)
+        {
+            return new Vector3Bool(
+                operation(Axis.X, a.x),
+                operation(Axis.Y, a.y),
+                operation(Axis.Z, a.z)
+            );
+        }
+        public static Vector2Bool OperateBool(this Vector2 a, System.Func<Axis, float, bool> operation)
+        {
+            return new Vector2Bool(
+                operation(Axis.X, a.x),
+                operation(Axis.Y, a.y)
+            );
+        }
+        public static Vector3Bool OperateBool(this Vector3 a, Vector3 b, System.Func<Axis, float, float, bool> operation)
+        {
+            return new Vector3Bool(
+                operation(Axis.X, a.x, b.x),
+                operation(Axis.Y, a.y, b.y),
+                operation(Axis.Z, a.z, b.z)
+            );
+        }
+        public static Vector2Bool OperateBool(this Vector2 a, Vector2 b, System.Func<Axis, float, float, bool> operation)
+        {
+            return new Vector2Bool(
+                operation(Axis.X, a.x, b.x),
+                operation(Axis.Y, a.y, b.y)
+            );
+        }
+
+        public static Vector3Bool OperateBool(this Vector3Int a, System.Func<Axis, int, bool> operation)
+        {
+            return new Vector3Bool(
+                operation(Axis.X, a.x),
+                operation(Axis.Y, a.y),
+                operation(Axis.Z, a.z)
+            );
+        }
+        public static Vector2Bool OperateBool(this Vector2Int a, System.Func<Axis, int, bool> operation)
+        {
+            return new Vector2Bool(
+                operation(Axis.X, a.x),
+                operation(Axis.Y, a.y)
+            );
+        }
+        public static Vector3Bool OperateBool(this Vector3Int a, Vector3Int b, System.Func<Axis, int, int, bool> operation)
+        {
+            return new Vector3Bool(
+                operation(Axis.X, a.x, b.x),
+                operation(Axis.Y, a.y, b.y),
+                operation(Axis.Z, a.z, b.z)
+            );
+        }
+        public static Vector2Bool OperateBool(this Vector2Int a, Vector2Int b, System.Func<Axis, int, int, bool> operation)
+        {
+            return new Vector2Bool(
+                operation(Axis.X, a.x, b.x),
+                operation(Axis.Y, a.y, b.y)
+            );
+        }
         
+        //math
         public static Vector3 Multiply(this Vector3 a, Vector3 b)
         {
             return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
@@ -249,6 +316,32 @@ namespace REXTools.TransformTools
         {
             return new Vector2Int(a.x / b.x, a.y / b.y);
         }
+
+        public static Vector3 Round(this Vector3 a)
+        {
+            return new Vector3(Mathf.Round(a.x), Mathf.Round(a.y), Mathf.Round(a.z));
+        }
+        public static Vector2 Round(this Vector2 a)
+        {
+            return new Vector2(Mathf.Round(a.x), Mathf.Round(a.y));
+        }
+        public static Vector3 Ceil(this Vector3 a)
+        {
+            return new Vector3(Mathf.Ceil(a.x), Mathf.Ceil(a.y), Mathf.Ceil(a.z));
+        }
+        public static Vector2 Ceil(this Vector2 a)
+        {
+            return new Vector2(Mathf.Ceil(a.x), Mathf.Ceil(a.y));
+        }
+        public static Vector3 Floor(this Vector3 a)
+        {
+            return new Vector3(Mathf.Floor(a.x), Mathf.Floor(a.y), Mathf.Floor(a.z));
+        }
+        public static Vector2 Floor(this Vector2 a)
+        {
+            return new Vector2(Mathf.Floor(a.x), Mathf.Floor(a.y));
+        }
+
 
         public static Vector3 Reciprocol(this Vector3 a)
         {
@@ -284,6 +377,140 @@ namespace REXTools.TransformTools
         {
             return CustomRoundVector3(f, increment, Vector3.zero);
         }
+
+        //SPECIAL
+
+        //plane raycasting
+        public static Vector3? OnPlane(Ray ray, Vector3 planePosition, Vector3 planeNormal)
+        {
+            planeNormal = planeNormal.normalized;
+
+            Plane plane = new Plane(planeNormal, planePosition);
+
+            float distance;
+
+            if (!(!plane.Raycast(ray, out distance) && distance == 0f))
+            {
+                return ray.GetPoint(distance);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public static Vector3? OnPlane(Vector3 point, Vector3 direction, Vector3 planePosition, Vector3 planeNormal)
+        {
+            return OnPlane(new Ray(point, direction), planePosition, planeNormal);
+        }
+
+        public static Vector3? RaycastPoint (this Plane plane, Ray ray)
+        {
+            float distance;
+
+            if (!(!plane.Raycast(ray, out distance) && distance == 0f))
+            {
+                return ray.GetPoint(distance);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static bool RaycastPoint(this Plane plane, Ray ray, out Vector3 set)
+        {
+            float distance;
+
+            if (!(!plane.Raycast(ray, out distance) && distance == 0f))
+            {
+                set = ray.GetPoint(distance);
+                return true;
+            }
+            else
+            {
+                set = Vector3.zero;
+                return false;
+            }
+        }
+
+        //returns a DIRECTION, 
+        //used for top down movement with dynamic camera (only Y, Z rotation influence)
+        //(X is always the same)
+        public static Vector3 Vector2OntoPlane (Vector2 direction, Vector3 planeNormal, Quaternion view)
+        {
+            Plane plane = new Plane(planeNormal, Vector3.zero);
+            
+            Vector3 up = plane.ClosestPointOnPlane(view * Vector3.up).normalized;
+            if (up == Vector3.zero)
+            {
+                up = plane.ClosestPointOnPlane(view * Quaternion.Euler(Vector3.right) * Vector3.up).normalized;
+            }
+
+            return Quaternion.LookRotation(-planeNormal, up) * direction;
+        }
+        public static Vector3 Vector2OntoPlane(Vector2 direction, Vector3 planeNormal, Quaternion view, Vector3 snapDirection, int count = 4)
+        {
+            Plane plane = new Plane(planeNormal, Vector3.zero);
+            
+            count = (int)Mathf.Clamp(count, 1, Mathf.Infinity);
+            snapDirection = plane.ClosestPointOnPlane(snapDirection).normalized;
+            
+            Vector3 up = plane.ClosestPointOnPlane(view * Vector3.up).normalized;
+            if (up == Vector3.zero)
+            {
+                up = plane.ClosestPointOnPlane(view * Quaternion.Euler(Vector3.right) * Vector3.up).normalized;
+            }
+
+            List<Vector3> snapDirections = new List<Vector3>();
+            for (int i = 0; i < count; i++)
+            {
+                Quaternion newDirection = Quaternion.LookRotation(planeNormal, snapDirection);
+                newDirection.eulerAngles = newDirection.eulerAngles.SetAxis(Axis.Z, newDirection.eulerAngles.z + ((360f / count) * i));
+
+                snapDirections.Add(newDirection * Vector3.up);
+            }
+
+            up = snapDirections.Aggregate((dir, newDir) => {
+                if (Vector3.Angle(up, newDir) < Vector3.Angle(up, dir))
+                {
+                    return newDir;
+                } else
+                {
+                    return dir;
+                }
+            });
+            
+            return Quaternion.LookRotation(-planeNormal, up) * direction;
+        }
+        public static Vector3 Vector2OntoPlane(Vector2 direction, Vector3 planeNormal, Quaternion view, Vector3[] snapDirections)
+        {
+            Plane plane = new Plane(planeNormal, Vector3.zero);
+
+            for (int i = 0; i < snapDirections.Length; i++)
+            {
+                snapDirections[i] = plane.ClosestPointOnPlane(snapDirections[i]).normalized;
+            }
+
+            Vector3 up = plane.ClosestPointOnPlane(view * Vector3.up).normalized;
+            if (up == Vector3.zero)
+            {
+                up = plane.ClosestPointOnPlane(view * Quaternion.Euler(Vector3.right) * Vector3.up).normalized;
+            }
+
+            up = snapDirections.Aggregate((dir, newDir) => {
+                if (Vector3.Angle(up, newDir) < Vector3.Angle(up, dir))
+                {
+                    return newDir;
+                }
+                else
+                {
+                    return dir;
+                }
+            });
+
+            return Quaternion.LookRotation(-planeNormal, up) * direction;
+        }
+
         //END
     }
 }

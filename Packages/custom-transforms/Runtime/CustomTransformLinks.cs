@@ -29,7 +29,7 @@ namespace REXTools.CustomTransforms
         public bool follow = false;
         public Transition transition;
 
-        public Link link = Link.Offset;
+        public Link link = Link.Match;
 
         public AxisOrder offset = new AxisOrder(null, SpaceVariety.Mixed);  //local
 

@@ -43,7 +43,7 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -98,7 +98,8 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 93e6b3ec3240a294eae144c2dbc94090,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -118,6 +119,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
@@ -151,6 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grid: {fileID: 11400000, guid: 2a20c059dd17bfe48882a4f54c9d59d1, type: 2}
+  offsetCenterPoint: {x: 0.5, y: 0, z: 0}
   offsetPosition:
     axes: []
     variety: 0
@@ -164,10 +168,10 @@ MonoBehaviour:
   space: 1
   showGridGizmos: 1
   showOnlyWhenSelected: 0
-  gridReach: {x: 3, y: 3, z: 3}
+  gridReach: {x: 2, y: 2, z: 2}
   gridOffset: {x: 0, y: 0, z: 0}
-  gridRepeats: {x: 1, y: 2, z: 1}
-  gridPlaneSpacing: {x: 10, y: 10, z: 10}
+  gridRepeats: {x: 1, y: 1, z: 1}
+  gridPlaneSpacing: {x: 10, y: 3, z: 10}
   showX: 1
   showY: 1
   showZ: 1
@@ -232,6 +236,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -256,6 +261,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &143438851
 MeshFilter:
   m_ObjectHideFlags: 0
