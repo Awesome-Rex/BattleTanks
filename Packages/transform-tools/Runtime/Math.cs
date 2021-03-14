@@ -29,6 +29,7 @@ namespace REXTools.TransformTools
             }
         }
 
+        
         public static float SignZeroed(this float f)
         {
             if (f > 0f)
@@ -45,6 +46,7 @@ namespace REXTools.TransformTools
             }
         }
 
+        //float ceil/floor
         public static float SignCeil(this float f, bool includeZero = false)
         {
             if (f < 0)
@@ -91,6 +93,47 @@ namespace REXTools.TransformTools
                 //}
             }
         }
+
+        //integer ceil/floor
+        public static int SignCeilToInt(this float f, bool includeZero = false)
+        {
+            if (f < 0)
+            {
+                return Mathf.FloorToInt(f);
+            }
+            else if (f > 0)
+            {
+                return Mathf.CeilToInt(f);
+            }
+            else
+            {
+                if (includeZero)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+        }
+        public static int SignFloorToInt(this float f/*, bool includeZero = false*/)
+        {
+            if (f < 0)
+            {
+                return Mathf.CeilToInt(f);
+            }
+            else if (f > 0)
+            {
+                return Mathf.FloorToInt(f);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+
 
         public static float CustomRound(this float f, float increment, float offset)
         {

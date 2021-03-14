@@ -35,7 +35,7 @@ namespace REXTools.TransformTools
 
         //METHODS
 
-        //axis
+        //get axis/set axis
         public static float GetAxis(this Vector3 from, Axis axis)
         {
             if (axis == Axis.X)
@@ -96,7 +96,7 @@ namespace REXTools.TransformTools
 
             return default;
         }
-        public static int GetAxis(this Vector3Int from, Axis axis)
+        public static int GetAxis(this UnityEngine.Vector3Int from, Axis axis)
         {
             if (axis == Axis.X)
             {
@@ -113,24 +113,24 @@ namespace REXTools.TransformTools
 
             return default;
         }
-        public static Vector3Int SetAxis(this Vector3Int from, Axis axis, int value)
+        public static UnityEngine.Vector3Int SetAxis(this UnityEngine.Vector3Int from, Axis axis, int value)
         {
             if (axis == Axis.X)
             {
-                return new Vector3Int(value, from.y, from.z);
+                return new UnityEngine.Vector3Int(value, from.y, from.z);
             }
             else if (axis == Axis.Y)
             {
-                return new Vector3Int(from.x, value, from.z);
+                return new UnityEngine.Vector3Int(from.x, value, from.z);
             }
             else if (axis == Axis.Z)
             {
-                return new Vector3Int(from.x, from.y, value);
+                return new UnityEngine.Vector3Int(from.x, from.y, value);
             }
 
             return default;
         }
-        public static int GetAxis(this Vector2Int from, Axis axis)
+        public static int GetAxis(this UnityEngine.Vector2Int from, Axis axis)
         {
             if (axis == Axis.X)
             {
@@ -143,21 +143,21 @@ namespace REXTools.TransformTools
 
             return default;
         }
-        public static Vector2Int SetAxis(this Vector2Int from, Axis axis, int value)
+        public static UnityEngine.Vector2Int SetAxis(this UnityEngine.Vector2Int from, Axis axis, int value)
         {
             if (axis == Axis.X)
             {
-                return new Vector2Int(value, from.y);
+                return new UnityEngine.Vector2Int(value, from.y);
             }
             else if (axis == Axis.Y)
             {
-                return new Vector2Int(from.x, value);
+                return new UnityEngine.Vector2Int(from.x, value);
             }
 
             return default;
         }
         
-        //operation
+        //operation (with same type)
         public static Vector3 Operate(this Vector3 a, System.Func<Axis, float, float> operation)
         {
             return new Vector3(
@@ -189,37 +189,138 @@ namespace REXTools.TransformTools
             );
         }
 
-        public static Vector3Int Operate(this Vector3Int a, System.Func<Axis, int, int> operation)
+        public static UnityEngine.Vector3Int Operate(this Vector3Int a, System.Func<Axis, int, int> operation)
         {
-            return new Vector3Int(
+            return new UnityEngine.Vector3Int(
                 operation(Axis.X, a.x),
                 operation(Axis.Y, a.y),
                 operation(Axis.Z, a.z)
             );
         }
-        public static Vector2Int Operate(this Vector2Int a, System.Func<Axis, int, int> operation)
+        public static UnityEngine.Vector2Int Operate(this Vector2Int a, System.Func<Axis, int, int> operation)
         {
-            return new Vector2Int(
+            return new UnityEngine.Vector2Int(
                 operation(Axis.X, a.x),
                 operation(Axis.Y, a.y)
             );
         }
-        public static Vector3Int Operate(this Vector3Int a, Vector3Int b, System.Func<Axis, int, int, int> operation)
+        public static UnityEngine.Vector3Int Operate(this Vector3Int a, Vector3Int b, System.Func<Axis, int, int, int> operation)
         {
-            return new Vector3Int(
+            return new UnityEngine.Vector3Int(
                 operation(Axis.X, a.x, b.x),
                 operation(Axis.Y, a.y, b.y),
                 operation(Axis.Z, a.z, b.z)
             );
         }
-        public static Vector2Int Operate(this Vector2Int a, Vector2Int b, System.Func<Axis, int, int, int> operation)
+        public static UnityEngine.Vector2Int Operate(this Vector2Int a, Vector2Int b, System.Func<Axis, int, int, int> operation)
         {
-            return new Vector2Int(
+            return new UnityEngine.Vector2Int(
                 operation(Axis.X, a.x, b.x),
                 operation(Axis.Y, a.y, b.y)
             );
         }
 
+
+        //vector3 custom operate
+        public static Vector3T<TR> Operate<TR>(this Vector3 a, System.Func<Axis, float, TR> operation)
+        {
+            return new Vector3T<TR>(
+                operation(Axis.X, a.x),
+                operation(Axis.Y, a.y),
+                operation(Axis.Z, a.z)
+            );
+        }
+        public static Vector3T<TR> Operate<TR, T1>(this Vector3 a, Vector3T<T1> b, System.Func<Axis, float, T1, TR> operation)
+        {
+            return new Vector3T<TR>(
+                operation(Axis.X, a.x, b.x),
+                operation(Axis.Y, a.y, b.y),
+                operation(Axis.Z, a.z, b.z)
+            );
+        }
+        public static Vector3T<TR> Operate<TR, T1, T2>(this Vector3 a, Vector3T<T1> b, Vector3T<T2> c, System.Func<Axis, float, T1, T2, TR> operation)
+        {
+            return new Vector3T<TR>(
+                operation(Axis.X, a.x, b.x, c.x),
+                operation(Axis.Y, a.y, b.y, c.y),
+                operation(Axis.Z, a.z, b.z, c.z)
+            );
+        }
+
+        //vector2 custom operate
+        public static Vector2T<TR> Operate<TR>(this Vector2 a, System.Func<Axis, float, TR> operation)
+        {
+            return new Vector2T<TR>(
+                operation(Axis.X, a.x),
+                operation(Axis.Y, a.y)
+            );
+        }
+        public static Vector2T<TR> Operate<TR, T1>(this Vector2 a, Vector3T<T1> b, System.Func<Axis, float, T1, TR> operation)
+        {
+            return new Vector2T<TR>(
+                operation(Axis.X, a.x, b.x),
+                operation(Axis.Y, a.y, b.y)
+            );
+        }
+        public static Vector2T<TR> Operate<TR, T1, T2>(this Vector2 a, Vector3T<T1> b, Vector3T<T2> c, System.Func<Axis, float, T1, T2, TR> operation)
+        {
+            return new Vector2T<TR>(
+                operation(Axis.X, a.x, b.x, c.x),
+                operation(Axis.Y, a.y, b.y, c.y)
+            );
+        }
+
+        //vector3int custom operate
+        public static Vector3T<TR> Operate<TR>(this UnityEngine.Vector3Int a, System.Func<Axis, int, TR> operation)
+        {
+            return new Vector3T<TR>(
+                operation(Axis.X, a.x),
+                operation(Axis.Y, a.y),
+                operation(Axis.Z, a.z)
+            );
+        }
+        public static Vector3T<TR> Operate<TR, T1>(this UnityEngine.Vector3Int a, Vector3T<T1> b, System.Func<Axis, int, T1, TR> operation)
+        {
+            return new Vector3T<TR>(
+                operation(Axis.X, a.x, b.x),
+                operation(Axis.Y, a.y, b.y),
+                operation(Axis.Z, a.z, b.z)
+            );
+        }
+        public static Vector3T<TR> Operate<TR, T1, T2>(this UnityEngine.Vector3Int a, Vector3T<T1> b, Vector3T<T2> c, System.Func<Axis, int, T1, T2, TR> operation)
+        {
+            return new Vector3T<TR>(
+                operation(Axis.X, a.x, b.x, c.x),
+                operation(Axis.Y, a.y, b.y, c.y),
+                operation(Axis.Z, a.z, b.z, c.z)
+            );
+        }
+
+        //vector2int custom operate
+        public static Vector2T<TR> Operate<TR>(this UnityEngine.Vector2Int a, System.Func<Axis, int, TR> operation)
+        {
+            return new Vector2T<TR>(
+                operation(Axis.X, a.x),
+                operation(Axis.Y, a.y)
+            );
+        }
+        public static Vector2T<TR> Operate<TR, T1>(this UnityEngine.Vector2Int a, Vector3T<T1> b, System.Func<Axis, int, T1, TR> operation)
+        {
+            return new Vector2T<TR>(
+                operation(Axis.X, a.x, b.x),
+                operation(Axis.Y, a.y, b.y)
+            );
+        }
+        public static Vector2T<TR> Operate<TR, T1, T2>(this UnityEngine.Vector2Int a, Vector3T<T1> b, Vector3T<T2> c, System.Func<Axis, int, T1, T2, TR> operation)
+        {
+            return new Vector2T<TR>(
+                operation(Axis.X, a.x, b.x, c.x),
+                operation(Axis.Y, a.y, b.y, c.y)
+            );
+        }
+
+
+        //operate bool
         public static Vector3Bool OperateBool(this Vector3 a, System.Func<Axis, float, bool> operation)
         {
             return new Vector3Bool(
@@ -300,21 +401,21 @@ namespace REXTools.TransformTools
             return new Vector2(a.x / b.x, a.y / b.y);
         }
 
-        public static Vector3Int Multiply(this Vector3Int a, Vector3Int b)
+        public static UnityEngine.Vector3Int Multiply(this Vector3Int a, Vector3Int b)
         {
-            return new Vector3Int(a.x * b.x, a.y * b.y, a.z * b.z);
+            return new UnityEngine.Vector3Int(a.x * b.x, a.y * b.y, a.z * b.z);
         }
-        public static Vector2Int Multiply(this Vector2Int a, Vector2Int b)
+        public static UnityEngine.Vector2Int Multiply(this Vector2Int a, Vector2Int b)
         {
-            return new Vector2Int(a.x * b.x, a.y * b.y);
+            return new UnityEngine.Vector2Int(a.x * b.x, a.y * b.y);
         }
-        public static Vector3Int Divide(this Vector3Int a, Vector3Int b)
+        public static UnityEngine.Vector3Int Divide(this Vector3Int a, Vector3Int b)
         {
-            return new Vector3Int(a.x / b.x, a.y / b.y, a.z / b.z);
+            return new UnityEngine.Vector3Int(a.x / b.x, a.y / b.y, a.z / b.z);
         }
-        public static Vector2Int Divide(this Vector2Int a, Vector2Int b)
+        public static UnityEngine.Vector2Int Divide(this Vector2Int a, Vector2Int b)
         {
-            return new Vector2Int(a.x / b.x, a.y / b.y);
+            return new UnityEngine.Vector2Int(a.x / b.x, a.y / b.y);
         }
 
         public static Vector3 Round(this Vector3 a)
