@@ -11,11 +11,11 @@ namespace REXTools.Tiling {
     {
         //public Dictionary<float, Dictionary<float, Dictionary<float, bool>>> area;
         
-        public Vector3Int[] area;
+        public UnityEngine.Vector3Int[] area;
 
         public TileOrigin originType = TileOrigin.Inside;
 
-        public Vector3Int origin;
+        public UnityEngine.Vector3Int origin;
 
         public override void ClearArea()
         {

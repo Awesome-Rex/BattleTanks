@@ -11,13 +11,15 @@ namespace REXTools.Tiling
         public Tile reference;
         public GridOrientation grid;
 
-        public Vector3Int rotation = Vector3Int.zero;
+        public UnityEngine.Vector3Int rotation = UnityEngine.Vector3Int.zero;
         
         public Quaternion offsetRotation
         {
             get
             {
-                return Quaternion.Euler(rotation.Operate((s, a) => a - (int)(Mathf.Floor(a / 4) * 4)) * 90);
+                TransformTools.Vector3T<int> temp = new TransformTools.Vector3Int(rotation).Operate((s, a) => (a - (int)(Mathf.Floor(a / 4) * 4) * 90))/* * 90*/;
+
+                return Quaternion.Euler(temp.x, temp.y, temp.z);
             }
         }
 

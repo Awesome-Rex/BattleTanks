@@ -113,13 +113,17 @@ namespace REXTools.Tiling
         //one subidivion to multiple subdivisions
         public Vector3 OneToGrid (Vector3 position, int subdivisions = 1)
         {
-            Vector3 totalSpacing;
+            //Vector3 totalSpacing;
+
+            throw new System.NotImplementedException();
         }
         public Vector3 GridToGrid(Vector3 position, int subdivisions = 1, int newSubdivisions = 1)
         {
             //converts 
             //Position => One
             //One => Position
+
+            throw new System.NotImplementedException();
         }
 
     }

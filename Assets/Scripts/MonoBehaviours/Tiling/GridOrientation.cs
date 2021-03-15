@@ -11,6 +11,7 @@ using REXTools.TransformTools;
 
 namespace REXTools.Tiling
 {
+    //grid implemented in scene - in world space
     public class GridOrientation : MonoBehaviour
     {
         //grid size
@@ -33,10 +34,10 @@ namespace REXTools.Tiling
         public bool showGridGizmos = true;
         public bool showOnlyWhenSelected = true;
 
-        public Vector3Int gridReach = Vector3Int.one * 10;
+        public UnityEngine.Vector3Int gridReach = UnityEngine.Vector3Int.one * 10;
         public Vector3 gridOffset = Vector3.zero;
 
-        public Vector3Int gridRepeats = Vector3Int.one;
+        public UnityEngine.Vector3Int gridRepeats = UnityEngine.Vector3Int.one;
         public Vector3 gridPlaneSpacing = Vector3.one * 10f;
 
         [Header("Grid Axis")]
@@ -213,7 +214,7 @@ namespace REXTools.Tiling
             return tileState;
         }
         //moves existing tile
-        public void SetPosition(TileState tile, Vector3 position, Vector3Int rotation, bool centerOnSpace)
+        public void SetPosition(TileState tile, Vector3 position, UnityEngine.Vector3Int rotation, bool centerOnSpace)
         {
 
         }
@@ -438,16 +439,16 @@ namespace REXTools.Tiling
         //takes world position
         public bool TileCast(Ray ray, out GridCastHit hitInfo, float maxDistance = Mathf.Infinity, int subdivisions = 1, int AxisMask = 000)
         {
-            hitInfo.point =
-            hitInfo.worldPoint =
+            //hitInfo.point =
+            //hitInfo.worldPoint =
 
-            hitInfo.distance =
-            hitInfo.worldDistance =
-
-
+            //hitInfo.distance =
+            //hitInfo.worldDistance =
 
 
 
+
+            throw new System.NotImplementedException();
         }
 
         //public bool TileCastAll(Ray ray, out GridCastHit[] hitInfo, float maxDistance = Mathf.Infinity, int subdivions = 1, int AxisMask = 000)
@@ -498,7 +499,7 @@ namespace REXTools.Tiling
                 (Vectors.axisDirections[drawAxes[1]] * tileSize.GetAxis(drawAxes[1]));
 
             Gizmos.matrix = Matrix4x4.TRS(
-                GridToWorld(position, true),
+                GridToWorld(position, 1, true),
                 finalRotation,
                 fillSize.Multiply(totalScale)
             );
@@ -524,7 +525,7 @@ namespace REXTools.Tiling
                 (Vectors.axisDirections[drawAxes[1]] * tileSize.GetAxis(drawAxes[1]));
 
             Gizmos.matrix = Matrix4x4.TRS(
-                GridToWorld(position, true),
+                GridToWorld(position, 1, true),
                 finalRotation,
                 fillSize.Multiply(totalScale)
             );
@@ -559,7 +560,7 @@ namespace REXTools.Tiling
             DrawTileOutline(position, axis, subdividisions);
         }
 
-        private void DrawGrid(Axis axis, Vector2Int radius, float offset = 0f)
+        private void DrawGrid(Axis axis, UnityEngine.Vector2Int radius, float offset = 0f)
         {
             if (grid != null)
             {
@@ -606,8 +607,8 @@ namespace REXTools.Tiling
                 {
                     for (int j = 0; j < Mathf.Abs(gridRepeats.GetAxis(i.Key)); j++)
                     {
-                        DrawGrid(i.Key, Vector2Int.one * gridReach.GetAxis(i.Key), gridOffset.GetAxis(i.Key) + (j * gridPlaneSpacing.GetAxis(i.Key)));
-                        DrawGrid(i.Key, Vector2Int.one * gridReach.GetAxis(i.Key), gridOffset.GetAxis(i.Key) - (j * gridPlaneSpacing.GetAxis(i.Key)));
+                        DrawGrid(i.Key, UnityEngine.Vector2Int.one * gridReach.GetAxis(i.Key), gridOffset.GetAxis(i.Key) + (j * gridPlaneSpacing.GetAxis(i.Key)));
+                        DrawGrid(i.Key, UnityEngine.Vector2Int.one * gridReach.GetAxis(i.Key), gridOffset.GetAxis(i.Key) - (j * gridPlaneSpacing.GetAxis(i.Key)));
                     }
                 }
             }
