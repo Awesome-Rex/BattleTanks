@@ -14,6 +14,6 @@ namespace REXTools.Tiling
         public float distance;
         public float worldDistance;
 
-        public Axis axis;
+        //public Axis axis;
     }
 }

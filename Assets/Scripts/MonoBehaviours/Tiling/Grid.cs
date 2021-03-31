@@ -6,12 +6,14 @@ using REXTools.TransformTools;
 
 namespace REXTools.Tiling
 {
+    public enum TileRepeatMethod { Point, Outline }
+    public enum TileAppearance { Border, Cross }
+
     [CreateAssetMenu(fileName = "New REX Grid", menuName = "REX/Tiling/Grid", order = 0)]
     public class Grid : ScriptableObject
     {
         public Vector3 size = Vector3.one;
-        public Vector3 spacing = Vector3.zero;
-        public Vector3 scale = Vector3.one;
+        public float scale = 1f;
 
         //properties
         public Dictionary<Axis, TileOrigin> center = new Dictionary<Axis, TileOrigin>
@@ -28,10 +30,6 @@ namespace REXTools.Tiling
         {
             get => size.x == size.y && size.x == size.z;
         }
-        public bool equalSpacing
-        {
-            get => spacing.x == spacing.y && spacing.x == spacing.z;
-        }
 
         public Vector3Bool canPivot
         {
@@ -45,82 +43,61 @@ namespace REXTools.Tiling
             }
         }
 
-        public bool spaced
-        {
-            get => spacing == Vector3.zero;
-        }
 
-
-        public int maxSubdivisions
-        {
-            get
-            {
-                int subdivisions = 1;
-                bool packed = false;
-                
-                while (!packed)
-                {
-                    ((subdivisions - 1) * spacing).OperateBool(size, (s, ASubdivisions, ASize) =>
-                    {
-                        if (ASubdivisions >= ASize)
-                        {
-                            return true;
-                        } else
-                        {
-                            return false;
-                        }
-                    });
-
-                    subdivisions++;
-                }
-
-                return subdivisions;
-            }
-        }
+        
         public Vector3 subdividedTileSize (int subdivisions)
         {
-            return size - (spacing * (subdivisions - 1));
+            //return size - (spacing * (subdivisions - 1));
+            return size / subdivisions;
         }
 
-        //STILL NEEDS TO FACTOR SPACING
-        public Vector3 GridToGridUnspaced(Vector3 position, int subdivisions = 1, int newSubdivisions = 1)
-        {
-            return position * (subdivisions / newSubdivisions);
-        }
 
         //multiple subdivisions to one subdivision
         public Vector3 GridToOne(Vector3 position, int subdivisions = 1)
         {
-            Vector3 newPosition = position;
-            newPosition /= subdivisions;
+            subdivisions = RMath.ClampMin(subdivisions, 1);
 
-            Vector3 totalSpaces;
-            if (subdivisions.Even())
+            if (RMath.Odd(subdivisions))
             {
-                totalSpaces = Vector3.one / 2f;
-                totalSpaces += position.Operate((s, a) => a.SignFloor() - a.SignFloor());
+                return position / subdivisions;
+            } 
+            else 
+            {
+                return (position / subdivisions) + (Vector3.one * (-0.25f) );
             }
+        }
+        //one subdivision to multiple subdivisions
+        public Vector3 OneToGrid(Vector3 position, int subdivisions = 1)
+        {
+            subdivisions = RMath.ClampMin(subdivisions, 1);
+
+            if (RMath.Odd(subdivisions)) {
+                return position * subdivisions;
+            } 
             else
             {
-                totalSpaces = position.Operate((s, a) => a.SignFloor());
+                return (position + (Vector3.one * 0.25f)) * subdivisions;
             }
-
-            Vector3 totalSpacing = spacing.Multiply(totalSpaces);
-            newPosition += totalSpacing;
-
-            return newPosition;
         }
-        //one subidivion to multiple subdivisions
-        public Vector3 OneToGrid (Vector3 position, int subdivisions = 1)
-        {
-            Vector3 totalSpacing;
-        }
+        
+        
         public Vector3 GridToGrid(Vector3 position, int subdivisions = 1, int newSubdivisions = 1)
         {
             //converts 
             //Position => One
             //One => Position
-        }
 
+            subdivisions = RMath.ClampMin(subdivisions, 1);
+            newSubdivisions = RMath.ClampMin(newSubdivisions, 1);
+
+            return OneToGrid(GridToOne(position, subdivisions), newSubdivisions);
+        }
+        
+        //Takes subdivided position
+        //returns position in "one's" space
+        //public Vector3 SubdivisionRound(Vector3 position, int subdivisions, Vector3 increment, Vector3 offset)
+        //{
+        //    return GridToOne(position.CustomRound(increment, offset), subdivisions);
+        //}
     }
 }
