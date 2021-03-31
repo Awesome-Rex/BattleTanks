@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace REXTools.TransformTools
 {
+    public enum AverageType { Least, Greatest, Mean, Median, Range, MidRange }
+
     public static class RMath
     {
         public static bool SignGreater(this float a, float b)
@@ -135,14 +138,33 @@ namespace REXTools.TransformTools
 
 
 
-        public static float CustomRound(this float f, float increment, float offset)
+        public static float CustomRound(this float f, System.Func<float, float> func, float increment = 1f, float offset = 0f)
         {
-            return (Mathf.Round((f - offset) / increment) * increment) + offset;
+            return (func((f - offset) / increment) * increment) + offset;
         }
-        public static float CustomRound(this float f, float increment)
+
+        public static float CustomRound(this float f, float increment = 1f, float offset = 0f)
         {
-            return CustomRound(f, increment, 0f);
+            return f.CustomRound((n) => Mathf.Round(n), increment, offset);
         }
+        public static float CustomFloor(this float f, float increment = 1f, float offset = 0f)
+        {
+            return f.CustomRound((n) => Mathf.Floor(n), increment, offset);
+        }
+        public static float CustomCeil(this float f, float increment = 1f, float offset = 0f)
+        {
+            return f.CustomRound((n) => Mathf.Ceil(n), increment, offset);
+        }
+        public static float CustomSignFloor(this float f, float increment = 1f, float offset = 0f)
+        {
+            return f.CustomRound((n) => RMath.SignFloor(n), increment, offset);
+        }
+        public static float CustomSignCeil(this float f, float increment = 1f, float offset = 0f)
+        {
+            return f.CustomRound((n) => RMath.SignCeil(n), increment, offset);
+        }
+
+
 
         public static bool Even (this int f)
         {
@@ -151,6 +173,81 @@ namespace REXTools.TransformTools
         public static bool Odd(this int f)
         {
             return f % 2 == 1;
+        }
+
+        public static float ClampMin (float value, float min)
+        {
+            return Mathf.Clamp(value, min, float.MaxValue);
+        }
+        public static float ClampMax(float value, float max)
+        {
+            return Mathf.Clamp(value, float.MinValue, max);
+        }
+        public static int ClampMin(int value, int min)
+        {
+            return Mathf.Clamp(value, min, int.MaxValue);
+        }
+        public static int ClampMax(int value, int max)
+        {
+            return Mathf.Clamp(value, int.MinValue, max);
+        }
+
+
+        public static float GetAverage<T>(this List<T> list, System.Func<T, float> property, AverageType averageType = AverageType.Mean)
+        {
+            if (averageType == AverageType.Least)
+            {
+                return list.Min(property);
+            }
+            else if (averageType == AverageType.Greatest)
+            {
+                return list.Max(property);
+            }
+            else if (averageType == AverageType.Mean)
+            {
+                return list.Average(property);
+            }
+            else if (averageType == AverageType.Median)
+            {
+                list = list.OrderBy(property).ToList<T>();
+
+                if (RMath.Odd(list.Count))
+                {
+                    //++++++++++++NEEDS TO BE FIXED
+                    //USE System.Func on induvidual value to get property
+                    return property(list[(int)(Mathf.Ceil(list.Count / 2f) - 1)]);
+                }
+                else if (RMath.Even(list.Count))
+                {
+                    return (
+                        property(list[(list.Count / 2) - 1]) +
+                        property(list[(list.Count / 2) + 1 - 1])
+                        ) / 2f;
+                }
+            }
+            else if (averageType == AverageType.Range)
+            {
+                return list.Max(property) - list.Min(property);
+            }
+            else if (averageType == AverageType.MidRange)
+            {
+                return (list.Min(property) + list.Max(property)) / 2f;
+            }
+
+            return 1f;
+        }
+        public static float GetAverage<T>(this T[] list, System.Func<T, float> property, AverageType averageType = AverageType.Mean)
+        {
+            List<T> listConverted = list.ToList<T>();
+
+            return listConverted.GetAverage<T>(property, averageType);
+        }
+
+        public static float GetAverage(this List<float> list, AverageType averageType = AverageType.Mean) {
+            return list.GetAverage(num => num, averageType);
+        }
+        public static float GetAverage(this float[] list, AverageType averageType = AverageType.Mean) {
+            return list.ToList().GetAverage(num => num, averageType);
         }
     }
 }

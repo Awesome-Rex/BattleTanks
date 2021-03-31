@@ -7,7 +7,7 @@ namespace REXTools.TransformTools
 {
     public enum Axis { X, Y, Z }
     public enum SpaceVariety { OneSided, Mixed }
-
+    
     public static class Vectors
     {
         // THE AXIS BIBLE
@@ -31,6 +31,17 @@ namespace REXTools.TransformTools
             { Axis.X, new Vector3(1f, 0f, 0f) },
             { Axis.Y, new Vector3(0f, 1f, 0f) },
             { Axis.Z, new Vector3(0f, 0f, 1f) }
+        };
+        public static Dictionary<Axis, Vector2T<Axis>> axisPlanes = new Dictionary<Axis, Vector2T<Axis>>
+        {
+            { Axis.X, new Vector2T<Axis>(Axis.Z, Axis.Y) },
+            { Axis.Y, new Vector2T<Axis>(Axis.X, Axis.Z) },
+            { Axis.Z, new Vector2T<Axis>(Axis.X, Axis.Y) }
+        };
+        public static Dictionary<Vector3, Vector2T<Vector3>> axisPlaneDirections = new Dictionary<Vector3, Vector2T<Vector3>> {
+            { axisDirections[Axis.X], new Vector2T<Vector3>(axisDirections[Axis.Z], axisDirections[Axis.Y]) },
+            { axisDirections[Axis.Y], new Vector2T<Vector3>(axisDirections[Axis.X], axisDirections[Axis.Z]) },
+            { axisDirections[Axis.Z], new Vector2T<Vector3>(axisDirections[Axis.X], axisDirections[Axis.Y]) }
         };
 
         //METHODS
@@ -457,10 +468,81 @@ namespace REXTools.TransformTools
         {
             return new Vector3(rad.x * Mathf.Rad2Deg, rad.y * Mathf.Rad2Deg, rad.z * Mathf.Rad2Deg);
         }
+        public static Vector3 Rad2Deg(this Vector2 rad)
+        {
+            return new Vector3(rad.x * Mathf.Rad2Deg, rad.y * Mathf.Rad2Deg);
+        }
         public static Vector3 Deg2Rad(this Vector3 deg)
         {
             return new Vector3(deg.x * Mathf.Deg2Rad, deg.y * Mathf.Deg2Rad, deg.z * Mathf.Deg2Rad);
         }
+        public static Vector3 Deg2Rad(this Vector2 deg)
+        {
+            return new Vector3(deg.x * Mathf.Deg2Rad, deg.y * Mathf.Deg2Rad);
+        }
+
+        public static float[] ToArray(this Vector3 f)
+        {
+            return new float[]{ 
+                f.x, 
+                f.y, 
+                f.z
+            };
+        }
+        public static float[] ToArray(this Vector2 f)
+        {
+            return new float[]{ 
+                f.x, 
+                f.y
+            };
+        }
+        public static int[] ToArray(this Vector3Int f)
+        {
+            return new int[]{
+                f.x,
+                f.y,
+                f.z
+            };
+        }
+        public static int[] ToArray(this Vector2Int f)
+        {
+            return new int[]{
+                f.x,
+                f.y
+            };
+        }
+
+        public static List<float> ToList(this Vector3 f)
+        {
+            return new List<float>{
+                f.x,
+                f.y,
+                f.z
+            };
+        }
+        public static List<float> ToList(this Vector2 f)
+        {
+            return new List<float>{
+                f.x,
+                f.y
+            };
+        }
+        public static List<int> ToList(this Vector3Int f)
+        {
+            return new List<int>{
+                f.x,
+                f.y,
+                f.z
+            };
+        }
+        public static List<int> ToList(this Vector2Int f)
+        {
+            return new List<int>{
+                f.x,
+                f.y
+            };
+        }
+
 
         public static Vector3 CustomRoundVector3(Vector3 f, Vector3 increment, Vector3 offset)
         {
@@ -610,6 +692,58 @@ namespace REXTools.TransformTools
             });
 
             return Quaternion.LookRotation(-planeNormal, up) * direction;
+        }
+
+        //checks if specified point(s) are seen by a camera
+        public static bool InView(this Camera camera, Vector3 point)
+        {
+            Vector3 viewportPoint = camera.WorldToViewportPoint(point);
+
+            if (
+                viewportPoint.x >= 0f && viewportPoint.x <= 1f &&
+                viewportPoint.y >= 0f && viewportPoint.y <= 1f &&
+                viewportPoint.z >= 0f
+                )
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+        public static bool InView(this Camera camera, Vector3[] points, bool fullyInView = false)
+        {
+            if (!fullyInView)
+            {
+                //If atleast one point is in view, set to true
+                bool oneInView = false;
+
+                foreach (Vector3 point in points)
+                {
+                    if (camera.InView(point))
+                    {
+                        oneInView = true;
+                    }
+                }
+
+                return oneInView;
+            } else if (fullyInView)
+            {
+                foreach (Vector3 point in points)
+                {
+                    if (!camera.InView(point))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            return default;
+        }
+        public static bool InView(this Camera camera, List<Vector3> points, bool fullyInView = false)
+        {
+            return camera.InView(points.ToArray(), fullyInView);
         }
 
         //END
