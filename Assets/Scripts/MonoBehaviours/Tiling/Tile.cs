@@ -5,14 +5,14 @@ using UnityEngine;
 using REXTools.TransformTools;
 
 namespace REXTools.Tiling {
+    [CreateAssetMenu(fileName = "New REX Tile", menuName = "REX/Tiling/Tile")]
     public class Tile : TileBase
     {
         public GameObject prefab;
 
         public Vector3 offsetPosition;
         public Quaternion offsetRotation;
-
-        public float offsetScale;
+        public Vector3 offsetScale;
 
         public Dictionary<Axis, Vector3> correspondDirection
         {

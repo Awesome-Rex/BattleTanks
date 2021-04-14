@@ -6,7 +6,7 @@ using UnityEditor;
 using REXTools.REXCore;
 
 [CustomPropertyDrawer(typeof(Space))]
-public class SpacePD : PropertyDrawerPRO
+public class SpacePropertyDrawer : PropertyDrawerPRO
 {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {

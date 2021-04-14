@@ -45,7 +45,7 @@ namespace REXTools.REXCore
         protected float lines = 1;
         protected bool resetIndent = true;
 
-        protected Rect newPosition;
+        protected Rect newPosition; //starts at indented position (EdiotrGUI.IndentedRect)
 
         public void OnGUIPRO(Rect position, SerializedProperty property, GUIContent label, System.Action action)
         {

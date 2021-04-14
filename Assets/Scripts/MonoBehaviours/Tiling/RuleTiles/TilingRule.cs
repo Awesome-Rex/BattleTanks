@@ -6,9 +6,11 @@ using REXTools.TransformTools;
 
 namespace REXTools.Tiling
 {
-    public class GridCastHit
+    public enum RuleBehaviour { DontCare, This, NotThis}
+
+    [System.Serializable]
+    public class TilingRule : SignAdjacency<RuleBehaviour>
     {
-        public Vector3 point;
-        public float distance;
+        
     }
 }

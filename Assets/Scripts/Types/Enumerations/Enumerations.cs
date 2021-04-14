@@ -1,1 +1,1 @@
-﻿public enum SnapDetectionMethod { Any, Staight, Custom }
+﻿//public enum ExampleEnumeration { }

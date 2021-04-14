@@ -5,7 +5,8 @@ using System.Linq;
 
 namespace REXTools.TransformTools
 {
-    public enum AverageType { Least, Greatest, Mean, Median, Range, MidRange }
+    public enum Sign { Neutral, Positive, Negative }
+    public enum AverageType { Least, Greatest, Mean, Median, Mode, Range, MidRange }
 
     public static class RMath
     {
@@ -224,6 +225,23 @@ namespace REXTools.TransformTools
                         property(list[(list.Count / 2) + 1 - 1])
                         ) / 2f;
                 }
+            }
+            else if (averageType == AverageType.Mode)
+            {
+                Dictionary<float, int> ocurrances = new Dictionary<float, int>();
+
+                foreach (T i in list)
+                {
+                    if (ocurrances.ContainsKey(property(i)))
+                    {
+                        ocurrances[property(i)] = ocurrances[property(i)] + 1;
+                    } else
+                    {
+                        ocurrances[property(i)] = 1;
+                    }
+                }
+
+                return list.Max((f) => ocurrances[property(f)]);
             }
             else if (averageType == AverageType.Range)
             {
