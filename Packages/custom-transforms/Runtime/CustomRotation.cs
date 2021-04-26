@@ -407,6 +407,7 @@ namespace REXTools.CustomTransforms
             previous = Linking.InverseTransformEuler(operationalRotation, parentRot);
         }
 
+        //inspector methods
         public override void Switch(Space newSpace, Link newLink)
         {
             Quaternion originalRotation = rotation;
@@ -503,6 +504,88 @@ namespace REXTools.CustomTransforms
             offset = new AxisOrder(null, offset.variety, offset.space);
         }
 
+        //context menu methods
+#if UNITY_EDITOR
+        public static void SetCheckedEnumMenuItems()
+        {
+            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Self", LinkSpaceRotation.Self, ref CustomRotationEditor.selfHandleRot);
+            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Parent", LinkSpaceRotation.Parent, ref CustomRotationEditor.selfHandleRot);
+            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/World", LinkSpaceRotation.World, ref CustomRotationEditor.selfHandleRot);
+
+            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/World Space Handle/Self", Space.Self, ref CustomRotationEditor.worldHandleRot);
+            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/World Space Handle/World", Space.World, ref CustomRotationEditor.worldHandleRot);
+        }
+
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Self")]
+        private static void SelfHandleRotation_Self()
+        {
+            CustomRotationEditor.selfHandleRot = LinkSpaceRotation.Self;
+
+            SetCheckedEnumMenuItems();
+        }
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Parent")]
+        private static void SelfHandleRotation_Parent()
+        {
+            CustomRotationEditor.selfHandleRot = LinkSpaceRotation.Parent;
+
+            SetCheckedEnumMenuItems();
+        }
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/World")]
+        private static void SelfHandleRotation_World()
+        {
+            CustomRotationEditor.selfHandleRot = LinkSpaceRotation.World;
+
+            SetCheckedEnumMenuItems();
+        }
+
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Self", true)]
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Parent", true)]
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/World", true)]
+        private static bool SelfHandleRotation_Valid()
+        {
+            return CustomTransformHandlesWindow.activeType == typeof(CustomRotation) && ((CustomRotation)CustomTransformHandlesWindow.activeCustomTransform).space == Space.Self;
+        }
+
+
+
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/World Space Handle/Self")]
+        private static void WorldHandleRotation_Self()
+        {
+            CustomRotationEditor.worldHandleRot = Space.Self;
+
+            SetCheckedEnumMenuItems();
+        }
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/World Space Handle/World")]
+        private static void WorldHandleRotation_Parent()
+        {
+            CustomRotationEditor.worldHandleRot = Space.World;
+
+            SetCheckedEnumMenuItems();
+        }
+
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/World Space Handle/Self", true)]
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/World Space Handle/World", true)]
+        private static bool WorldHandleRotation_Valid()
+        {
+            return CustomTransformHandlesWindow.activeType == typeof(CustomRotation) && ((CustomRotation)CustomTransformHandlesWindow.activeCustomTransform).space == Space.World;
+        }
+#endif
+
+        //events
+
         private void Start() { }
+
+
+        //Startup
+#if UNITY_EDITOR
+        [UnityEditor.InitializeOnLoad]
+        public static class Startup
+        {
+            static Startup()
+            {
+                SetCheckedEnumMenuItems();
+            }
+        }
+#endif
     }
 }

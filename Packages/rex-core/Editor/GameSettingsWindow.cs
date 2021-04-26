@@ -17,7 +17,7 @@ namespace REXTools.REXCore
         public void retrieveProperties()
         {
             // Debug.Log(_ETERNAL.I);
-            gameSettings = Editor.CreateEditor(_ETERNAL.I.gameSettings, typeof(E));
+            gameSettings = Editor.CreateEditor(_ETERNAL.I.gameSettings, typeof(GameSettingsEditor));
             gameEditorSettings = Editor.CreateEditor(_ETERNAL.I.gameEditorSettings, typeof(GameEditorSettings));
         }
 

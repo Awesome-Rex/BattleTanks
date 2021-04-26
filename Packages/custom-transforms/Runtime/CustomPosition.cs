@@ -563,8 +563,95 @@ namespace REXTools.CustomTransforms
             offset = new AxisOrder(null, offset.variety, offset.space);
         }
 
+
+        //context menu methods
+#if UNITY_EDITOR
+        //[ContextMenu("Open Handles Window")]
+        //private void OpenHandlesWindow ()
+        //{
+        //    CustomTransformHandlesWindow.ShowWindow();
+        //}
+
+        public static void SetCheckedEnumMenuItems()
+        {
+            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Self", LinkSpaceRotation.Self, ref CustomPositionEditor.selfHandleRot);
+            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Parent", LinkSpaceRotation.Parent, ref CustomPositionEditor.selfHandleRot);
+            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/Self Space Handle/World", LinkSpaceRotation.World, ref CustomPositionEditor.selfHandleRot);
+
+            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/World Space Handle/Self", Space.Self, ref CustomPositionEditor.worldHandleRot);
+            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/World Space Handle/World", Space.World, ref CustomPositionEditor.worldHandleRot);
+        }
+
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Self")]
+        private static void SelfHandleRotation_Self()
+        {
+            CustomPositionEditor.selfHandleRot = LinkSpaceRotation.Self;
+
+            SetCheckedEnumMenuItems();
+        }
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Parent")]
+        private static void SelfHandleRotation_Parent()
+        {
+            CustomPositionEditor.selfHandleRot = LinkSpaceRotation.Parent;
+
+            SetCheckedEnumMenuItems();
+        }
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/World")]
+        private static void SelfHandleRotation_World()
+        {
+            CustomPositionEditor.selfHandleRot = LinkSpaceRotation.World;
+
+            SetCheckedEnumMenuItems();
+        }
+
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Self", true)]
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Parent", true)]
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/World", true)]
+        private static bool SelfHandleRotation_Valid()
+        {
+            return CustomTransformHandlesWindow.activeType == typeof(CustomPosition) && ((CustomPosition)CustomTransformHandlesWindow.activeCustomTransform).space == Space.Self;
+        }
+
+
+
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/World Space Handle/Self")]
+        private static void WorldHandleRotation_Self()
+        {
+            CustomPositionEditor.worldHandleRot = Space.Self;
+
+            SetCheckedEnumMenuItems();
+        }
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/World Space Handle/World")]
+        private static void WorldHandleRotation_Parent()
+        {
+            CustomPositionEditor.worldHandleRot = Space.World;
+
+            SetCheckedEnumMenuItems();
+        }
+
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/World Space Handle/Self", true)]
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/World Space Handle/World", true)]
+        private static bool WorldHandleRotation_Valid()
+        {
+            return CustomTransformHandlesWindow.activeType == typeof(CustomPosition) && ((CustomPosition)CustomTransformHandlesWindow.activeCustomTransform).space == Space.World;
+        }
+#endif
+
         //events
 
         private void Start() { }
+
+
+        //Startup
+#if UNITY_EDITOR
+        [UnityEditor.InitializeOnLoad]
+        public static class Startup
+        {
+            static Startup()
+            {
+                SetCheckedEnumMenuItems();
+            }
+        }
+#endif
     }
 }

@@ -7,7 +7,7 @@ using UnityEditor;
 namespace REXTools.REXCore
 {
     [CustomEditor(typeof(GameSettings))]
-    public class E : Editor
+    public class GameSettingsEditor : Editor
     {
         private new GameSettings target;
 

@@ -11,7 +11,20 @@ namespace REXTools.REXCore
     {
         public new GameEditorSettings target;
 
+        //delegates
+        //public static System.Action SetCheckedEnumMenuItems;
 
+        //methods
+        //[MenuItem("File/Reload Menu Item Enums")]
+        //private static void SetCheckedEnumMenuItemsEvent ()
+        //{
+        //    if (SetCheckedEnumMenuItems != null) {
+        //        SetCheckedEnumMenuItems();
+        //    }
+        //}
+
+
+        //events
         private void OnEnable()
         {
             target = (GameEditorSettings)base.target;

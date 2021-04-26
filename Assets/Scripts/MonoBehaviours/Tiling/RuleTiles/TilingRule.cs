@@ -11,6 +11,6 @@ namespace REXTools.Tiling
     [System.Serializable]
     public class TilingRule : SignAdjacency<RuleBehaviour>
     {
-        
+
     }
 }

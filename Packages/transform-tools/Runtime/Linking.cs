@@ -33,6 +33,19 @@ namespace REXTools.TransformTools
             );
         }
 
+
+        //local > world
+        public static Vector3 TransformDirection(Vector3 direction, Quaternion rotation)
+        {
+            return Matrix4x4.TRS(Vector3.zero, rotation, Vector3.one).MultiplyPoint3x4(direction);
+        }
+        //world > local
+        public static Vector3 InverseTransformDirection(Vector3 direction, Quaternion rotation)
+        {
+            return Quaternion.Inverse(rotation) * direction; //++++THIS SHOULD WORK
+        }
+
+
         //local > world
         public static Quaternion TransformEuler(Quaternion eulers, Quaternion rotation)
         {

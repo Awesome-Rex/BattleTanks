@@ -18,6 +18,14 @@ namespace REXTools.REXCore
             }
         }
 
+        //variables
         public List<GUIStyle> styles;
+
+
+        //properties
+        //_
+
+        //methods
+        //_
     }
 }

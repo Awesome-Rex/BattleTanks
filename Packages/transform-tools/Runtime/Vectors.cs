@@ -561,6 +561,17 @@ namespace REXTools.TransformTools
             return CustomRoundVector3(f, increment, Vector3.zero);
         }
 
+        
+        public static Vector3T<Sign> Rotate(this Vector3T<Sign> f, UnityEngine.Vector3Int eulers)
+        {
+            return SignAdjacency<dynamic>.signPositions.First(x => x.Value == (Quaternion.Euler(((Vector3)eulers) * 90f) * Quaternion.LookRotation(SignAdjacency<dynamic>.signPositions[f])) * Vector3.forward * SignAdjacency<dynamic>.signPositions[f].magnitude).Key;
+        }
+        public static Vector3T<Sign> Mirror(this Vector3T<Sign> f, Axis axis)
+        {
+            return f.SetAxis(axis, f.GetAxis(axis).Negative());
+        }
+
+
         //SPECIAL
 
         //plane raycasting

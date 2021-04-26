@@ -267,5 +267,54 @@ namespace REXTools.TransformTools
         public static float GetAverage(this float[] list, AverageType averageType = AverageType.Mean) {
             return list.ToList().GetAverage(num => num, averageType);
         }
+
+
+        //Enum extension methods
+        public static int ToInt(this Sign sign)
+        {
+            if (sign == Sign.Positive)
+            {
+                return 1;
+            }
+            else if (sign == Sign.Negative)
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        public static float ToFloat(this Sign sign)
+        {
+            if (sign == Sign.Positive)
+            {
+                return 1f;
+            }
+            else if (sign == Sign.Negative)
+            {
+                return -1f;
+            }
+            else
+            {
+                return 0f;
+            }
+        }
+
+        public static Sign Negative (this Sign sign)
+        {
+            if (sign == Sign.Positive)
+            {
+                return Sign.Negative;
+            }
+            else if (sign == Sign.Negative)
+            {
+                return Sign.Positive;
+            }
+            else
+            {
+                return Sign.Neutral;
+            }
+        }
     }
 }

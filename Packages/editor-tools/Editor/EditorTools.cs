@@ -9,7 +9,7 @@ using UnityEditor;
 
 namespace REXTools.EditorTools
 {
-    public static class CustomInspector
+    public static class CustomEditors
     {
         public static object GetParent(SerializedProperty prop)
         {
@@ -56,6 +56,68 @@ namespace REXTools.EditorTools
                 enm.MoveNext();
             return enm.Current;
         }
+
+
+        //if "press" is pressed, set "set" to "val"
+        //if "press" is already selected, disable it
+        public static void EnumButton<T>(this Editor editor, System.Func<bool> press, T val, ref T set)// where T : System.Enum
+        {
+            bool original = GUI.enabled;
+            if (set.Equals(val))
+            {
+                GUI.enabled = false;
+            }
+
+            if (press())
+            {
+                set = val;
+            }
+
+            GUI.enabled = original;
+        }
+        public static void EnumButton<T>(this EditorWindow editor, System.Func<bool> press, T val, ref T set)// where T : System.Enum
+        {
+            bool original = GUI.enabled;
+            if (set.Equals(val))
+            {
+                GUI.enabled = false;
+            }
+
+            if (press())
+            {
+                set = val;
+            }
+
+            GUI.enabled = original;
+        }
+        public static void EnumButton<T>(this PropertyDrawer editor, System.Func<bool> press, T val, ref T set)// where T : System.Enum
+        {
+            bool original = GUI.enabled;
+            if (set.Equals(val))
+            {
+                GUI.enabled = false;
+            }
+
+            if (press())
+            {
+                set = val;
+            }
+
+            GUI.enabled = original;
+        }
+
+
+
+        //if "press" if pressed, do nothing
+        //if "press" is already selected, set checked
+        public static void EnumMenuItem<T>(string press, T val, ref T set)
+        {
+            Menu.SetChecked(press, set.Equals(val));
+        }
+        //public static void EnumMenuItems<T>(Dictionary<string, T> menuItems) //equivelent to val and set ^^
+        //{
+            
+        //}
 
         //private static void SerializeList(FieldInfo field)
         //{

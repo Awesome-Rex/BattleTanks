@@ -29,13 +29,13 @@ public class GridTest : REXTools.REXCore.MonoBehaviourPRO
     public void OnDrawGizmos()
     {
         GridOrientationCastHit hit = SR.GetComponent<GridOrientation>().TileCast(ray, Axis.X, distance, subdivisions);
-        Debug.Log(distance + " ==> " + SR.GetComponent<GridOrientation>().WorldToGridDistance(ray, distance, subdivisions));
+        //Debug.Log(distance + " ==> " + SR.GetComponent<GridOrientation>().WorldToGridDistance(ray, distance, subdivisions));
         //Debug.Log(ray.direction + " ==> " + SR.GetComponent<GridOrientation>().WorldToGridDirection(ray.direction));
 
         Gizmos.color = Color.white;
 
         if (hit != null) {
-            Debug.Log("Worked!!!!");
+            //Debug.Log("Worked!!!!");
             //Debug.Log(hit.worldPoint);
             //Debug.Log(hit.worldDistance);
             //Debug.Log(SR.GetComponent<GridOrientation>().grid.OneToGridDistance(hit.distance, 2));

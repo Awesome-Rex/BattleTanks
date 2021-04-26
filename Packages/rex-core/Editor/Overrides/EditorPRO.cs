@@ -100,6 +100,16 @@ namespace REXTools.REXCore
             EditorGUILayout.EndHorizontal();
         }
 
+        public static void KeyValuePair(SerializedProperty key, SerializedProperty value)
+        {
+            EditorGUILayout.BeginHorizontal();
+            {
+                EditorGUILayout.PropertyField(key);
+                EditorGUILayout.PropertyField(value);
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
         //events
         protected virtual void OnEnable()
         {
