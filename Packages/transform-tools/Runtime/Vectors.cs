@@ -562,9 +562,9 @@ namespace REXTools.TransformTools
         }
 
         
-        public static Vector3T<Sign> Rotate(this Vector3T<Sign> f, UnityEngine.Vector3Int eulers)
+        public static Vector3T<Sign> Rotate(this Vector3T<Sign> f, UnityEngine.Vector3Int euler)
         {
-            return SignAdjacency<dynamic>.signPositions.First(x => x.Value == (Quaternion.Euler(((Vector3)eulers) * 90f) * Quaternion.LookRotation(SignAdjacency<dynamic>.signPositions[f])) * Vector3.forward * SignAdjacency<dynamic>.signPositions[f].magnitude).Key;
+            return SignAdjacency<dynamic>.signPositions.First(x => x.Value == (Quaternion.Euler(((Vector3)euler) * 90f) * Quaternion.LookRotation(SignAdjacency<dynamic>.signPositions[f])) * Vector3.forward * SignAdjacency<dynamic>.signPositions[f].magnitude).Key;
         }
         public static Vector3T<Sign> Mirror(this Vector3T<Sign> f, Axis axis)
         {

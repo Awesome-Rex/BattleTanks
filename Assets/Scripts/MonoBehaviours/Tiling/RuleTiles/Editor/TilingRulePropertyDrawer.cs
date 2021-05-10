@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections.Generic;
 
 using UnityEditor;
 
@@ -108,9 +107,9 @@ namespace REXTools.Tiling
 
             ////horizontal
             return new Vector2(
-                (-TilingRule.signPositions[TilingRule.ruleSigns[rule]].x + 1) +
-                ((TilingRule.signPositions[TilingRule.ruleSigns[rule]].y + 1) * 3f) +
-                RMath.ClampMin(TilingRule.signPositions[TilingRule.ruleSigns[rule]].y + 1, 0),
+                (-TilingRule.signPositions[TilingRule.ruleSigns[rule]].x + 1) + //x
+                ((TilingRule.signPositions[TilingRule.ruleSigns[rule]].y + 1) * 3f) + //y
+                RMath.ClampMin(TilingRule.signPositions[TilingRule.ruleSigns[rule]].y + 1, 0), //z
 
                 (TilingRule.signPositions[TilingRule.ruleSigns[rule]].z + 1)
             );
@@ -126,29 +125,64 @@ namespace REXTools.Tiling
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            TilingRule PropertyToTilingRule (SerializedProperty prop)
+            {
+                //converts property to local tiling rule
+                TilingRule tilingRule = new TilingRule();
+
+                foreach (string rule in TilingRule.ruleNames)
+                {
+                    tilingRule.SetRule(rule, (RuleBehaviour)prop.FindPropertyRelative(rule).enumValueIndex);
+                }
+
+                return tilingRule;
+            }
+            SerializedProperty TilingRuleToProperty (TilingRule tilingRule, SerializedProperty prop)
+            {
+                //sets property values to newTilingRule values
+                foreach (string rule in TilingRule.ruleNames)
+                {
+                    prop.FindPropertyRelative(rule).enumValueIndex = (int)tilingRule.GetRule(rule);
+                }
+
+                return prop;
+            }
+
+
             //Context Menu methods
             void Clear()
             {
+                TilingRule clearRule = new TilingRule();
+
                 foreach (string rule in TilingRule.ruleNames)
                 {
-                    property.FindPropertyRelative(rule).enumValueIndex = (int)RuleBehaviour.DontCare;
+                    clearRule.SetRule(rule, RuleBehaviour.DontCare);
                 }
+
+                TilingRuleToProperty(clearRule, property);
+
+                property.serializedObject.ApplyModifiedProperties();
             }
             void Rotate(UnityEngine.Vector3Int euler)
-            {
-
-            }
-            void Mirror(Axis axis)
-            {
-                //converts property to local tiling rule
-                TilingRule oldTilingRule = new TilingRule();
+            {//MAIN OPERATION - makes new tiling rule with flipped rules along axis
+                TilingRule oldTilingRule = PropertyToTilingRule(property);
+                TilingRule newTilingRule = new TilingRule();
 
                 foreach (string rule in TilingRule.ruleNames)
                 {
-                    oldTilingRule.SetRule(rule, (RuleBehaviour)property.FindPropertyRelative(rule).enumValueIndex);
+                    newTilingRule.SetRule(
+                        SignAdjacency<dynamic>.ruleSigns.First(x => x.Value.Equals(SignAdjacency<dynamic>.ruleSigns[rule].Rotate(euler))).Key,
+                        oldTilingRule.GetRule(rule)
+                    );
                 }
 
-                //MAIN OPERATION - makes new tiling rule with flipped rules along axis
+                TilingRuleToProperty(newTilingRule, property);
+
+                property.serializedObject.ApplyModifiedProperties();
+            }
+            void Mirror(Axis axis)
+            {//MAIN OPERATION - makes new tiling rule with flipped rules along axis
+                TilingRule oldTilingRule = PropertyToTilingRule(property);
                 TilingRule newTilingRule = new TilingRule();
 
                 foreach (string rule in TilingRule.ruleNames)
@@ -159,23 +193,24 @@ namespace REXTools.Tiling
 
                     newTilingRule.SetRule(
                         SignAdjacency<dynamic>.ruleSigns.First(x => x.Value.Equals(SignAdjacency<dynamic>.ruleSigns[rule].Mirror(axis))).Key, 
-                        newTilingRule.GetRule(rule)
+                        oldTilingRule.GetRule(rule)
                     );
                 }
 
-                //sets property values to newTilingRule values
-                foreach (string rule in TilingRule.ruleNames)
-                {
-                    property.FindPropertyRelative(rule).enumValueIndex = (int)newTilingRule.GetRule(rule);
-                }
+                TilingRuleToProperty(newTilingRule, property);
+
+                property.serializedObject.ApplyModifiedProperties();
             }
 
             OnGUIPRO(position, property, label, () =>
             {
+                //Vector3T<Sign> test = (new Vector3T<Sign>(Sign.Negative, Sign.Negative, Sign.Negative)).Mirror(Axis.X);
+                //Vector3T<Sign> test = (new Vector3T<Sign>(Sign.Neutral, Sign.Positive, Sign.Positive)).Rotate(new UnityEngine.Vector3Int(1, 0, 0));
+                //Debug.Log(test.x.ToString() + " " + test.y.ToString() + " " + test.z.ToString());
 
-                lines = 1;
+                lines = 1f;
 
-                maximized = EditorGUI.Foldout(newPosition, maximized, maximized ? GUIContent.none : new GUIContent("Tiling Rule"));
+                maximized = EditorGUI.Foldout(newPosition, maximized, /*maximized ? GUIContent.none : new GUIContent(*/property.displayName/*)*/);
 
 
                 //Context menu
@@ -199,7 +234,7 @@ namespace REXTools.Tiling
                     context.AddItem(new GUIContent("Edit/Mirror/X"), false, () => Mirror(Axis.X));
                     context.AddItem(new GUIContent("Edit/Mirror/Y"), false, () => Mirror(Axis.Y));
                     context.AddItem(new GUIContent("Edit/Mirror/Z"), false, () => Mirror(Axis.Z));
-                    //DOESNT WORK FOR SOME REASON
+                    
                     context.AddItem(new GUIContent("Edit/Clear"), false, () => Clear());
 
                     context.ShowAsContext();
@@ -209,6 +244,7 @@ namespace REXTools.Tiling
                 newPosition.width = lineHeight;
 
                 Rect originPosition = newPosition;
+                originPosition.y += lineHeight;
 
                 //Draws tiling rules
                 if (maximized)
@@ -216,17 +252,19 @@ namespace REXTools.Tiling
                     //lines += 9f + 2f;
                     lines += 3f;
 
+                    //Debug.Log(lines);
+
                     newPosition.y += lineHeight * 1f;
                     newPosition.height = lineHeight * (3f + GUI.skin.horizontalScrollbar.fixedHeight);
                     newPosition.width = indentedPosition.width;
 
-                    scrollPosition = GUI.BeginScrollView(newPosition, scrollPosition, new Rect(originPosition.position, new Vector2(lineHeight * (9f + 2f + 5f), lineHeight * 3f)));
+                    //scrollPosition = GUI.BeginScrollView(newPosition, scrollPosition, new Rect(originPosition.position, new Vector2(lineHeight * (9f + 2f + 5f), lineHeight * 3f)));
 
                     foreach (string rule in TilingRule.ruleNames)
                     {
                         property.FindPropertyRelative(rule).enumValueIndex = (int)BehaviourButton(
                             new Rect(
-                                originPosition.position + (RulePosition(rule) * lineHeight), 
+                                originPosition.position + ((RulePosition(rule) + Vector2.right) * lineHeight), 
                                 Vector2.one * lineHeight
                             ),
                             (RuleBehaviour)property.FindPropertyRelative(rule).enumValueIndex,
@@ -234,7 +272,7 @@ namespace REXTools.Tiling
                         );
                     }
 
-                    GUI.EndScrollView();
+                    //GUI.EndScrollView();
                 }
             });
         }

@@ -311,10 +311,12 @@ namespace REXTools.TransformTools
             {
                 return Sign.Positive;
             }
-            else
+            else if (sign == Sign.Neutral)
             {
                 return Sign.Neutral;
             }
+
+            return default;
         }
     }
 }

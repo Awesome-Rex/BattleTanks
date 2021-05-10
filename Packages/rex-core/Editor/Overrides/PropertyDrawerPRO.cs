@@ -47,6 +47,11 @@ namespace REXTools.REXCore
 
         protected Rect newPosition; //starts at indented position (EdiotrGUI.IndentedRect)
 
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            base.OnGUI(position, property, label);
+        }
+
         public void OnGUIPRO(Rect position, SerializedProperty property, GUIContent label, System.Action action)
         {
             start(position, property, label);
@@ -80,6 +85,21 @@ namespace REXTools.REXCore
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             return base.GetPropertyHeight(property, label) * lines;
+        }
+
+
+        //static methods
+        public static void ApplyModifiedProperties(System.Action action, SerializedProperty property)
+        {
+            action();
+
+            property.serializedObject.ApplyModifiedProperties();
+        }
+        public static void ApplyModifiedProperties(System.Action action, SerializedObject property)
+        {
+            action();
+
+            property.ApplyModifiedProperties();
         }
     }
 

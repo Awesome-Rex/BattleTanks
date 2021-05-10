@@ -10,7 +10,7 @@ namespace REXTools.CustomTransforms
     public class CustomPosition : CustomTransformLinks<Vector3>
     {
         public Vector3 position
-        {
+        { //world position
             get
             {
                 return GetPosition(Space.World);
@@ -32,7 +32,7 @@ namespace REXTools.CustomTransforms
             }
         }
         public Vector3 localPosition
-        {
+        { //world position
             get
             {
                 return GetPosition(Space.Self);
@@ -56,9 +56,9 @@ namespace REXTools.CustomTransforms
                 }
             }
         }
-
+        
         public Vector3 positionRaw
-        {
+        { //world position without transition delay
             get
             {
                 if (space == Space.Self && link == Link.Offset)
@@ -83,7 +83,7 @@ namespace REXTools.CustomTransforms
             }
         }
         public Vector3 localPositionRaw
-        {
+        { //local position without transition delay
             get
             {
                 if (space == Space.Self && link == Link.Offset)
@@ -108,8 +108,8 @@ namespace REXTools.CustomTransforms
             }
         }
 
-        public bool factorScale = true;
-        public float offsetScale = 1f;
+        public bool factorScale = true; //factor scaling
+        public float offsetScale = 1f; //offset scaling
 
         private Vector3 previousDirection;
 
@@ -118,7 +118,7 @@ namespace REXTools.CustomTransforms
         private Vector3 parentScale;
 
         private Vector3 operationalPosition
-        {
+        { //current position to use
             get
             {
                 return transform.position;
@@ -130,7 +130,7 @@ namespace REXTools.CustomTransforms
         }
 
         public override void SetToTarget()
-        {
+        { //set to target without transition
             //Debug.Log("Position - " + value);
 
             target = GetTarget();
@@ -143,7 +143,7 @@ namespace REXTools.CustomTransforms
             }
         }
         public override void MoveToTarget()
-        {
+        { //move to target with transition
             target = GetTarget();
 
             if (enabled)
@@ -180,7 +180,7 @@ namespace REXTools.CustomTransforms
             }
         }
         public override Vector3 GetTarget()
-        {
+        { //get target position
             Vector3 target = Vector3.zero;
 
             if (space == Space.World)
@@ -254,7 +254,7 @@ namespace REXTools.CustomTransforms
         }
 
         public Vector3 Translate(Vector3 translation, Space relativeTo = Space.Self)
-        {
+        { //transform translate
             if (relativeTo == Space.Self)
             {
                 if (factorScale)
@@ -272,7 +272,7 @@ namespace REXTools.CustomTransforms
             }
         }
         public Vector3 Translate(Vector3 from, Vector3 translation, Space relativeTo = Space.Self)
-        {
+        { //transform translate
             if (relativeTo == Space.Self)
             {
                 if (factorScale)
@@ -292,7 +292,7 @@ namespace REXTools.CustomTransforms
         }
 
         public Vector3 SetPosition(Vector3 position, Space relativeTo = Space.Self)
-        {
+        { //sets position and returns world position
             if (relativeTo == Space.Self)
             {
                 if (factorScale)
@@ -310,7 +310,7 @@ namespace REXTools.CustomTransforms
             }
         } //returns world
         public Vector3 SetPositionLocal(Vector3 position, Space relativeTo = Space.Self)
-        {
+        { //sets position and returns local position
             if (relativeTo == Space.Self)
             {
                 return position;
@@ -328,7 +328,7 @@ namespace REXTools.CustomTransforms
             }
         } //returns self
         public Vector3 GetPosition(Space relativeTo = Space.Self)
-        {
+        { //gets position with specified space
             if (relativeTo == Space.Self)
             {
                 if (factorScale)
@@ -354,17 +354,17 @@ namespace REXTools.CustomTransforms
         }
 
         public Vector3 SetPositionRaw(Vector3 position, Space relativeTo = Space.Self)
-        {
+        { //sets position and returns world position
             //return offset.ApplyPosition(this, SetPosition(position, relativeTo));
             return SetPosition(position, relativeTo);
         }
         public Vector3 SetPositionRawLocal(Vector3 position, Space relativeTo = Space.Self)
-        {
+        { //sets position and returns local position
             //return SetPositionLocal(offset.ApplyPosition(this, SetPosition(SetPositionLocal(position, relativeTo), Space.Self)), Space.World);
             return SetPositionLocal(SetPosition(SetPositionLocal(position, relativeTo), Space.Self), Space.World);
         }
         public Vector3 GetPositionRaw(Space relativeTo = Space.Self)
-        {
+        { //gets raw position with specified space
             if (space == Space.Self && link == Link.Offset)
             {
                 if (relativeTo == Space.Self)
@@ -412,7 +412,7 @@ namespace REXTools.CustomTransforms
 
         //inspector methods
         public override void Switch(Space newSpace, Link newLink)
-        {
+        { //switch spaces and link
             Vector3 originalPositon = position;
             Vector3 originalLocalPosition = localPosition;
 
@@ -507,7 +507,7 @@ namespace REXTools.CustomTransforms
             }
         }
         public override void SwitchParent(Transform newParent)
-        {
+        { //switch parent
             if (newParent != null)
             {
                 if (space == Space.Self)
@@ -532,7 +532,7 @@ namespace REXTools.CustomTransforms
             }
         }
         public void SwitchFactorScale(bool factor)
-        {
+        { //switch factor scale
             if (space == Space.Self)
             {
                 Vector3 originalPos = position;
@@ -543,7 +543,7 @@ namespace REXTools.CustomTransforms
             }
         }
         public void ApplyOffsetScale(float newScale = 1f)
-        {
+        { //switches factor scale and moves current position to match previous
             if (space == Space.Self && factorScale)
             {
                 Vector3 originalPos = position;
@@ -554,7 +554,7 @@ namespace REXTools.CustomTransforms
             }
         }
         public override void RemoveOffset()
-        {
+        { //removes offset and moves current position ot match previous
             if (space == Space.Self && link == Link.Offset)
             {
                 position = offset.ApplyPosition(this, position);
@@ -649,7 +649,10 @@ namespace REXTools.CustomTransforms
         {
             static Startup()
             {
-                SetCheckedEnumMenuItems();
+                UnityEditor.EditorApplication.delayCall += () =>
+                {
+                    SetCheckedEnumMenuItems();
+                };
             }
         }
 #endif

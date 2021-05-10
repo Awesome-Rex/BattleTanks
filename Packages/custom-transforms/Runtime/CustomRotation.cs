@@ -512,8 +512,8 @@ namespace REXTools.CustomTransforms
             EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Parent", LinkSpaceRotation.Parent, ref CustomRotationEditor.selfHandleRot);
             EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/World", LinkSpaceRotation.World, ref CustomRotationEditor.selfHandleRot);
 
-            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/World Space Handle/Self", Space.Self, ref CustomRotationEditor.worldHandleRot);
-            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/World Space Handle/World", Space.World, ref CustomRotationEditor.worldHandleRot);
+            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Rotation/World Space Handle/Self", Space.Self, ref CustomRotationEditor.worldHandleRot);
+            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Rotation/World Space Handle/World", Space.World, ref CustomRotationEditor.worldHandleRot);
         }
 
         [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Self")]
@@ -583,7 +583,10 @@ namespace REXTools.CustomTransforms
         {
             static Startup()
             {
-                SetCheckedEnumMenuItems();
+                UnityEditor.EditorApplication.delayCall += () =>
+                {
+                    SetCheckedEnumMenuItems();
+                };
             }
         }
 #endif
