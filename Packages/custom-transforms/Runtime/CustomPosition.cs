@@ -212,7 +212,7 @@ namespace REXTools.CustomTransforms
 
                     if (factorScale)
                     {
-                        newTarget = Linking.TransformPoint(previous * offsetScale, parent.position, parent.rotation, parent.localScale);
+                        newTarget = Linking.TransformPoint(previous * offsetScale, parent.position, parent.rotation, parent.scale);
                     }
                     else
                     {
@@ -250,7 +250,7 @@ namespace REXTools.CustomTransforms
         {
             parentPos = parent.position;
             parentRot = parent.rotation;
-            parentScale = parent.localScale;
+            parentScale = parent.scale;
         }
 
         public Vector3 Translate(Vector3 translation, Space relativeTo = Space.Self)
@@ -410,6 +410,53 @@ namespace REXTools.CustomTransforms
             }
         }
 
+        public override void SetParent(TransformObject parent, bool worldPositionStays = false)
+        {
+            if (!worldPositionStays)
+            {
+                if (parent != null)
+                {
+                    if (!_parent.isNull)
+                    {
+                        this._parent = parent;
+                    }
+                    else
+                    {
+                        this._parent = null;
+                    }
+
+                }
+                else
+                {
+                    this._parent = null;
+                }
+            }
+            else if (worldPositionStays)
+            {
+                if (parent != null && !_parent.isNull)
+                {
+                    if (space == Space.Self)
+                    {
+                        Vector3 originalPosition = position;
+                        Vector3 originalLocalPosition = localPosition;
+
+                        if (link == Link.Offset)
+                        {
+                            SetParent(parent);
+
+                            position = offset.ReversePosition(this, originalPosition);
+                        }
+                        else if (link == Link.Match)
+                        {
+                            SetParent(parent);
+
+                            position = originalPosition;
+                        }
+                    }
+                }
+            }
+        }
+
         //inspector methods
         public override void Switch(Space newSpace, Link newLink)
         { //switch spaces and link
@@ -430,8 +477,8 @@ namespace REXTools.CustomTransforms
                         {
                             SetToTarget();
 
-                            Vector3 from = Linking.InverseTransformPoint(position, parent.position, parent.rotation, parent.localScale * offsetScale);
-                            Vector3 to = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation, parent.localScale * offsetScale);
+                            Vector3 from = Linking.InverseTransformPoint(position, parent.position, parent.rotation, parent.scale * offsetScale);
+                            Vector3 to = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation, parent.scale * offsetScale);
 
                             value += to - from;
                         }
@@ -487,8 +534,8 @@ namespace REXTools.CustomTransforms
                             {
                                 SetToTarget();
 
-                                Vector3 from = Linking.InverseTransformPoint(position, parent.position, parent.rotation, parent.localScale * offsetScale);
-                                Vector3 to = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation, parent.localScale * offsetScale);
+                                Vector3 from = Linking.InverseTransformPoint(position, parent.position, parent.rotation, parent.scale * offsetScale);
+                                Vector3 to = Linking.InverseTransformPoint(originalPositon, parent.position, parent.rotation, parent.scale * offsetScale);
 
                                 value += to - from;
                             }
@@ -506,31 +553,31 @@ namespace REXTools.CustomTransforms
                 }
             }
         }
-        public override void SwitchParent(Transform newParent)
-        { //switch parent
-            if (newParent != null)
-            {
-                if (space == Space.Self)
-                {
-                    Vector3 originalPosition = position;
-                    Vector3 originalLocalPosition = localPosition;
+        //public override void SwitchParent(Transform newParent)
+        //{ //switch parent
+        //    if (newParent != null)
+        //    {
+        //        if (space == Space.Self)
+        //        {
+        //            Vector3 originalPosition = position;
+        //            Vector3 originalLocalPosition = localPosition;
 
-                    if (link == Link.Offset)
-                    {
-                        parent = newParent;
+        //            if (link == Link.Offset)
+        //            {
+        //                parent = newParent;
 
-                        position = offset.ReversePosition(this, originalPosition);
+        //                position = offset.ReversePosition(this, originalPosition);
 
-                    }
-                    else if (link == Link.Match)
-                    {
-                        parent = newParent;
+        //            }
+        //            else if (link == Link.Match)
+        //            {
+        //                parent = newParent;
 
-                        position = originalPosition;
-                    }
-                }
-            }
-        }
+        //                position = originalPosition;
+        //            }
+        //        }
+        //    }
+        //}
         public void SwitchFactorScale(bool factor)
         { //switch factor scale
             if (space == Space.Self)
@@ -580,6 +627,8 @@ namespace REXTools.CustomTransforms
 
             EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/World Space Handle/Self", Space.Self, ref CustomPositionEditor.worldHandleRot);
             EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/World Space Handle/World", Space.World, ref CustomPositionEditor.worldHandleRot);
+
+            UnityEditor.Menu.SetChecked("REX Custom Transforms/Custom Position/Use Raw Position", CustomPositionEditor.offsetHandleRaw);
         }
 
         [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Self")]
@@ -634,6 +683,22 @@ namespace REXTools.CustomTransforms
         private static bool WorldHandleRotation_Valid()
         {
             return CustomTransformHandlesWindow.activeType == typeof(CustomPosition) && ((CustomPosition)CustomTransformHandlesWindow.activeCustomTransform).space == Space.World;
+        }
+
+
+
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Use Raw Position")]
+        private static void OffsetHandleRaw()
+        {
+            CustomPositionEditor.offsetHandleRaw = !CustomPositionEditor.offsetHandleRaw;
+
+            SetCheckedEnumMenuItems();
+        }
+
+        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Use Raw Position", true)]
+        private static bool OffsetHandleRaw_Valid()
+        {
+            return CustomTransformHandlesWindow.activeType == typeof(CustomPosition);
         }
 #endif
 

@@ -22,14 +22,14 @@ namespace REXTools.TransformTools
                 {
                     GenericMenu context = new GenericMenu();
 
-                    context.AddItem(new GUIContent("Transform"), property.FindPropertyRelative("referenceType").enumValueIndex == (int)TransformObject.ReferenceType.Transform, () => ApplyModifiedProperties(() => property.FindPropertyRelative("referenceType").enumValueIndex = (int)TransformObject.ReferenceType.Transform, property));
-                    context.AddItem(new GUIContent("Constant"), property.FindPropertyRelative("referenceType").enumValueIndex == (int)TransformObject.ReferenceType.Constant, () => ApplyModifiedProperties(() => property.FindPropertyRelative("referenceType").enumValueIndex = (int)TransformObject.ReferenceType.Constant, property));
-                    context.AddItem(new GUIContent("Delegate Function"), property.FindPropertyRelative("referenceType").enumValueIndex == (int)TransformObject.ReferenceType.Function, () => ApplyModifiedProperties(() => property.FindPropertyRelative("referenceType").enumValueIndex = (int)TransformObject.ReferenceType.Function, property));
+                    context.AddItem(new GUIContent("Transform"), property.FindPropertyRelative("_referenceType").enumValueIndex == (int)TransformObject.ReferenceType.Transform, () => ApplyModifiedProperties(() => property.FindPropertyRelative("_referenceType").enumValueIndex = (int)TransformObject.ReferenceType.Transform, property));
+                    context.AddItem(new GUIContent("Constant"), property.FindPropertyRelative("_referenceType").enumValueIndex == (int)TransformObject.ReferenceType.Constant, () => ApplyModifiedProperties(() => property.FindPropertyRelative("_referenceType").enumValueIndex = (int)TransformObject.ReferenceType.Constant, property));
+                    context.AddItem(new GUIContent("Delegate Function"), property.FindPropertyRelative("_referenceType").enumValueIndex == (int)TransformObject.ReferenceType.Function, () => ApplyModifiedProperties(() => property.FindPropertyRelative("_referenceType").enumValueIndex = (int)TransformObject.ReferenceType.Function, property));
 
                     context.ShowAsContext();
                 }
 
-                if (property.FindPropertyRelative("referenceType").enumValueIndex == (int)TransformObject.ReferenceType.Transform)
+                if (property.FindPropertyRelative("_referenceType").enumValueIndex == (int)TransformObject.ReferenceType.Transform)
                 {
                     lines = 1f;
 
@@ -78,7 +78,8 @@ namespace REXTools.TransformTools
                     //    }
                     //}
                 }
-                else if (property.FindPropertyRelative("referenceType").enumValueIndex == (int)TransformObject.ReferenceType.Constant) {
+                else if (property.FindPropertyRelative("_referenceType").enumValueIndex == (int)TransformObject.ReferenceType.Constant)
+                {
                     lines = 1f;
 
                     maximized = EditorGUI.Foldout(newPosition, maximized, property.displayName);
@@ -114,7 +115,7 @@ namespace REXTools.TransformTools
                         }
                     }
                 }
-                else if (property.FindPropertyRelative("referenceType").enumValueIndex == (int)TransformObject.ReferenceType.Function)
+                else if (property.FindPropertyRelative("_referenceType").enumValueIndex == (int)TransformObject.ReferenceType.Function)
                 {
                     lines = 1f;
 

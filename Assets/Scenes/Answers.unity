@@ -136,7 +136,6 @@ GameObject:
   - component: {fileID: 3990957}
   - component: {fileID: 3990956}
   - component: {fileID: 3990955}
-  - component: {fileID: 3990954}
   - component: {fileID: 3990959}
   - component: {fileID: 3990958}
   m_Layer: 0
@@ -154,24 +153,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3990952}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1325304074}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3990954
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3990952}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13007da5bc17891489fde1f626dc1d85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3990955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -210,10 +197,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   space: 1
-  parent: {fileID: 1325304074}
-  value: {x: 0, y: 0, z: 0}
+  _parent:
+    _referenceType: 0
+    transform: {fileID: 1325304074}
+    _positionConstant: {x: 0, y: 0, z: 0}
+    _rotationConstant: {x: 0, y: 0, z: 0, w: 0}
+    _scaleConstant: {x: 0, y: 0, z: 0}
+  value: {x: 2, y: 0, z: 0}
   showContextInfo: 0
-  showMethods: 0
+  showMethods: 1
   follow: 0
   transition:
     type: 0
@@ -242,7 +234,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3990952}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -867,51 +859,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rule:
-    p__: 1
+    p__: 0
     n__: 0
     _p_: 0
     _n_: 0
     __p: 0
     __n: 0
-    pp_: 1
+    pp_: 0
     nn_: 0
-    pn_: 1
+    pn_: 0
     np_: 0
     _pp: 0
     _nn: 0
     _pn: 0
     _np: 0
-    p_p: 1
+    p_p: 0
     n_n: 0
     n_p: 0
-    p_n: 1
-    ppp: 2
-    pnn: 1
-    ppn: 1
-    pnp: 1
+    p_n: 0
+    ppp: 0
+    pnn: 0
+    ppn: 0
+    pnp: 0
     npp: 0
     nnn: 0
     npn: 0
     nnp: 0
   rule2:
     p__: 0
-    n__: 1
-    _p_: 2
+    n__: 0
+    _p_: 0
     _n_: 0
     __p: 0
-    __n: 1
+    __n: 0
     pp_: 0
     nn_: 0
     pn_: 0
     np_: 0
-    _pp: 1
+    _pp: 0
     _nn: 0
     _pn: 0
     _np: 0
     p_p: 0
     n_n: 0
-    n_p: 1
-    p_n: 1
+    n_p: 0
+    p_n: 0
     ppp: 0
     pnn: 0
     ppn: 0
@@ -948,30 +940,30 @@ MonoBehaviour:
     npn: 0
     nnp: 0
   transformObjectConstant:
-    referenceType: 0
+    _referenceType: 0
     transform: {fileID: 0}
     _positionConstant: {x: 0, y: 0, z: 0}
     _rotationConstant: {x: 0, y: 0, z: 0, w: 0}
     _scaleConstant: {x: 0, y: 0, z: 0}
     _position: {x: 0, y: 0, z: 0}
-    _rotation: {x: 0, y: 0, z: 0, w: 1}
+    _rotation: {x: 0, y: 0, z: 0, w: 0}
     _scale: {x: 0, y: 0, z: 0}
   transformObjectComponent:
-    referenceType: 0
+    _referenceType: 0
     transform: {fileID: 0}
     _positionConstant: {x: 0, y: 0, z: 0}
     _rotationConstant: {x: 0, y: 0, z: 0, w: 0}
     _scaleConstant: {x: 0, y: 0, z: 0}
     transform: {fileID: 0}
   transformObjectReference:
-    referenceType: 0
+    _referenceType: 0
     transform: {fileID: 0}
     _positionConstant: {x: 0, y: 0, z: 0}
     _rotationConstant: {x: 0, y: 0, z: 0, w: 0}
     _scaleConstant: {x: 0, y: 0, z: 0}
   defaultConstant:
-    referenceType: 0
-    transform: {fileID: 96587887}
+    _referenceType: 0
+    transform: {fileID: 0}
     _positionConstant: {x: 0, y: 0, z: 0}
     _rotationConstant: {x: 0, y: 0, z: 0, w: 1}
     _scaleConstant: {x: 0, y: 0, z: 0}

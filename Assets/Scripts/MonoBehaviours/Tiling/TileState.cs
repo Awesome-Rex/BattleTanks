@@ -6,10 +6,22 @@ using REXTools.TransformTools;
 
 namespace REXTools.Tiling
 {
-    public class TileOrientation : MonoBehaviour
+    public class TileState : MonoBehaviour
     {
         public Tile tile;
-        public GridOrientation grid;
+        public virtual GridOrientation grid
+        {
+            get
+            {
+                return _grid;
+            }
+            set
+            {
+                _grid = value;
+            }
+        }
+        [SerializeField]
+        protected GridOrientation _grid;
 
         public Vector3 offsetPosition;
         public Quaternion offsetRotation;
@@ -20,7 +32,7 @@ namespace REXTools.Tiling
         //  tile.offsetPosition
         //  offsetPosition
 
-        public Vector3 position
+        public virtual Vector3 position
         {
             get
             {
@@ -32,7 +44,7 @@ namespace REXTools.Tiling
                 transform.position = grid.GridToWorld(value, subdivisions) + tile.prefab.transform.position + tile.offsetPosition + offsetPosition;
             }
         }
-        public UnityEngine.Vector3Int rotation
+        public virtual UnityEngine.Vector3Int rotation
         {
             get
             {
@@ -45,7 +57,7 @@ namespace REXTools.Tiling
                 transform.rotation = Quaternion.Euler(Vector3.zero.Operate((s, a) => value.GetAxis(s) * 90f)) * offsetRotation * tile.offsetRotation * tile.prefab.transform.rotation;
             }
         }
-        public int subdivisions
+        public virtual int subdivisions
         {
             get
             {
@@ -71,7 +83,7 @@ namespace REXTools.Tiling
         
         //switch grid to new grid with same position, scale and rotation
         //(may snap position and rotation to new grid)
-        public void SwitchGrid (GridOrientation newGrid, bool snap = true)
+        public virtual void SwitchGrid (GridOrientation newGrid, bool snap = true)
         {
             if (newGrid.grid == grid.grid) 
             {
@@ -103,7 +115,7 @@ namespace REXTools.Tiling
         //public Vector3 Scale(Vector3 newScale, Quaternion? parentRotation = null)
         //{
         //    newScale *= tile.offsetScale;
-            
+
         //    if (parentRotation == null)
         //    {
         //        parentRotation = transform.parent.rotation;

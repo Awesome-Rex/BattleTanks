@@ -11,34 +11,34 @@ namespace REXTools.TransformTools
     public static class Vectors
     {
         // THE AXIS BIBLE
-        public static Axis[] axisIterate = new Axis[]
+        public readonly static Axis[] axisIterate = new Axis[]
         {
             Axis.X, Axis.Y, Axis.Z
         };
-        public static Axis[] axisDefaultOrder = new Axis[]
+        public readonly static Axis[] axisDefaultOrder = new Axis[]
         {
             Axis.X, Axis.Y, Axis.Z
         };
 
-        public static Dictionary<Axis, string> axisNames = new Dictionary<Axis, string>
+        public readonly static Dictionary<Axis, string> axisNames = new Dictionary<Axis, string>
         {
             { Axis.X, "X" },
             { Axis.Y, "Y" },
             { Axis.Z, "Z" }
         };
-        public static Dictionary<Axis, Vector3> axisDirections = new Dictionary<Axis, Vector3>
+        public readonly static Dictionary<Axis, Vector3> axisDirections = new Dictionary<Axis, Vector3>
         {
             { Axis.X, new Vector3(1f, 0f, 0f) },
             { Axis.Y, new Vector3(0f, 1f, 0f) },
             { Axis.Z, new Vector3(0f, 0f, 1f) }
         };
-        public static Dictionary<Axis, Vector2T<Axis>> axisPlanes = new Dictionary<Axis, Vector2T<Axis>>
+        public readonly static Dictionary<Axis, Vector2T<Axis>> axisPlanes = new Dictionary<Axis, Vector2T<Axis>>
         {
             { Axis.X, new Vector2T<Axis>(Axis.Z, Axis.Y) },
             { Axis.Y, new Vector2T<Axis>(Axis.X, Axis.Z) },
             { Axis.Z, new Vector2T<Axis>(Axis.X, Axis.Y) }
         };
-        public static Dictionary<Vector3, Vector2T<Vector3>> axisPlaneDirections = new Dictionary<Vector3, Vector2T<Vector3>> {
+        public readonly static Dictionary<Vector3, Vector2T<Vector3>> axisPlaneDirections = new Dictionary<Vector3, Vector2T<Vector3>> {
             { axisDirections[Axis.X], new Vector2T<Vector3>(axisDirections[Axis.Z], axisDirections[Axis.Y]) },
             { axisDirections[Axis.Y], new Vector2T<Vector3>(axisDirections[Axis.X], axisDirections[Axis.Z]) },
             { axisDirections[Axis.Z], new Vector2T<Vector3>(axisDirections[Axis.X], axisDirections[Axis.Y]) }

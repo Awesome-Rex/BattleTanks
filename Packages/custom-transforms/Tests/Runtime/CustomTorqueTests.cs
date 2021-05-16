@@ -2,137 +2,140 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using REXTools.CustomTransforms;
+//using REXTools.CustomTransforms;
 using REXTools.REXCore;
 using REXTools.TransformTools;
 
-[RequireComponent(typeof(Rigidbody))]
-public class CustomTorqueTests : CustomTransform<Vector3>
-{
-    public float torque = 9.81f;
-    public float torqueScale = 1f;
+//namespace REXTools.CustomTransforms
+//{
+//    [RequireComponent(typeof(Rigidbody))]
+//    public class CustomTorqueTests : CustomTransform<Vector3>
+//    {
+//        public float torque = 9.81f;
+//        public float torqueScale = 1f;
 
-    public AxisOrder offset;  //local
+//        public AxisOrder offset;  //local
 
-    public LocalRelativity linkTo;
+//        public LocalRelativity linkTo;
 
-    //previous
-    private Quaternion parentRot;
-
-
-    //script reference
-    private new Rigidbody rigidbody;
-    private CustomTorqueTests parentTorque;
-
-    public void Apply()
-    {
-        if (enabled)
-        {
-            //Rotate velocity
-            rigidbody.velocity = GetTarget();
-
-            //Apply force
-            Vector3 fallDirection = Vector3.zero;
+//        //previous
+//        private Quaternion parentRot;
 
 
-            if (linkTo == LocalRelativity.Natural || parentTorque == null) //Transform Direction Vector
-            {
-                
-            }
-            else if (linkTo == LocalRelativity.Constraint && parentTorque != null) //CustomGravity
-            {
-                
-            }
+//        //script reference
+//        private new Rigidbody rigidbody;
+//        private CustomTorqueTests parentTorque;
 
-            if (space == Space.World)
-            {
-                
-            }
-            else if (space == Space.Self)
-            {
-                
-            }
-        }
-    }
+//        public void Apply()
+//        {
+//            if (enabled)
+//            {
+//                //Rotate velocity
+//                rigidbody.velocity = GetTarget();
 
-    public override Vector3 GetTarget()
-    {
-        Vector3 target = Vector3.zero;
+//                //Apply force
+//                Vector3 fallDirection = Vector3.zero;
 
-        if (space == Space.World)
-        {
-            target = rigidbody.angularVelocity;
-        }
-        else if (space == Space.Self)
-        {
-            target = parent.eulerAngles + Vectors.Rad2Deg(rigidbody.angularVelocity);
-        }
 
-        return target;
-    }
+//                if (linkTo == LocalRelativity.Natural || parentTorque == null) //Transform Direction Vector
+//                {
 
-    public override void SetPrevious()
-    {
-        previous = parent.eulerAngles;
+//                }
+//                else if (linkTo == LocalRelativity.Constraint && parentTorque != null) //CustomGravity
+//                {
 
-        //parentRot = parent.rotation;
-    }
+//                }
 
-    public override void Switch(Space newSpace, Link newLink)
-    {
-        throw new System.NotImplementedException();
-    }
-    public override void SwitchParent(Transform newParent)
-    {
-        throw new System.NotImplementedException();
-    }
+//                if (space == Space.World)
+//                {
 
-    public void Enable(bool enabled)
-    {
-        if (enabled)
-        {
-            //disable rigidhodies, add custom behaviour
+//                }
+//                else if (space == Space.Self)
+//                {
 
-            _ETERNAL.I.earlyRecorder.lateCallbackF += Apply;
-            _ETERNAL.I.lateRecorder.callbackF += SetPrevious;
+//                }
+//            }
+//        }
 
-            rigidbody.useGravity = false;
+//        public override Vector3 GetTarget()
+//        {
+//            Vector3 target = Vector3.zero;
 
-            this.enabled = true;
-        }
-        else
-        {
-            //enable rigidbodies, disable this scirpt
+//            if (space == Space.World)
+//            {
+//                target = rigidbody.angularVelocity;
+//            }
+//            else if (space == Space.Self)
+//            {
+//                target = parent.eulerAngles + Vectors.Rad2Deg(rigidbody.angularVelocity);
+//            }
 
-            _ETERNAL.I.earlyRecorder.lateCallbackF -= Apply;
-            _ETERNAL.I.lateRecorder.callbackF -= SetPrevious;
+//            return target;
+//        }
 
-            rigidbody.useGravity = true;
+//        public override void SetPrevious()
+//        {
+//            previous = parent.eulerAngles;
 
-            this.enabled = false;
-        }
-    }
+//            //parentRot = parent.rotation;
+//        }
 
-    protected override void Awake()
-    {
-        rigidbody = GetComponent<Rigidbody>();
-        parentTorque = parent.GetComponent<CustomTorqueTests>();
+//        public override void Switch(Space newSpace, Link newLink)
+//        {
+//            throw new System.NotImplementedException();
+//        }
+//        //public override void SwitchParent(Transform newParent)
+//        //{
+//        //    throw new System.NotImplementedException();
+//        //}
 
-        base.Awake();
-    }
+//        public void Enable(bool enabled)
+//        {
+//            if (enabled)
+//            {
+//                //disable rigidhodies, add custom behaviour
 
-    void Start() { }
+//                _ETERNAL.I.earlyRecorder.lateCallbackF += Apply;
+//                _ETERNAL.I.lateRecorder.callbackF += SetPrevious;
 
-    private void OnEnable()
-    {
-        Enable(true);
-    }
-    private void OnDisable()
-    {
-        Enable(false);
-    }
-    protected override void OnDestroy()
-    {
-        Enable(false);
-    }
-}
+//                rigidbody.useGravity = false;
+
+//                this.enabled = true;
+//            }
+//            else
+//            {
+//                //enable rigidbodies, disable this scirpt
+
+//                _ETERNAL.I.earlyRecorder.lateCallbackF -= Apply;
+//                _ETERNAL.I.lateRecorder.callbackF -= SetPrevious;
+
+//                rigidbody.useGravity = true;
+
+//                this.enabled = false;
+//            }
+//        }
+
+//        protected override void Awake()
+//        {
+//            rigidbody = GetComponent<Rigidbody>();
+//            parentTorque = parent.GetComponent<CustomTorqueTests>();
+
+//            base.Awake();
+//        }
+
+//        void Start() { }
+
+//        private void OnEnable()
+//        {
+//            Enable(true);
+//        }
+//        private void OnDisable()
+//        {
+//            Enable(false);
+//        }
+//        protected override void OnDestroy()
+//        {
+//            Enable(false);
+//        }
+//    }
+//}

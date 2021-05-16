@@ -1,7 +1,9 @@
-﻿using REXTools.REXCore;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+using REXTools.REXCore;
+using REXTools.TransformTools;
 
 namespace REXTools.CustomTransforms
 {
@@ -13,9 +15,31 @@ namespace REXTools.CustomTransforms
         //properties
         public Space space = Space.Self;
 
-        public Transform parent;
+        //public Transform parent;
+        public TransformObject parent
+        {
+            get
+            {
+                if (_parent != null)
+                {
+                    if (!_parent.isNull) {
+                        return _parent;
+                    } else
+                    {
+                        return null;
+                    }
+                } else
+                {
+                    return null;
+                }
+            }
+        }
+        [SerializeField]
+        public TransformObject _parent;
+
         public T value; //original position/rotation/direction in world space
 
+        
         protected T previous;
 
         //methods
@@ -23,33 +47,8 @@ namespace REXTools.CustomTransforms
 
         public abstract void SetPrevious();
 
+        //inspector method
         public abstract void Switch(Space newSpace, Link newLink);
-
-        public abstract void SwitchParent(Transform newParent);
-        
-        public abstract void SwitchParent(Vector3 newPosition, Quaternion newRotation, Vector3 newScale);
-        public void SwitchParent(Vector3 newPosition, Quaternion newRotation)
-        {
-            SwitchParent(newPosition, newRotation, Vector3.one);
-        }
-        public void SwitchParent(Vector3 newPosition)
-        {
-            SwitchParent(newPosition, Quaternion.Euler(Vector3.zero));
-        }
-
-        public abstract void SwitchParent(System.Func<Vector3> newPosition, System.Func<Quaternion> newRotation, System.Func<Vector3> newScale);
-        public void SwitchParent(System.Func<Vector3> newPosition, System.Func<Quaternion> newRotation)
-        {
-            //++++++++ will change default scale parameter depending on current parent referencetype
-            //referencetype == transform => set delegate to og transform scale
-            //referencetype == constant => set delegate to return og constant scale
-
-            //SwitchParent(newPosition, newRotation, )
-        }
-        public void SwitchParent(System.Func<Vector3> newPosition)
-        {
-            
-        }
 
         protected virtual void Awake()
         {

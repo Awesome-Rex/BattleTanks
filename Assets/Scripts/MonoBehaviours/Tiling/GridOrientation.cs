@@ -151,18 +151,18 @@ namespace REXTools.Tiling
         //TILES
 
         //creates new tile
-        public TileOrientation CreateTile(Tile tile)
+        public TileState CreateTile(Tile tile)
         {
             GameObject tileInstance = Instantiate(tile.prefab);
-            TileOrientation tileState = tileInstance.AddComponent<TileOrientation>();
+            TileState tileState = tileInstance.AddComponent<TileState>();
             tileState.tile = tile;
             tileState.grid = this;
 
             return tileState;
         }
-        public TileOrientation CreateTile(Tile tile, Vector3 position, int subdivisions = 1, UnityEngine.Vector3Int rotation = default)
+        public TileState CreateTile(Tile tile, Vector3 position, int subdivisions = 1, UnityEngine.Vector3Int rotation = default)
         {
-            TileOrientation tileInstance = CreateTile(tile);
+            TileState tileInstance = CreateTile(tile);
 
             SetPosition(tileInstance, position, subdivisions);
             SetRotation(tileInstance, rotation);
@@ -170,12 +170,12 @@ namespace REXTools.Tiling
             return tileInstance;
         }
         
-        public void SetPosition(TileOrientation tile, Vector3 position, int subdivisions = 1)
+        public void SetPosition(TileState tile, Vector3 position, int subdivisions = 1)
         { //moves existing tile
             tile.subdivisions = subdivisions;
             tile.position = position;
         }
-        public void SetRotation(TileOrientation tile, UnityEngine.Vector3Int rotation)
+        public void SetRotation(TileState tile, UnityEngine.Vector3Int rotation)
         { //rotates existing tile
             tile.rotation = rotation;
         }

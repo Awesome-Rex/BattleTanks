@@ -11,17 +11,27 @@ namespace REXTools.REXCore
         protected new T target;
 
         //serialized properties
-        protected Dictionary<string, SerializedProperty> props = new Dictionary<string, SerializedProperty>();
+        /*protected */private Dictionary<string, SerializedProperty> props = new Dictionary<string, SerializedProperty>();
+        /*protected */private Dictionary<string, SerializedProperty> propsEditor = new Dictionary<string, SerializedProperty>();
 
         protected abstract void DeclareProperties();
 
-        protected void AddProperty(string name)
+        protected virtual void AddProperty(string name)
         {
             props.Add(name, serializedObject.FindProperty(name));
         }
-        protected SerializedProperty FindProperty(string name)
+        protected virtual SerializedProperty FindProperty(string name)
         {
             return props[name];
+        }
+
+        protected void AddPropertyEditor (string name)
+        {
+            propsEditor.Add(name, (new SerializedObject(this)).FindProperty(name));
+        }
+        protected SerializedProperty FindPropertyEditor (string name)
+        {
+            return propsEditor[name];
         }
 
         //widgets and components

@@ -47,6 +47,8 @@ namespace REXTools.REXCore
 
         protected Rect newPosition; //starts at indented position (EdiotrGUI.IndentedRect)
 
+        //protected SerializedObject _property;
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             base.OnGUI(position, property, label);
@@ -61,15 +63,20 @@ namespace REXTools.REXCore
 
         private void start (Rect position, SerializedProperty property, GUIContent label)
         {
+            //private variables
             _lineHeight = base.GetPropertyHeight(property, label);
 
             _indentedPosition = EditorGUI.IndentedRect(position);
             _indentedPosition.height = lineHeight;
 
+            //properties and public variables
             newPosition = indentedPosition;
 
             originalIndentLevel = EditorGUI.indentLevel;
 
+            //_property = new SerializedObject(property.FindPropertyRelative("_private").objectReferenceValue);
+            //_property = property.FindPropertyRelative("_private").serializedObject;
+            
             EditorGUI.BeginProperty(indentedPosition, label, property);
         }
         private void end()

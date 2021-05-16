@@ -62,6 +62,30 @@ namespace REXTools.CustomTransforms
 
         public abstract void RecordParent();
 
+        public abstract void SetParent(TransformObject parent, bool worldPositionStays = false);
+        public void SetParent(TransformObject p)
+        {
+            SetParent(p, false);
+        }
+        public void SetParent(Transform parent, bool worldPositionStays = false)
+        {
+            SetParent(new TransformObject(parent), false);
+        }
+        public void SetParent(Transform p)
+        {
+            SetParent(p, false);
+        }
+
+        //inspector methods
+        public void SwitchParent (TransformObject newParent)
+        {
+            SetParent(newParent, false);
+        }
+        public void SwitchParent(Transform newParent)
+        {
+            SwitchParent(newParent);
+        }
+
 #if UNITY_EDITOR
         private void EditorStateChanged(PlayModeStateChange n)
         {

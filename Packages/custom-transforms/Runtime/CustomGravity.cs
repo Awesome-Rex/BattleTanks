@@ -295,19 +295,19 @@ namespace REXTools.CustomTransforms
                 }
             }
         }
-        public override void SwitchParent(Transform newParent)
-        {
-            if (space == Space.Self)
-            {
-                Vector3 originalDirection = direction;
-                Vector3 originalLocalDirection = localDirection;
+        //public override void SwitchParent(Transform newParent)
+        //{
+        //    if (space == Space.Self)
+        //    {
+        //        Vector3 originalDirection = direction;
+        //        Vector3 originalLocalDirection = localDirection;
 
-                //NO LINKS (compared to Position and Rotation)
-                parent = newParent;
+        //        //NO LINKS (compared to Position and Rotation)
+        //        parent = newParent;
 
-                direction = originalDirection; //Should automatically FACTOR OFFSET, no need for offset.Reverse
-            }
-        }
+        //        direction = originalDirection; //Should automatically FACTOR OFFSET, no need for offset.Reverse
+        //    }
+        //}
         public void RemoveOffset()
         {
             if (space == Space.Self)
