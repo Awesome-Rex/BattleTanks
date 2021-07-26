@@ -29,7 +29,7 @@ namespace REXTools.REXCore
 
         private void OnEnable()
         {
-            _ETERNAL.I = ((GameObject)Resources.Load("_ETERNAL")).GetComponent<_ETERNAL>();
+            //_ETERNAL.I = ((GameObject)Resources.Load("_ETERNAL")).GetComponent<_ETERNAL>();
 
             retrieveProperties();
         }

@@ -1,0 +1,19 @@
+{
+    "name": "com.awesomusrex.tiling",
+    "rootNamespace": "",
+    "references": [
+        "GUID:658d1f6619d92fe4c810381d8224d550",
+        "GUID:cd05bb3454858084eb2b228dab114a15",
+        "GUID:984543fd1d26a5741936a6f8841691f5",
+        "GUID:96d99a3db4aa2fe46bd75fadd9e84291"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

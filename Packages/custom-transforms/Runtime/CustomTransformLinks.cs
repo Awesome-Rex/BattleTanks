@@ -139,6 +139,8 @@ namespace REXTools.CustomTransforms
             if (!inEditor)
             {
                 //base.OnDestroy();
+                //base.OnDestroy();
+                Debug.Log("OnDestroy");
                 _ETERNAL.I.earlyRecorder.callbackF -= MoveToTarget;
             }
 

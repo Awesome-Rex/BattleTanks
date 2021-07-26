@@ -7,18 +7,18 @@ using REXTools.TransformTools;
 namespace REXTools.Tiling
 {
     [System.Serializable]
-    public class GridPlaneOrientation
+    public struct GridPlaneOrientation
     {
-        public bool enabled = true;
+        public bool enabled;// = true;
 
 
         //Gizmos orientation
-        public UnityEngine.Vector2Int size;
+        public UnityEngine.Vector2Int size;// = new UnityEngine.Vector2Int(1, 1);
 
-        public UnityEngine.Vector3Int offset = UnityEngine.Vector3Int.zero;
-        public float normalOffset = 0f;
+        public UnityEngine.Vector3Int offset;// = UnityEngine.Vector3Int.zero;
+        public float normalOffset;// = 0f;
 
-        public int subdivisions = 1;
+        public int subdivisions;// = 1;
 
         public bool planeOnEdge
         {

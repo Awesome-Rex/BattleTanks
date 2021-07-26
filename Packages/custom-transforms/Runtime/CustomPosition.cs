@@ -248,9 +248,18 @@ namespace REXTools.CustomTransforms
 
         public override void RecordParent()
         {
-            parentPos = parent.position;
-            parentRot = parent.rotation;
-            parentScale = parent.scale;
+            if (parent != null)
+            {
+                parentPos = parent.position;
+                parentRot = parent.rotation;
+                parentScale = parent.scale;
+            }
+            else //TESTING
+            {
+                parentPos = Vector3.zero;
+                parentRot = Quaternion.identity;
+                parentScale = Vector3.one;
+            }
         }
 
         public Vector3 Translate(Vector3 translation, Space relativeTo = Space.Self)
@@ -390,7 +399,7 @@ namespace REXTools.CustomTransforms
             }
         }
 
-        public override void SetPrevious() //WORKS!
+        public override void SetPrevious() //Only called during Link = Match
         {
             if (factorScale)
             {
@@ -416,15 +425,21 @@ namespace REXTools.CustomTransforms
             {
                 if (parent != null)
                 {
-                    if (!_parent.isNull)
-                    {
-                        this._parent = parent;
-                    }
-                    else
-                    {
-                        this._parent = null;
-                    }
+                    //if (!_parent.isNull)
+                    //{
+                    //    this._parent = parent;
+                    //}
+                    //else
+                    //{
+                    //    this._parent = null;
+                    //}
+                    this._parent = parent;
 
+                    RecordParent(); //TESTING
+                    if (space == Space.Self && link == Link.Match) //TESTING
+                    {
+                        SetPrevious(); //TESTING
+                    }
                 }
                 else
                 {
@@ -553,31 +568,6 @@ namespace REXTools.CustomTransforms
                 }
             }
         }
-        //public override void SwitchParent(Transform newParent)
-        //{ //switch parent
-        //    if (newParent != null)
-        //    {
-        //        if (space == Space.Self)
-        //        {
-        //            Vector3 originalPosition = position;
-        //            Vector3 originalLocalPosition = localPosition;
-
-        //            if (link == Link.Offset)
-        //            {
-        //                parent = newParent;
-
-        //                position = offset.ReversePosition(this, originalPosition);
-
-        //            }
-        //            else if (link == Link.Match)
-        //            {
-        //                parent = newParent;
-
-        //                position = originalPosition;
-        //            }
-        //        }
-        //    }
-        //}
         public void SwitchFactorScale(bool factor)
         { //switch factor scale
             if (space == Space.Self)
@@ -609,117 +599,9 @@ namespace REXTools.CustomTransforms
 
             offset = new AxisOrder(null, offset.variety, offset.space);
         }
-
-
-        //context menu methods
-#if UNITY_EDITOR
-        //[ContextMenu("Open Handles Window")]
-        //private void OpenHandlesWindow ()
-        //{
-        //    CustomTransformHandlesWindow.ShowWindow();
-        //}
-
-        public static void SetCheckedEnumMenuItems()
-        {
-            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Self", LinkSpaceRotation.Self, ref CustomPositionEditor.selfHandleRot);
-            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Parent", LinkSpaceRotation.Parent, ref CustomPositionEditor.selfHandleRot);
-            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/Self Space Handle/World", LinkSpaceRotation.World, ref CustomPositionEditor.selfHandleRot);
-
-            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/World Space Handle/Self", Space.Self, ref CustomPositionEditor.worldHandleRot);
-            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Position/World Space Handle/World", Space.World, ref CustomPositionEditor.worldHandleRot);
-
-            UnityEditor.Menu.SetChecked("REX Custom Transforms/Custom Position/Use Raw Position", CustomPositionEditor.offsetHandleRaw);
-        }
-
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Self")]
-        private static void SelfHandleRotation_Self()
-        {
-            CustomPositionEditor.selfHandleRot = LinkSpaceRotation.Self;
-
-            SetCheckedEnumMenuItems();
-        }
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Parent")]
-        private static void SelfHandleRotation_Parent()
-        {
-            CustomPositionEditor.selfHandleRot = LinkSpaceRotation.Parent;
-
-            SetCheckedEnumMenuItems();
-        }
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/World")]
-        private static void SelfHandleRotation_World()
-        {
-            CustomPositionEditor.selfHandleRot = LinkSpaceRotation.World;
-
-            SetCheckedEnumMenuItems();
-        }
-
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Self", true)]
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/Parent", true)]
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Self Space Handle/World", true)]
-        private static bool SelfHandleRotation_Valid()
-        {
-            return CustomTransformHandlesWindow.activeType == typeof(CustomPosition) && ((CustomPosition)CustomTransformHandlesWindow.activeCustomTransform).space == Space.Self;
-        }
-
-
-
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/World Space Handle/Self")]
-        private static void WorldHandleRotation_Self()
-        {
-            CustomPositionEditor.worldHandleRot = Space.Self;
-
-            SetCheckedEnumMenuItems();
-        }
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/World Space Handle/World")]
-        private static void WorldHandleRotation_Parent()
-        {
-            CustomPositionEditor.worldHandleRot = Space.World;
-
-            SetCheckedEnumMenuItems();
-        }
-
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/World Space Handle/Self", true)]
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/World Space Handle/World", true)]
-        private static bool WorldHandleRotation_Valid()
-        {
-            return CustomTransformHandlesWindow.activeType == typeof(CustomPosition) && ((CustomPosition)CustomTransformHandlesWindow.activeCustomTransform).space == Space.World;
-        }
-
-
-
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Use Raw Position")]
-        private static void OffsetHandleRaw()
-        {
-            CustomPositionEditor.offsetHandleRaw = !CustomPositionEditor.offsetHandleRaw;
-
-            SetCheckedEnumMenuItems();
-        }
-
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Position/Use Raw Position", true)]
-        private static bool OffsetHandleRaw_Valid()
-        {
-            return CustomTransformHandlesWindow.activeType == typeof(CustomPosition);
-        }
-#endif
-
+        
         //events
 
         private void Start() { }
-
-
-        //Startup
-#if UNITY_EDITOR
-        [UnityEditor.InitializeOnLoad]
-        public static class Startup
-        {
-            static Startup()
-            {
-                UnityEditor.EditorApplication.delayCall += () =>
-                {
-                    SetCheckedEnumMenuItems();
-                };
-            }
-        }
-#endif
     }
 }

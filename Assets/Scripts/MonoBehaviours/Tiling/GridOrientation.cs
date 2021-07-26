@@ -14,6 +14,7 @@ namespace REXTools.Tiling
     //grid implemented in scene - in world space
     public class GridOrientation : MonoBehaviour
     {
+        //Non static methods
         //grid size
         public Grid grid;
 
@@ -131,75 +132,96 @@ namespace REXTools.Tiling
             return grid.subdividedTileSize(subdivisions);
         }
 
-        //++++++++NEEDS TO BE CONVERTED TO Vector3Bool!!!!!!!!
         //directions
+        public Vector3 up
+        {
+            get
+            {
+                return finalRotation * Vector3.up;
+            }
+        }
+        public Vector3 forward
+        {
+            get
+            {
+                return finalRotation * Vector3.forward;
+            }
+        }
+        public Vector3 right
+        {
+            get
+            {
+                return finalRotation * Vector3.right;
+            }
+        }
+
         public Vector3 x
         {
-            get => finalRotation * Vector3.right;
+            get => right;
         }
         public Vector3 y
         {
-            get => finalRotation * Vector3.up;
+            get => up;
         }
         public Vector3 z
         {
-            get => finalRotation * Vector3.forward;
+            get => forward;
         }
 
 
 
         //TILES
 
-        //creates new tile
-        public TileState CreateTile(Tile tile)
-        {
-            GameObject tileInstance = Instantiate(tile.prefab);
-            TileState tileState = tileInstance.AddComponent<TileState>();
-            tileState.tile = tile;
-            tileState.grid = this;
+        ////creates new tile
+        //public TileState CreateTile(Tile tile)
+        //{
+        //    GameObject tileInstance = Instantiate(tile.prefab);
+        //    TileState tileState = tileInstance.AddComponent<TileState>();
+        //    tileState.tile = tile;
+        //    tileState.grid = this;
 
-            return tileState;
-        }
-        public TileState CreateTile(Tile tile, Vector3 position, int subdivisions = 1, UnityEngine.Vector3Int rotation = default)
-        {
-            TileState tileInstance = CreateTile(tile);
+        //    return tileState;
+        //}
+        //public TileState CreateTile(Tile tile, Vector3 position, int subdivisions = 1, UnityEngine.Vector3Int rotation = default)
+        //{
+        //    TileState tileInstance = CreateTile(tile);
 
-            SetPosition(tileInstance, position, subdivisions);
-            SetRotation(tileInstance, rotation);
+        //    tileInstance.subdivisions = subdivisions;
+        //    tileInstance.positionRaw = position;
+        //    tileInstance.rotation = rotation;
 
-            return tileInstance;
-        }
-        
-        public void SetPosition(TileState tile, Vector3 position, int subdivisions = 1)
-        { //moves existing tile
-            tile.subdivisions = subdivisions;
-            tile.position = position;
-        }
-        public void SetRotation(TileState tile, UnityEngine.Vector3Int rotation)
-        { //rotates existing tile
-            tile.rotation = rotation;
-        }
+        //    return tileInstance;
+        //}
+        //public TileState CreateTile(Tile tile, UnityEngine.Vector3Int position, int subdivisions = 1, UnityEngine.Vector3Int rotation = default)
+        //{
+        //    TileState tileInstance = CreateTile(tile);
 
+        //    tileInstance.subdivisions = subdivisions;
+        //    tileInstance.position = position;
+        //    tileInstance.rotation = rotation;
+
+        //    return tileInstance;
+        //}
 
         //INHERITED SPACE CONVERSION
         public Vector3 GridToOne(Vector3 position, int subdivisions = 1)
         {
-            return grid.GridToOne(position, subdivisions);
+            return /*grid*/Grid.GridToOne(position, subdivisions);
         }
         public Vector3 OneToGrid(Vector3 position, int subdivisions = 1)
         {
-            return grid.OneToGrid(position, subdivisions);
+            return /*grid*/Grid.OneToGrid(position, subdivisions);
         }
         public Vector3 GridToGrid(Vector3 position, int subdivisions = 1, int newSubdivisions = 1)
         {
-            return grid.GridToGrid(position, subdivisions);
+            return /*grid*/Grid.GridToGrid(position, subdivisions);
         }
 
 
         //SPACE CONVERSION
         public Vector3 GridToWorld(Vector3 position, int subdivisions = 1)
         {
-            position = grid.GridToOne(position, subdivisions);
+            position = /*grid*/Grid.GridToOne(position, subdivisions);
 
             position -= offsetCenterPoint;
 
@@ -222,7 +244,7 @@ namespace REXTools.Tiling
 
             localPos += offsetCenterPoint;
 
-            return grid.OneToGrid(localPos, subdivisions);
+            return /*grid*/Grid.OneToGrid(localPos, subdivisions);
         }
 
         public Vector3 GridToWorldDirection (Vector3 direction)
@@ -255,15 +277,22 @@ namespace REXTools.Tiling
         //GRID RAYCASTING ONTO CENTERS OR EDGES
         public GridOrientationCastHit GridToWorldHit(GridCastHit hit, Axis axis, Ray ray)
         {
-            GridOrientationCastHit newHit = new GridOrientationCastHit();
+            if (hit != null)
+            {
+                GridOrientationCastHit newHit = new GridOrientationCastHit();
 
-            newHit.point = hit.point;
-            newHit.distance = hit.distance;
+                newHit.point = hit.point;
+                newHit.distance = hit.distance;
 
-            newHit.worldPoint = GridToWorld(hit.point);
-            newHit.worldDistance = GridToWorldDistance(ray, hit.distance);
+                newHit.worldPoint = GridToWorld(hit.point);
+                newHit.worldDistance = GridToWorldDistance(ray, hit.distance);
 
-            return newHit;
+                return newHit;
+            }
+            else
+            {
+                return null;
+            }
         }
         public GridCastHit WorldToGridHit(GridOrientationCastHit hit, Axis axis, Ray ray)
         {
@@ -271,13 +300,13 @@ namespace REXTools.Tiling
         }
 
 
-        
+
         //takes world position 
         //distance in one's unit
         //+++++++++++++++TO BE TESTED OUT!!!!!!!
         public GridOrientationCastHit TileCast(Ray ray, Axis axis, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
         {
-            GridCastHit hitInfo = grid.TileCast(WorldToGridRay(ray, subdivisions), axis, WorldToGridDistance(ray, maxDistance), subdivisions);
+            GridCastHit hitInfo = /*grid*/Grid.TileCast(WorldToGridRay(ray, subdivisions), axis, WorldToGridDistance(ray, maxDistance), subdivisions);
 
             return GridToWorldHit(hitInfo, axis, ray);
         }
@@ -285,7 +314,7 @@ namespace REXTools.Tiling
         {
             List<GridOrientationCastHit> hitInfo = new List<GridOrientationCastHit>();
 
-            foreach (GridCastHit i in grid.TileCastAll(WorldToGridRay(ray, subdivisions), axis, WorldToGridDistance(ray, maxDistance), subdivisions))
+            foreach (GridCastHit i in /*grid*/Grid.TileCastAll(WorldToGridRay(ray, subdivisions), axis, WorldToGridDistance(ray, maxDistance), subdivisions))
             {
                 hitInfo.Add(GridToWorldHit(i, axis, ray));
             }
@@ -319,7 +348,7 @@ namespace REXTools.Tiling
 
         public GridOrientationCastHit EdgeCast(Ray ray, Axis axis, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
         {
-            GridCastHit hitInfo = grid.EdgeCast(WorldToGridRay(ray, subdivisions), axis, WorldToGridDistance(ray, maxDistance), subdivisions);
+            GridCastHit hitInfo = /*grid*/Grid.EdgeCast(WorldToGridRay(ray, subdivisions), axis, WorldToGridDistance(ray, maxDistance), subdivisions);
 
             return GridToWorldHit(hitInfo, axis, ray);
         }
@@ -327,7 +356,7 @@ namespace REXTools.Tiling
         {
             List<GridOrientationCastHit> hitInfo = new List<GridOrientationCastHit>();
 
-            foreach (GridCastHit i in grid.EdgeCastAll(WorldToGridRay(ray, subdivisions), axis, WorldToGridDistance(ray, maxDistance), subdivisions))
+            foreach (GridCastHit i in /*grid*/Grid.EdgeCastAll(WorldToGridRay(ray, subdivisions), axis, WorldToGridDistance(ray, maxDistance), subdivisions))
             {
                 hitInfo.Add(GridToWorldHit(i, axis, ray));
             }
@@ -366,10 +395,9 @@ namespace REXTools.Tiling
         {
             return GridOnEdge(WorldToGrid(position, subdivisions));
         }
-        //Checks if position parameter has axis equal to 0.5f or -0.5f
         public Vector3Bool GridOnEdge(Vector3 position, int subdivisions = 1)
-        {
-            position = grid.OneToGrid(position.normalized, subdivisions);
+        { //Checks if position parameter has axis equal to 0.5f or -0.5f
+            position = /*grid*/Grid.OneToGrid(position.normalized, subdivisions);
 
             Vector3Bool edgeCase = new Vector3Bool(false, false, false);
             return (Vector3Bool)edgeCase.Operate((s, a) =>
@@ -387,6 +415,52 @@ namespace REXTools.Tiling
                 }
             });
         }
+
+
+        //STATIC METHODS
+
+        //Intersection (Tile Occupation)
+        //public static bool IntersectsRaw(GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA, GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB)
+        //{ //factors position, size and rotation
+            
+        //    Geometry.Box tileA = new Geometry.Box(orientationA.GridToWorld(positionA, subdivisionsA), Linking.TransformEuler(rotationA, orientationA.finalRotation), orientationA.grid.subdividedTileSize(subdivisionsA).Multiply(sizeA) * orientationA.totalScale);
+        //    Geometry.Box tileB = new Geometry.Box(orientationB.GridToWorld(positionB, subdivisionsB), Linking.TransformEuler(rotationB, orientationB.finalRotation), orientationB.grid.subdividedTileSize(subdivisionsB).Multiply(sizeB) * orientationB.totalScale);
+
+        //    return tileA.Intersects(tileB, true);
+        //}
+        //public static bool IntersectsRaw(GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, int subdivisionsA, GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, int subdivisionsB)
+        //{ //factors position and size
+        //    return IntersectsRaw(orientationA, positionA, sizeA, Quaternion.identity, subdivisionsA, orientationB, positionB, sizeB, Quaternion.identity, subdivisionsB);
+        //}
+        //public static bool IntersectsRaw(GridOrientation orientationA, Vector3 a, int subdivisionsA, GridOrientation orientationB, Vector3 b, int subdivisionsB)
+        //{ //factors position
+        //    return IntersectsRaw(orientationA, a, Vector3.one, subdivisionsA, orientationB, b, Vector3.one, subdivisionsB);
+        //}
+        //public static bool Intersects(GridOrientation orientationA, UnityEngine.Vector3Int a, int subdivisionsA, GridOrientation orientationB, UnityEngine.Vector3Int b, int subdivisionsB)
+        //{ //doesnt use raw values
+        //    return IntersectsRaw(orientationA, a, subdivisionsA, orientationB, b, subdivisionsB);
+        //}
+
+        //public static bool AdjacentRaw(GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA, GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB)
+        //{ //factors position, size and rotation
+
+        //    Geometry.Box tileA = new Geometry.Box(orientationA.GridToWorld(positionA, subdivisionsA), Linking.TransformEuler(rotationA, orientationA.finalRotation), orientationA.grid.subdividedTileSize(subdivisionsA).Multiply(sizeA) * orientationA.totalScale);
+        //    Geometry.Box tileB = new Geometry.Box(orientationB.GridToWorld(positionB, subdivisionsB), Linking.TransformEuler(rotationB, orientationB.finalRotation), orientationB.grid.subdividedTileSize(subdivisionsB).Multiply(sizeB) * orientationB.totalScale);
+
+        //    return tileA.Adjacent(tileB);
+        //}
+        //public static bool AdjacentRaw(GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, int subdivisionsA, GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, int subdivisionsB)
+        //{ //factors position and size
+        //    return AdjacentRaw(orientationA, positionA, sizeA, Quaternion.identity, subdivisionsA, orientationB, positionB, sizeB, Quaternion.identity, subdivisionsB);
+        //}
+        //public static bool AdjacentRaw(GridOrientation orientationA, Vector3 a, int subdivisionsA, GridOrientation orientationB, Vector3 b, int subdivisionsB)
+        //{ //factors position
+        //    return AdjacentRaw(orientationA, a, Vector3.one, subdivisionsA, orientationB, b, Vector3.one, subdivisionsB);
+        //}
+        //public static bool Adjacent(GridOrientation orientationA, UnityEngine.Vector3Int a, int subdivisionsA, GridOrientation orientationB, UnityEngine.Vector3Int b, int subdivisionsB)
+        //{ //doesnt use raw values
+        //    return AdjacentRaw(orientationA, a, subdivisionsA, orientationB, b, subdivisionsB);
+        //}
 
 
 

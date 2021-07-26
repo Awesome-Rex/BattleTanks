@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Reflection;
 
 using UnityEditor;
 
@@ -34,10 +35,24 @@ namespace REXTools.REXCore
         {
             get
             {
-                return _lineHeight;
+                return EditorGUIUtility.singleLineHeight;//_lineHeight;
             }
         }
-        protected float _lineHeight;
+        //protected float _lineHeight;
+        protected float labelWidth
+        {
+            get
+            {
+                return EditorGUIUtility.labelWidth;
+            }
+        }
+        protected float fieldWidth
+        {
+            get
+            {
+                return EditorGUIUtility.fieldWidth;
+            }
+        }
 
         private int originalIndentLevel;
 
@@ -64,7 +79,7 @@ namespace REXTools.REXCore
         private void start (Rect position, SerializedProperty property, GUIContent label)
         {
             //private variables
-            _lineHeight = base.GetPropertyHeight(property, label);
+            //_lineHeight = EditorGUIUtility.singleLineHeight;//base.GetPropertyHeight(property, label);
 
             _indentedPosition = EditorGUI.IndentedRect(position);
             _indentedPosition.height = lineHeight;
@@ -94,6 +109,12 @@ namespace REXTools.REXCore
             return base.GetPropertyHeight(property, label) * lines;
         }
 
+        //local methods
+        public void DrawDefaultProperty(Rect position, SerializedProperty property, GUIContent label)
+        {
+            MethodInfo defaultDraw = typeof(EditorGUI).GetMethod("DefaultPropertyField", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            defaultDraw.Invoke(null, new object[3] { position, property, label });
+        }
 
         //static methods
         public static void ApplyModifiedProperties(System.Action action, SerializedProperty property)
@@ -107,19 +128,6 @@ namespace REXTools.REXCore
             action();
 
             property.ApplyModifiedProperties();
-        }
-    }
-
-    public static class GUITextTools
-    {
-        public static string Titalized(this string text)
-        {
-            //capitalizes first character
-            string newText = text;
-            newText = text.Substring(1, text.Length - 1);
-            newText = text.Substring(0, 1).ToUpper() + newText;
-
-            return newText;
         }
     }
 }

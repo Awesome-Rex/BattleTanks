@@ -43,10 +43,10 @@ namespace REXTools.Tiling
                         EditorGUILayout.LabelField("Self", EditorStyles.boldLabel, GUILayout.Width(buttonSizeClamped * 3f));
 
                         EditorGUILayout.BeginHorizontal();
-                        CustomEditors.EnumButton<RuleBehaviour?>(this, () => GUILayout.Button("Cycle", GUILayout.Width(buttonSizeClamped), GUILayout.Height(buttonSize)), null, ref TilingRulePropertyDrawer.brushType);
-                        CustomEditors.EnumButton<RuleBehaviour?>(this, () => GUILayout.Button("Eraser", GUILayout.Width(buttonSizeClamped), GUILayout.Height(buttonSize)), RuleBehaviour.DontCare, ref TilingRulePropertyDrawer.brushType);
-                        CustomEditors.EnumButton<RuleBehaviour?>(this, () => GUILayout.Button("This", GUILayout.Width(buttonSizeClamped), GUILayout.Height(buttonSize)), RuleBehaviour.This, ref TilingRulePropertyDrawer.brushType);
-                        CustomEditors.EnumButton<RuleBehaviour?>(this, () => GUILayout.Button("NotThis", GUILayout.Width(buttonSizeClamped), GUILayout.Height(buttonSize)), RuleBehaviour.NotThis, ref TilingRulePropertyDrawer.brushType);
+                        this.EnumButton<RuleBehaviour?>(() => GUILayout.Button("Cycle", GUILayout.Width(buttonSizeClamped), GUILayout.Height(buttonSize)), null, ref TilingRulePropertyDrawer.brushType);
+                        this.EnumButton<RuleBehaviour?>(() => GUILayout.Button("Eraser", GUILayout.Width(buttonSizeClamped), GUILayout.Height(buttonSize)), RuleBehaviour.DontCare, ref TilingRulePropertyDrawer.brushType);
+                        this.EnumButton<RuleBehaviour?>(() => GUILayout.Button("This", GUILayout.Width(buttonSizeClamped), GUILayout.Height(buttonSize)), RuleBehaviour.This, ref TilingRulePropertyDrawer.brushType);
+                        this.EnumButton<RuleBehaviour?>(() => GUILayout.Button("NotThis", GUILayout.Width(buttonSizeClamped), GUILayout.Height(buttonSize)), RuleBehaviour.NotThis, ref TilingRulePropertyDrawer.brushType);
                         EditorGUILayout.EndHorizontal();
                     }
                     EditorGUILayout.EndVertical();
@@ -66,10 +66,10 @@ namespace REXTools.Tiling
 
                 EditorGUILayout.LabelField("Self", EditorStyles.boldLabel, GUILayout.Width(buttonSize));
 
-                CustomEditors.EnumButton<RuleBehaviour?>(this, () => GUILayout.Button("Cycle", GUILayout.Width(buttonSize), GUILayout.Height(buttonSize), GUILayout.MaxHeight(maxButtonSize)), null, ref TilingRulePropertyDrawer.brushType);
-                CustomEditors.EnumButton<RuleBehaviour?>(this, () => GUILayout.Button("Eraser", GUILayout.Width(buttonSize), GUILayout.Height(buttonSize), GUILayout.MaxHeight(maxButtonSize)), RuleBehaviour.DontCare, ref TilingRulePropertyDrawer.brushType);
-                CustomEditors.EnumButton<RuleBehaviour?>(this, () => GUILayout.Button("This", GUILayout.Width(buttonSize), GUILayout.Height(buttonSize), GUILayout.MaxHeight(maxButtonSize)), RuleBehaviour.This, ref TilingRulePropertyDrawer.brushType);
-                CustomEditors.EnumButton<RuleBehaviour?>(this, () => GUILayout.Button("NotThis", GUILayout.Width(buttonSize), GUILayout.Height(buttonSize), GUILayout.MaxHeight(maxButtonSize)), RuleBehaviour.NotThis, ref TilingRulePropertyDrawer.brushType);
+                this.EnumButton<RuleBehaviour?>(() => GUILayout.Button("Cycle", GUILayout.Width(buttonSize), GUILayout.Height(buttonSize), GUILayout.MaxHeight(maxButtonSize)), null, ref TilingRulePropertyDrawer.brushType);
+                this.EnumButton<RuleBehaviour?>(() => GUILayout.Button("Eraser", GUILayout.Width(buttonSize), GUILayout.Height(buttonSize), GUILayout.MaxHeight(maxButtonSize)), RuleBehaviour.DontCare, ref TilingRulePropertyDrawer.brushType);
+                this.EnumButton<RuleBehaviour?>(() => GUILayout.Button("This", GUILayout.Width(buttonSize), GUILayout.Height(buttonSize), GUILayout.MaxHeight(maxButtonSize)), RuleBehaviour.This, ref TilingRulePropertyDrawer.brushType);
+                this.EnumButton<RuleBehaviour?>(() => GUILayout.Button("NotThis", GUILayout.Width(buttonSize), GUILayout.Height(buttonSize), GUILayout.MaxHeight(maxButtonSize)), RuleBehaviour.NotThis, ref TilingRulePropertyDrawer.brushType);
             }
         }
             

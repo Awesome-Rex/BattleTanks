@@ -7,7 +7,9 @@ namespace REXTools.TransformTools
 {
     public enum Axis { X, Y, Z }
     public enum SpaceVariety { OneSided, Mixed }
-    
+
+    public enum PlaneProjection { Reorient, View, Plane }
+
     public static class Vectors
     {
         // THE AXIS BIBLE
@@ -43,6 +45,18 @@ namespace REXTools.TransformTools
             { axisDirections[Axis.Y], new Vector2T<Vector3>(axisDirections[Axis.X], axisDirections[Axis.Z]) },
             { axisDirections[Axis.Z], new Vector2T<Vector3>(axisDirections[Axis.X], axisDirections[Axis.Y]) }
         };
+
+        public static void AxisIterate(System.Action<Axis> operation)
+        {
+            operation(Axis.X);
+            operation(Axis.Y);
+            operation(Axis.Z);
+        }
+        public static void AxisIterate2D(System.Action<Axis> operation)
+        {
+            operation(Axis.X);
+            operation(Axis.Y);
+        }
 
         //METHODS
 
@@ -167,7 +181,7 @@ namespace REXTools.TransformTools
 
             return default;
         }
-        
+
         //operation (with same type)
         public static Vector3 Operate(this Vector3 a, System.Func<Axis, float, float> operation)
         {
@@ -393,7 +407,7 @@ namespace REXTools.TransformTools
                 operation(Axis.Y, a.y, b.y)
             );
         }
-        
+
         //math
         public static Vector3 Multiply(this Vector3 a, Vector3 b)
         {
@@ -429,6 +443,23 @@ namespace REXTools.TransformTools
             return new UnityEngine.Vector2Int(a.x / b.x, a.y / b.y);
         }
 
+        public static Vector3 Abs(this Vector3 a)
+        {
+            return new Vector3(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
+        }
+        public static Vector2 Abs(this Vector2 a)
+        {
+            return new Vector2(Mathf.Abs(a.x), Mathf.Abs(a.y));
+        }
+        public static UnityEngine.Vector3Int Abs(this UnityEngine.Vector3Int a)
+        {
+            return new UnityEngine.Vector3Int(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
+        }
+        public static UnityEngine.Vector2Int Abs(this UnityEngine.Vector2Int a)
+        {
+            return new UnityEngine.Vector2Int(Mathf.Abs(a.x), Mathf.Abs(a.y));
+        }
+
         public static Vector3 Round(this Vector3 a)
         {
             return new Vector3(Mathf.Round(a.x), Mathf.Round(a.y), Mathf.Round(a.z));
@@ -454,6 +485,116 @@ namespace REXTools.TransformTools
             return new Vector2(Mathf.Floor(a.x), Mathf.Floor(a.y));
         }
 
+
+        public static UnityEngine.Vector3Int RoundToInt(this Vector3 a)
+        {
+            return new UnityEngine.Vector3Int(Mathf.RoundToInt(a.x), Mathf.RoundToInt(a.y), Mathf.RoundToInt(a.z));
+        }
+        public static UnityEngine.Vector2Int RoundToInt(this Vector2 a)
+        {
+            return new UnityEngine.Vector2Int(Mathf.RoundToInt(a.x), Mathf.RoundToInt(a.y));
+        }
+        public static UnityEngine.Vector3Int CeilToInt(this Vector3 a)
+        {
+            return new UnityEngine.Vector3Int(Mathf.CeilToInt(a.x), Mathf.CeilToInt(a.y), Mathf.CeilToInt(a.z));
+        }
+        public static UnityEngine.Vector2Int CeilToInt(this Vector2 a)
+        {
+            return new UnityEngine.Vector2Int(Mathf.CeilToInt(a.x), Mathf.CeilToInt(a.y));
+        }
+        public static UnityEngine.Vector3Int FloorToInt(this Vector3 a)
+        {
+            return new UnityEngine.Vector3Int(Mathf.FloorToInt(a.x), Mathf.FloorToInt(a.y), Mathf.FloorToInt(a.z));
+        }
+        public static UnityEngine.Vector2Int FloorToInt(this Vector2 a)
+        {
+            return new UnityEngine.Vector2Int(Mathf.FloorToInt(a.x), Mathf.FloorToInt(a.y));
+        }
+        //PROPERTIES
+        public static Vector3 Sign(this Vector3 a)
+        {
+            return new Vector3(Mathf.Sign(a.x), Mathf.Sign(a.y), Mathf.Sign(a.z));
+        }
+        public static Vector2 Sign(this Vector2 a)
+        {
+            return new Vector2(Mathf.Sign(a.x), Mathf.Sign(a.y));
+        }
+        public static UnityEngine.Vector3Int Sign(this UnityEngine.Vector3Int a)
+        {
+            return new UnityEngine.Vector3Int((int)Mathf.Sign(a.x), (int)Mathf.Sign(a.y), (int)Mathf.Sign(a.z));
+        }
+        public static UnityEngine.Vector2Int Sign(this UnityEngine.Vector2Int a)
+        {
+            return new UnityEngine.Vector2Int((int)Mathf.Sign(a.x), (int)Mathf.Sign(a.y));
+        }
+
+        public static Vector3 SignZeroed(this Vector3 a)
+        {
+            return new Vector3(a.x.SignZeroed(), a.y.SignZeroed(), a.z.SignZeroed());
+        }
+        public static Vector2 SignZeroed(this Vector2 a)
+        {
+            return new Vector2(a.x.SignZeroed(), a.y.SignZeroed());
+        }
+        public static UnityEngine.Vector3Int SignZeroed(this UnityEngine.Vector3Int a)
+        {
+            return new UnityEngine.Vector3Int(((float)a.x).SignZeroedToInt(), ((float)a.y).SignZeroedToInt(), ((float)a.z).SignZeroedToInt());
+        }
+        public static UnityEngine.Vector2Int SignZeroed(this UnityEngine.Vector2Int a)
+        {
+            return new UnityEngine.Vector2Int(((float)a.x).SignZeroedToInt(), ((float)a.y).SignZeroedToInt());
+        }
+
+        public static Vector3 SignCeil(this Vector3 a)
+        {
+            return new Vector3(a.x.SignCeil(), a.y.SignCeil(), a.z.SignCeil());
+        }
+        public static Vector2 SignCeil(this Vector2 a)
+        {
+            return new Vector2(a.x.SignCeil(), a.y.SignCeil());
+        }
+        public static UnityEngine.Vector3Int SignCeil(this UnityEngine.Vector3Int a)
+        {
+            return new UnityEngine.Vector3Int(((float)a.x).SignCeilToInt(), ((float)a.y).SignCeilToInt(), ((float)a.z).SignCeilToInt());
+        }
+        public static UnityEngine.Vector2Int SignCeil(this UnityEngine.Vector2Int a)
+        {
+            return new UnityEngine.Vector2Int(((float)a.x).SignCeilToInt(), ((float)a.y).SignCeilToInt());
+        }
+
+        public static Vector3 SignFloor(this Vector3 a)
+        {
+            return new Vector3(a.x.SignFloor(), a.y.SignFloor(), a.z.SignFloor());
+        }
+        public static Vector2 SignFloor(this Vector2 a)
+        {
+            return new Vector2(a.x.SignFloor(), a.y.SignFloor());
+        }
+        public static UnityEngine.Vector3Int SignFloor(this UnityEngine.Vector3Int a)
+        {
+            return new UnityEngine.Vector3Int(((float)a.x).SignFloorToInt(), ((float)a.y).SignFloorToInt(), ((float)a.z).SignFloorToInt());
+        }
+        public static UnityEngine.Vector2Int SignFloor(this UnityEngine.Vector2Int a)
+        {
+            return new UnityEngine.Vector2Int(((float)a.x).SignFloorToInt(), ((float)a.y).SignFloorToInt());
+        }
+
+        public static Vector3Sign ToSign(this Vector3 a) 
+        {
+            return new Vector3Sign(a.x.ToSign(), a.y.ToSign(), a.z.ToSign());
+        }
+        public static Vector2Sign ToSign(this Vector2 a)
+        {
+            return new Vector2Sign(a.x.ToSign(), a.y.ToSign());
+        }
+        public static Vector3Sign ToSign(this UnityEngine.Vector3Int a)
+        {
+            return new Vector3Sign(a.x.ToSign(), a.y.ToSign(), a.z.ToSign());
+        }
+        public static Vector2Sign ToSign(this UnityEngine.Vector2Int a)
+        {
+            return new Vector2Sign(a.x.ToSign(), a.y.ToSign());
+        }
 
         public static Vector3 Reciprocol(this Vector3 a)
         {
@@ -483,16 +624,16 @@ namespace REXTools.TransformTools
 
         public static float[] ToArray(this Vector3 f)
         {
-            return new float[]{ 
-                f.x, 
-                f.y, 
+            return new float[]{
+                f.x,
+                f.y,
                 f.z
             };
         }
         public static float[] ToArray(this Vector2 f)
         {
-            return new float[]{ 
-                f.x, 
+            return new float[]{
+                f.x,
                 f.y
             };
         }
@@ -544,155 +685,292 @@ namespace REXTools.TransformTools
         }
 
 
-        public static Vector3 CustomRoundVector3(Vector3 f, Vector3 increment, Vector3 offset)
+
+        //QUATERNION EXTENSION METHODS
+        public static Quaternion Add(this Quaternion a, Quaternion b, Space space = Space.Self)
         {
-            return f.Operate(offset, (s, a, b) => a - b).Operate(increment, (s, a, b) => Mathf.Round(a / b) * b).Operate(offset, (s, a, b) => a + b); ;
+            if (space == Space.Self)
+            {
+                return a * b;
+            }
+            else if (space == Space.World)
+            {
+                return b * a;
+            }
+
+            return default;
         }
-        public static Vector3 CustomRoundVector3(Vector3 f, Vector3 increment)
+        public static Quaternion Subtract(this Quaternion a, Quaternion b, Space space = Space.Self)
         {
-            return CustomRoundVector3(f, increment, Vector3.zero);
-        }
-        public static Vector3 CustomRound(this Vector3 f, Vector3 increment, Vector3 offset)
-        {
-            return CustomRoundVector3(f, increment, offset);
-        }
-        public static Vector3 CustomRound(this Vector3 f, Vector3 increment)
-        {
-            return CustomRoundVector3(f, increment, Vector3.zero);
+            if (space == Space.Self)
+            {
+                return a * Quaternion.Inverse(b);
+            }
+            else if (space == Space.World)
+            {
+                return Quaternion.Inverse(b) * a;
+                //return (Quaternion.identity * Quaternion.Inverse(b)) * a;
+                //return b * Quaternion.Inverse(a);
+                //return Quaternion.Inverse(b) * Quaternion.Inverse(a);
+                //return Quaternion.Inverse(Quaternion.Inverse(b) * Quaternion.Inverse(a));
+                //return Quaternion.Inverse(b * a);
+                //return Quaternion.Inverse(Quaternion.Inverse(b) * a);
+                //return Quaternion.Inverse(b * Quaternion.Inverse(a));
+            }
+
+            return default;
         }
 
-        
-        public static Vector3T<Sign> Rotate(this Vector3T<Sign> f, UnityEngine.Vector3Int euler)
+
+        //AXIS EXTENSION METHODS
+        public static Axis Rotate(this Axis axis, UnityEngine.Vector3Int eulers, Space space = Space.Self)
         {
-            return SignAdjacency<dynamic>.signPositions.First(x => x.Value == (Quaternion.Euler(((Vector3)euler) * 90f) * Quaternion.LookRotation(SignAdjacency<dynamic>.signPositions[f])) * Vector3.forward * SignAdjacency<dynamic>.signPositions[f].magnitude).Key;
-        }
-        public static Vector3T<Sign> Mirror(this Vector3T<Sign> f, Axis axis)
-        {
-            return f.SetAxis(axis, f.GetAxis(axis).Negative());
+            Axis newAxis = axis;
+
+            new Vector3Sign(Vector3Sign.zero.SetAxis(axis, TransformTools.Sign.Positive)).Rotate(eulers, space).Operate((s, a) =>
+            {
+                if (a != TransformTools.Sign.Neutral)
+                {
+                    newAxis = s;
+                }
+
+                return default;
+            });
+
+            return newAxis;
         }
 
+
+
+        //public static UnityEngine.Vector3Int ToInt(this Quaternion euler, int divisions)
+        //{
+        //    return ((Vector3Int)euler.eulerAngles.Operate((s, a) =>
+        //    {
+        //        return Mathf.RoundToInt(a / 90f);
+        //    })).UValue;
+        //}
+        //public static Quaternion ToQuaternion(this UnityEngine.Vector3Int euler, int divisions)
+        //{
+
+        //}
+        //public static UnityEngine.Vector3Int ToInt(this Vector3 euler, int divisions)
+        //{
+
+        //}
+        //public static Vector3 ToQuaternion(this UnityEngine.Vector3Int euler, int divisions)
+        //{
+
+        //}
+
+        ///
 
         //SPECIAL
 
-        //plane raycasting
-        public static Vector3? OnPlane(Ray ray, Vector3 planePosition, Vector3 planeNormal)
+        //Get point on plane from raycast
+        public static Vector3? RaycastPoint(this Plane plane, Ray ray, bool registerStart = false)
         {
-            planeNormal = planeNormal.normalized;
-
-            Plane plane = new Plane(planeNormal, planePosition);
-
             float distance;
+            bool result = plane.Raycast(ray, out distance);
 
-            if (!(!plane.Raycast(ray, out distance) && distance == 0f))
-            {
-                return ray.GetPoint(distance);
+            if (registerStart && Vector3.Distance(ray.origin, plane.ClosestPointOnPlane(ray.origin)) <= Geometry.zeroRound)
+            { //ray starts on plane
+                return ray.origin;
             }
             else
-            {
-                return null;
+            { //ray starts outside of plane
+                if
+                (
+                    (distance < 0f) ||
+                    (!result && distance == 0)
+                )
+                { // ray points away / perpendicular to plane
+                    return null;
+                }
+                else
+                { //ray points towards plane
+                    return ray.GetPoint(distance);
+                }
             }
         }
-        public static Vector3? OnPlane(Vector3 point, Vector3 direction, Vector3 planePosition, Vector3 planeNormal)
-        {
-            return OnPlane(new Ray(point, direction), planePosition, planeNormal);
-        }
-
-        public static Vector3? RaycastPoint (this Plane plane, Ray ray)
-        {
-            float distance;
-
-            if (!(!plane.Raycast(ray, out distance) && distance == 0f))
-            {
-                return ray.GetPoint(distance);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public static bool RaycastPoint(this Plane plane, Ray ray, out Vector3 set)
+        public static bool RaycastPoint(this Plane plane, Ray ray, out Vector3 set, bool registerStart = false)
         {
             float distance;
+            bool result = plane.Raycast(ray, out distance);
 
-            if (!(!plane.Raycast(ray, out distance) && distance == 0f))
-            {
-                set = ray.GetPoint(distance);
+            if (registerStart && Vector3.Distance(ray.origin, plane.ClosestPointOnPlane(ray.origin)) <= Geometry.zeroRound)
+            { //ray starts on plane
+                set = ray.origin;
                 return true;
             }
             else
-            {
-                set = Vector3.zero;
-                return false;
+            { //ray starts outside of plane
+                if
+                (
+                    (distance < 0f) ||
+                    (!result && distance == 0)
+                )
+                { // ray points away / perpendicular to plane
+                    set = ray.GetPoint(distance);
+                    return false;
+                }
+                else 
+                { //ray points towards plane
+                    set = ray.GetPoint(distance);
+                    return true;
+                }
             }
         }
+        public static Vector3? LinecastPoint(this Plane plane, Ray ray, bool registerStart = true) {
+            Vector3 pointA;
+            Vector3 pointB;
+            if (plane.RaycastPoint(ray, out pointA, registerStart))
+            {
+                return pointA;
+            }
+            else if (plane.RaycastPoint(new Ray(ray.origin, -ray.direction), out pointB, registerStart))
+            {
+                return pointB;
+            }
+            else 
+            {
+                return null;
+            }
+        }
+        public static bool LinecastPoint(this Plane plane, Ray ray, out Vector3 set, bool registerStart = true)
+        {
+            Vector3 pointA;
+            Vector3 pointB;
+            if (plane.RaycastPoint(ray, out pointA, registerStart))
+            {
+                set = pointA;
+                return true;
+            }
+            else if (plane.RaycastPoint(new Ray(ray.origin, -ray.direction), out pointB, registerStart))
+            {
+                set = pointB;
+                return true;
+            }
+
+            set = Vector3.zero;
+            return false;
+        }
+
+
+        //public static Vector3? OnPlane(Ray ray, Vector3 planePosition, Vector3 planeNormal)
+        //{
+        //    planeNormal = planeNormal.normalized;
+
+        //    Plane plane = new Plane(planeNormal, planePosition);
+
+        //    float distance;
+
+        //    if (!(!plane.Raycast(ray, out distance) && distance == 0f))
+        //    {
+        //        return ray.GetPoint(distance);
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+        //}
+        //public static Vector3? OnPlane(Vector3 point, Vector3 direction, Vector3 planePosition, Vector3 planeNormal)
+        //{
+        //    return OnPlane(new Ray(point, direction), planePosition, planeNormal);
+        //}
+
+        ///
 
         //returns a DIRECTION, 
         //used for top down movement with dynamic camera (only Y, Z rotation influence)
         //(X is always the same)
-        public static Vector3 Vector2OntoPlane (Vector2 direction, Vector3 planeNormal, Quaternion view)
+        public static Vector3 ProjectVector2(this Plane plane, Vector2 direction, Quaternion view, PlaneProjection projection = PlaneProjection.Reorient, bool backwardsFlip = false, Vector3 viewOrigin = default)
         {
-            Plane plane = new Plane(planeNormal, Vector3.zero);
-            
-            Vector3 up = plane.ClosestPointOnPlane(view * Vector3.up).normalized;
-            if (up == Vector3.zero)
+            if (direction != Vector2.zero)
             {
-                up = plane.ClosestPointOnPlane(view * Quaternion.Euler(Vector3.right) * Vector3.up).normalized;
+                plane = new Plane(plane.normal, Vector3.zero);
+
+                Vector3 planeDirection = default;
+                if (projection == PlaneProjection.Reorient)
+                { //reorients view flattely onto plane
+                    Vector3 up = plane.ClosestPointOnPlane(view * Vector3.up).normalized;
+                    if (up == Vector3.zero)
+                    {
+                        up = plane.ClosestPointOnPlane(view * Quaternion.Euler(Vector3.right) * Vector3.up).normalized;
+                    }
+
+                    planeDirection = (Quaternion.LookRotation(-plane.normal, up) * direction).normalized;
+                }
+                else if (projection == PlaneProjection.View)
+                { //projects rays onto plane from view
+                    //planeDirection = ((Vector3)plane.LinecastPoint(new Ray(Vector3.zero + view * direction, view * Vector3.forward)))/*.normalized*/;
+                    plane.LinecastPoint(new Ray(Vector3.zero + view * direction, view * Vector3.forward), out planeDirection);
+                }
+                else if (projection == PlaneProjection.Plane)
+                { //gets closest points on plane from view
+                    planeDirection = plane.ClosestPointOnPlane(Vector3.zero + view * direction)/*.normalized*/;
+                }
+
+                if (backwardsFlip)
+                {
+                    Vector3 point = default;
+                    if (!plane.RaycastPoint(new Ray(viewOrigin, view * Vector3.forward), out point, true))
+                    {
+                        planeDirection = -planeDirection;
+                    }
+                }
+
+                return planeDirection;
+            }
+            else
+            {
+                return Vector3.zero;
+            }
+        }
+        
+        //Flattens ray direction onto plane
+        public static Vector3 ProjectRay(this Plane plane, Ray ray)
+        {
+            float dot = RMath.CustomRound(Vector3.Dot(plane.normal.normalized, ray.direction.normalized), Geometry.zeroRound);
+            if (dot > 0f || dot < 0f)
+            {
+                if (Mathf.Abs(dot) == 1f) 
+                { //pointing in same / opposite direction
+                    return Vector3.zero;
+                } 
+                else 
+                { //point in different direction (STANDARD)
+                    Vector3 raycastPoint;
+                    plane.LinecastPoint(ray, out raycastPoint);
+                    return (raycastPoint - plane.ClosestPointOnPlane(ray.origin));
+                }
+            }
+            else if (dot == 0f) //perpendicular
+            {
+                return ray.GetPoint(1f) - ray.origin;
             }
 
-            return Quaternion.LookRotation(-planeNormal, up) * direction;
+            return default;
         }
-        public static Vector3 Vector2OntoPlane(Vector2 direction, Vector3 planeNormal, Quaternion view, Vector3 snapDirection, int count = 4)
+
+        //Snaps direction on plane to intervals
+        public static Vector3 SnapDirection(this Plane plane, Vector3 direction, Vector3 snapDirection, int count = 4)
         {
-            Plane plane = new Plane(planeNormal, Vector3.zero);
-            
+            plane = new Plane(plane.normal, Vector3.zero);
+
             count = (int)Mathf.Clamp(count, 1, Mathf.Infinity);
             snapDirection = plane.ClosestPointOnPlane(snapDirection).normalized;
-            
-            Vector3 up = plane.ClosestPointOnPlane(view * Vector3.up).normalized;
-            if (up == Vector3.zero)
-            {
-                up = plane.ClosestPointOnPlane(view * Quaternion.Euler(Vector3.right) * Vector3.up).normalized;
-            }
 
             List<Vector3> snapDirections = new List<Vector3>();
             for (int i = 0; i < count; i++)
             {
-                Quaternion newDirection = Quaternion.LookRotation(planeNormal, snapDirection);
+                Quaternion newDirection = Quaternion.LookRotation(plane.normal, snapDirection);
                 newDirection.eulerAngles = newDirection.eulerAngles.SetAxis(Axis.Z, newDirection.eulerAngles.z + ((360f / count) * i));
 
                 snapDirections.Add(newDirection * Vector3.up);
             }
 
-            up = snapDirections.Aggregate((dir, newDir) => {
-                if (Vector3.Angle(up, newDir) < Vector3.Angle(up, dir))
-                {
-                    return newDir;
-                } else
-                {
-                    return dir;
-                }
-            });
-            
-            return Quaternion.LookRotation(-planeNormal, up) * direction;
-        }
-        public static Vector3 Vector2OntoPlane(Vector2 direction, Vector3 planeNormal, Quaternion view, Vector3[] snapDirections)
-        {
-            Plane plane = new Plane(planeNormal, Vector3.zero);
-
-            for (int i = 0; i < snapDirections.Length; i++)
-            {
-                snapDirections[i] = plane.ClosestPointOnPlane(snapDirections[i]).normalized;
-            }
-
-            Vector3 up = plane.ClosestPointOnPlane(view * Vector3.up).normalized;
-            if (up == Vector3.zero)
-            {
-                up = plane.ClosestPointOnPlane(view * Quaternion.Euler(Vector3.right) * Vector3.up).normalized;
-            }
-
-            up = snapDirections.Aggregate((dir, newDir) => {
-                if (Vector3.Angle(up, newDir) < Vector3.Angle(up, dir))
+            direction = snapDirections.Aggregate((dir, newDir) => {
+                if (Vector3.Angle(direction, newDir) < Vector3.Angle(direction, dir))
                 {
                     return newDir;
                 }
@@ -702,10 +980,33 @@ namespace REXTools.TransformTools
                 }
             });
 
-            return Quaternion.LookRotation(-planeNormal, up) * direction;
+            return direction;
+        }
+        public static Vector3 SnapDirection(this Plane plane, Vector3 direction, Vector3[] snapDirections)
+        {
+            plane = new Plane(plane.normal, Vector3.zero);
+
+            for (int i = 0; i < snapDirections.Length; i++)
+            {
+                snapDirections[i] = plane.ClosestPointOnPlane(snapDirections[i]).normalized;
+            }
+
+            direction = snapDirections.Aggregate((dir, newDir) =>
+            {
+                if (Vector3.Angle(direction, newDir) < Vector3.Angle(direction, dir))
+                {
+                    return newDir;
+                }
+                else
+                {
+                    return dir;
+                }
+            });
+
+            return direction;
         }
 
-        //checks if specified point(s) are seen by a camera
+        //Checks if specified point(s) are seen by a camera
         public static bool InView(this Camera camera, Vector3 point)
         {
             Vector3 viewportPoint = camera.WorldToViewportPoint(point);

@@ -4,9 +4,11 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - _ETERNAL
-  - SceneControl
-  - Transformable
+  - REX_ETERNAL
+  - REX_SceneControl
+  - REX_Transformable
+  - REX_TileOccupation
+  - REX_TileOccupationRaw
   layers:
   - Default
   - TransparentFX
@@ -14,8 +16,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - REX_TileOccupation
+  - REX_TileOccupationRaw
   - TeamA
   - TeamB
   - TeamC

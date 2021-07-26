@@ -44,41 +44,46 @@ namespace REXTools.Tiling
         }
 
 
-        
-        public Vector3 subdividedTileSize (int subdivisions)
+
+        public Vector3 subdividedTileSize(int subdivisions)
         {
             //return size - (spacing * (subdivisions - 1));
             return size / subdivisions;
         }
+        public Vector3 subdividedTileSizeRaw(float subdivisions)
+        {
+            return size / subdivisions;
+        }
 
         //SPACE CONVERSION
-        
-        public Vector3 GridToOne(Vector3 position, int subdivisions = 1)
+
+        public static Vector3 GridToOne(Vector3 position, int subdivisions = 1)
         { //multiple subdivisions to one subdivision
             subdivisions = RMath.ClampMin(subdivisions, 1);
 
             if (RMath.Odd(subdivisions))
             {
                 return position / subdivisions;
-            } 
-            else 
+            }
+            else
             {
-                return (position / subdivisions) + (Vector3.one * (-0.25f) );
+                return (position / subdivisions) + (Vector3.one * (-0.25f / subdivisions * 2f));
             }
         }
-        public Vector3 OneToGrid(Vector3 position, int subdivisions = 1)
+        public static Vector3 OneToGrid(Vector3 position, int subdivisions = 1)
         { //one subdivision to multiple subdivisions
             subdivisions = RMath.ClampMin(subdivisions, 1);
 
-            if (RMath.Odd(subdivisions)) {
+            if (RMath.Odd(subdivisions))
+            {
                 return position * subdivisions;
-            } 
+            }
             else
             {
-                return (position + (Vector3.one * 0.25f)) * subdivisions;
+                return (position + (Vector3.one * (0.25f / subdivisions * 2f))) * subdivisions;
             }
         }
-        public Vector3 GridToGrid(Vector3 position, int subdivisions = 1, int newSubdivisions = 1)
+        public static Vector3 GridToGrid(Vector3 position, int subdivisions = 1, int newSubdivisions = 1)
         {
             //converts 
             //Position => One
@@ -92,29 +97,29 @@ namespace REXTools.Tiling
 
 
         //DISTANCE CONVERSION
-        public float GridToOneDistance(float distance, int subdivisions = 1)
+        public static float GridToOneDistance(float distance, int subdivisions = 1)
         {
             return distance / subdivisions;
         }
-        public float OneToGridDistance(float distance, int subdivisions = 1)
+        public static float OneToGridDistance(float distance, int subdivisions = 1)
         {
             return distance * subdivisions;
         }
-        public float GridToGridDistance(float distance, int subdivisions = 1, int newSubdivisions = 1)
+        public static float GridToGridDistance(float distance, int subdivisions = 1, int newSubdivisions = 1)
         {
             return OneToGridDistance(GridToOneDistance(distance, subdivisions), newSubdivisions);
         }
 
 
-        public Ray GridToOneRay(Ray ray, int subdivisions = 1)
+        public static Ray GridToOneRay(Ray ray, int subdivisions = 1)
         {
             return new Ray(GridToOne(ray.origin, subdivisions), ray.direction);
         }
-        public Ray OneToGridRay(Ray ray, int subdivisions = 1)
+        public static Ray OneToGridRay(Ray ray, int subdivisions = 1)
         {
             return new Ray(OneToGrid(ray.origin, subdivisions), ray.direction);
         }
-        public Ray GridToGridRay(Ray ray, int subdivisions = 1, int newSubdivisions = 1)
+        public static Ray GridToGridRay(Ray ray, int subdivisions = 1, int newSubdivisions = 1)
         {
             return OneToGridRay(GridToOneRay(ray, subdivisions), subdivisions);
         }
@@ -125,11 +130,11 @@ namespace REXTools.Tiling
         //GRID RAYCASTING
         //*distance in one's unit
         //*ray in subdivision's unit
-        public GridCastHit TileCast(Ray ray, Axis axis, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
+        public static GridCastHit TileCast(Ray ray, Axis axis, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
         {
             float pointDirection = Mathf.Sign(ray.direction.GetAxis(axis));
-            Vector3 planeOrigin = Vectors.axisDirections[axis] * (pointDirection == 1 ? 
-                RMath.CustomCeil(ray.origin.GetAxis(axis), 1f, 0f) : 
+            Vector3 planeOrigin = Vectors.axisDirections[axis] * (pointDirection == 1 ?
+                RMath.CustomCeil(ray.origin.GetAxis(axis), 1f, 0f) :
                 RMath.CustomFloor(ray.origin.GetAxis(axis), 1f, 0f));
 
             //implements rounding to tile centers
@@ -151,7 +156,7 @@ namespace REXTools.Tiling
 
             return null;
         }
-        public List<GridCastHit> TileCastAll(Ray ray, Axis axis, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
+        public static List<GridCastHit> TileCastAll(Ray ray, Axis axis, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
         {
             List<GridCastHit> hitInfo = new List<GridCastHit>();
 
@@ -197,7 +202,7 @@ namespace REXTools.Tiling
             }
         }
 
-        public Vector3T<GridCastHit> TileCastAxis(Ray ray, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
+        public static Vector3T<GridCastHit> TileCastAxis(Ray ray, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
         {
             Vector3T<GridCastHit> hitInfo = null;
 
@@ -208,7 +213,7 @@ namespace REXTools.Tiling
 
             return hitInfo;
         }
-        public Vector3T<List<GridCastHit>> TileCastAxisAll(Ray ray, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
+        public static Vector3T<List<GridCastHit>> TileCastAxisAll(Ray ray, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
         {
             Vector3T<List<GridCastHit>> hitInfo = null;
 
@@ -221,11 +226,11 @@ namespace REXTools.Tiling
         }
 
 
-        public GridCastHit EdgeCast(Ray ray, Axis axis, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
+        public static GridCastHit EdgeCast(Ray ray, Axis axis, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
         {
             float pointDirection = Mathf.Sign(ray.direction.GetAxis(axis));
-            Vector3 planeOrigin = Vectors.axisDirections[axis] * (pointDirection == 1 ? 
-                RMath.CustomCeil(ray.origin.GetAxis(axis), 1f, 0.5f) : 
+            Vector3 planeOrigin = Vectors.axisDirections[axis] * (pointDirection == 1 ?
+                RMath.CustomCeil(ray.origin.GetAxis(axis), 1f, 0.5f) :
                 RMath.CustomFloor(ray.origin.GetAxis(axis), 1f, 0.5f));
 
             //implements rounding to tile centers
@@ -247,7 +252,7 @@ namespace REXTools.Tiling
 
             return null;
         }
-        public List<GridCastHit> EdgeCastAll(Ray ray, Axis axis, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
+        public static List<GridCastHit> EdgeCastAll(Ray ray, Axis axis, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
         {
             List<GridCastHit> hitInfo = new List<GridCastHit>();
 
@@ -293,7 +298,7 @@ namespace REXTools.Tiling
             }
         }
 
-        public Vector3T<GridCastHit> EdgeCastAxis(Ray ray, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
+        public static Vector3T<GridCastHit> EdgeCastAxis(Ray ray, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
         {
             Vector3T<GridCastHit> hitInfo = null;
 
@@ -304,7 +309,7 @@ namespace REXTools.Tiling
 
             return hitInfo;
         }
-        public Vector3T<List<GridCastHit>> EdgeCastAxisAll(Ray ray, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
+        public static Vector3T<List<GridCastHit>> EdgeCastAxisAll(Ray ray, float maxDistance = Mathf.Infinity, int subdivisions = 1/*, int AxisMask = 000*/)
         {
             Vector3T<List<GridCastHit>> hitInfo = null;
 
@@ -314,6 +319,137 @@ namespace REXTools.Tiling
             }
 
             return hitInfo;
+        }
+
+
+        //GRID TILE INTERSECTIONS (collisions)
+        //public bool IntersectsRaw(Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB)
+        //{ //factors position, size and rotation
+        //    Geometry.Box tileA = new Geometry.Box(GridToOne(positionA, subdivisionsA), rotationA, (1f / subdivisionsA) * sizeA);
+        //    Geometry.Box tileB = new Geometry.Box(GridToOne(positionB, subdivisionsB), rotationB, (1f / subdivisionsB) * sizeB);
+
+        //    return tileA.Intersects(tileB, true);
+        //}
+        //public bool IntersectsRaw(Vector3 positionA, Vector3 sizeA, int subdivisionsA, Vector3 positionB, Vector3 sizeB, int subdivisionsB)
+        //{ //factors position and size
+        //    Bounds tileA = new Bounds(GridToOne(positionA, subdivisionsA), (1f / subdivisionsA) * sizeA);
+        //    Bounds tileB = new Bounds(GridToOne(positionB, subdivisionsB), (1f / subdivisionsB) * sizeB);
+
+        //    return tileA.IntersectsCast(tileB, true);
+        //}
+        //public bool IntersectsRaw(Vector3 a, int subdivisionsA, Vector3 b, int subdivisionsB)
+        //{ //factors position
+        //    return IntersectsRaw(a, Vector3.one, subdivisionsA, b, Vector3.one, subdivisionsB);
+        //}
+        //public bool Intersects(UnityEngine.Vector3Int a, int subdivisionsA, UnityEngine.Vector3Int b, int subdivisionsB)
+        //{ //doesnt use raw values
+        //    return Intersects(a, subdivisionsA, b, subdivisionsB);
+        //}
+        ////^^^^^^^^^NEEDS TO BE FIXED (Will cause crash)
+
+        ////GRID TILE ADJACENCY
+        //public bool AdjacentRaw(Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB, bool useTilt = true, bool useShear = false, bool useEdge = false, bool useCorner = false)
+        //{
+        //    Geometry.Box tileA = new Geometry.Box(GridToOne(positionA, subdivisionsA), rotationA, (1f / subdivisionsA) * sizeA);
+        //    Geometry.Box tileB = new Geometry.Box(GridToOne(positionB, subdivisionsB), rotationB, (1f / subdivisionsB) * sizeB);
+
+        //    return tileA.Adjacent(tileB, useTilt, useShear);
+        //}
+        //public bool AdjacentRaw(Vector3 positionA, Vector3 sizeA, int subdivisionsA, Vector3 positionB, Vector3 sizeB, int subdivisionsB, bool useEdge = false, bool useCorner = false)
+        //{
+        //    Bounds tileA = new Bounds(GridToOne(positionA, subdivisionsA), (1f / subdivisionsA) * sizeA);
+        //    Bounds tileB = new Bounds(GridToOne(positionB, subdivisionsB), (1f / subdivisionsB) * sizeB);
+
+        //    return tileA.AdjacentCast(tileB);
+        //}
+        //public bool AdjacentRaw(Vector3 a, int subdivisionsA, Vector3 b, int subdivisionsB, bool useEdge = false, bool useCorner = false)
+        //{
+        //    return AdjacentRaw(a, Vector3.one, subdivisionsA, b, Vector3.one, subdivisionsB);
+        //}
+        //public bool Adjacent(UnityEngine.Vector3Int a, int subdivisionsA, UnityEngine.Vector3Int b, int subdivisionsB, bool useEdge = false, bool useCorner = false)
+        //{
+        //    return Adjacent(a, subdivisionsA, b, subdivisionsB);
+        //}
+
+
+
+        //Static methods
+        //public static Vector3 SnapPosition(Vector3 position/*, int subdivisions = 1*/) //takes grid position, returns grid position
+        //{
+        //    return position.Round();
+        //}
+        //public static UnityEngine.Vector3Int SnapPositionToInt(Vector3 position/*, int subdivisions = 1*/) //takes grid position, returns grid position
+        //{
+        //    return position.RoundToInt();
+        //}
+        public static Vector3 SnapPosition(Vector3 position, int subdivisions = 1, int snapSubdivisions = 1)
+        { //returns subdivided position
+            return GridToGrid(position, subdivisions, snapSubdivisions).Round();
+        }
+        public static UnityEngine.Vector3Int SnapPositionToInt(Vector3 position, int subdivisions = 1, int snapSubdivisions = 1)
+        { //returns subdivided position
+            return GridToGrid(position, subdivisions, snapSubdivisions).RoundToInt();
+        }
+
+        public static Vector3 SnapPositionSubdivided(Vector3 position, int subdivisions = 1, int snapSubdivisions = 1)
+        { //returns tile position without subdivisions
+            return (SnapPosition((position * (1f / subdivisions)) * snapSubdivisions) * (1f / snapSubdivisions)) * subdivisions;
+        }
+
+        public static Quaternion SnapRotation(Quaternion rotation, Vector3Bool canPivot) //takes grid rotation, returns grid rotation
+        {
+            return Quaternion.Euler((new Vector3Float(rotation.eulerAngles.Divide(Vector3.one * 90f).Round().Operate(canPivot, (s, a, b) =>
+            {
+                if (b)
+                {
+                    return a.CustomRound(2);
+                }
+                else
+                {
+                    return a;
+                }
+            })).UValue.Round().Multiply(Vector3.one * 90)));
+        }
+        public static Quaternion SnapRotation(Quaternion rotation) //takes grid rotation, returns grid rotation
+        {
+            return SnapRotation(rotation, new Vector3Bool(true, true, true));
+        }
+        public static UnityEngine.Vector3Int SnapRotationToInt(Quaternion rotation, Vector3Bool canPivot) //takes grid rotation, returns grid rotation
+        {
+            return (new TransformTools.Vector3Int(rotation.eulerAngles.Divide(Vector3.one * 90f).RoundToInt().Operate(canPivot, (s, a, b) =>
+            {
+                if (b)
+                {
+                    return a.CustomRound(2);
+                }
+                else
+                {
+                    return a;
+                }
+            }))).UValue;
+        }
+        public static UnityEngine.Vector3Int SnapRotationToInt(Quaternion rotation) //takes grid rotation, returns grid rotation
+        {
+            return SnapRotationToInt(rotation, new Vector3Bool(true, true, true));
+        }
+
+        public static int SnapSubdivisions(float subdivisions) //takes grid subdivisions, returns grid subdivisions
+        {
+            return Mathf.RoundToInt(subdivisions);
+        }
+
+
+        public static UnityEngine.Vector3Int PointArea(Vector3 point, int subdivisions = 1, int areaSubdivisions = 1)
+        { //returns subdivided tile position
+            return SnapPositionToInt(GridToGrid(point, subdivisions, areaSubdivisions));
+        }
+        public static BoundsInt BoundsArea(Vector3 min, Vector3 max, int subdivisions = 1, int areaSubdivisions = 1)
+        { //returns subdivided bounds 
+            BoundsInt newBounds = new BoundsInt();
+            newBounds.SetMinMax(SnapPositionToInt(GridToGrid(min, subdivisions, areaSubdivisions)), SnapPositionToInt(GridToGrid(max, subdivisions, areaSubdivisions)));
+            newBounds.size = newBounds.size.Abs();
+
+            return newBounds;
         }
     }
 }

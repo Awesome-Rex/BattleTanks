@@ -23,10 +23,11 @@ public class TopDownMovementInput : MonoBehaviourPRO
     {
         GetComponent<Rigidbody>().MovePosition(
             transform.position +
-            (Vectors.Vector2OntoPlane(new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")),
-            GetComponent<CustomPosition>().parent.up,
-            Camera.main.transform.rotation, 
-            GetComponent<CustomPosition>().parent.forward) * 5f * Time.deltaTime)
+            ((new Plane(GetComponent<CustomPosition>().parent.up, Vector3.zero)).ProjectVector2(
+                new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")),
+                Camera.main.transform.rotation//, 
+                //GetComponent<CustomPosition>().parent.forward
+            ) * 5f * Time.deltaTime)
         );
     }
 }

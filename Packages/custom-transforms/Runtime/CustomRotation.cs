@@ -307,7 +307,14 @@ namespace REXTools.CustomTransforms
 
         public override void RecordParent()
         {
-            parentRot = parent.rotation;
+            if (parent != null)
+            {
+                parentRot = parent.rotation;
+            }
+            else //TESTING
+            {
+                parentRot = Quaternion.identity; //TESTING
+            }
         }
 
         public Quaternion Rotate(Vector3 eulers, Space relativeTo = Space.Self)
@@ -413,15 +420,21 @@ namespace REXTools.CustomTransforms
             {
                 if (parent != null)
                 {
-                    if (!_parent.isNull)
-                    {
-                        this._parent = parent;
-                    }
-                    else
-                    {
-                        this._parent = null;
-                    }
+                    //if (!_parent.isNull)
+                    //{
+                    //    this._parent = parent;
+                    //}
+                    //else
+                    //{
+                    //    this._parent = null;
+                    //}
+                    this._parent = parent;
 
+                    RecordParent(); //TESTING
+                    if (space == Space.Self && link == Link.Match) //TESTING
+                    {
+                        SetPrevious(); //TESTING
+                    }
                 }
                 else
                 {
@@ -519,28 +532,6 @@ namespace REXTools.CustomTransforms
                 }
             }
         }
-        //public override void SwitchParent(Transform newParent)
-        //{
-        //    if (space == Space.Self)
-        //    {
-        //        Quaternion originalRotation = rotation;
-        //        Quaternion originalLocalRotation = localRotation;
-
-        //        if (link == Link.Offset)
-        //        {
-        //            parent = newParent;
-
-        //            rotation = offset.ReverseRotation(originalRotation);
-
-        //        }
-        //        else if (link == Link.Match)
-        //        {
-        //            parent = newParent;
-
-        //            rotation = originalRotation;
-        //        }
-        //    }
-        //}
         public override void RemoveOffset()
         {
             if (space == Space.Self && link == Link.Offset)
@@ -551,109 +542,8 @@ namespace REXTools.CustomTransforms
             offset = new AxisOrder(null, offset.variety, offset.space);
         }
 
-        //context menu methods
-#if UNITY_EDITOR
-        public static void SetCheckedEnumMenuItems()
-        {
-            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Self", LinkSpaceRotation.Self, ref CustomRotationEditor.selfHandleRot);
-            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Parent", LinkSpaceRotation.Parent, ref CustomRotationEditor.selfHandleRot);
-            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/World", LinkSpaceRotation.World, ref CustomRotationEditor.selfHandleRot);
-
-            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Rotation/World Space Handle/Self", Space.Self, ref CustomRotationEditor.worldHandleRot);
-            EditorTools.CustomEditors.EnumMenuItem("REX Custom Transforms/Custom Rotation/World Space Handle/World", Space.World, ref CustomRotationEditor.worldHandleRot);
-
-            UnityEditor.Menu.SetChecked("REX Custom Transforms/Custom Rotation/Use Raw Rotation", CustomRotationEditor.offsetHandleRaw);
-        }
-
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Self")]
-        private static void SelfHandleRotation_Self()
-        {
-            CustomRotationEditor.selfHandleRot = LinkSpaceRotation.Self;
-
-            SetCheckedEnumMenuItems();
-        }
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Parent")]
-        private static void SelfHandleRotation_Parent()
-        {
-            CustomRotationEditor.selfHandleRot = LinkSpaceRotation.Parent;
-
-            SetCheckedEnumMenuItems();
-        }
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/World")]
-        private static void SelfHandleRotation_World()
-        {
-            CustomRotationEditor.selfHandleRot = LinkSpaceRotation.World;
-
-            SetCheckedEnumMenuItems();
-        }
-
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Self", true)]
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/Parent", true)]
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Self Space Handle/World", true)]
-        private static bool SelfHandleRotation_Valid()
-        {
-            return CustomTransformHandlesWindow.activeType == typeof(CustomRotation) && ((CustomRotation)CustomTransformHandlesWindow.activeCustomTransform).space == Space.Self;
-        }
-
-
-
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/World Space Handle/Self")]
-        private static void WorldHandleRotation_Self()
-        {
-            CustomRotationEditor.worldHandleRot = Space.Self;
-
-            SetCheckedEnumMenuItems();
-        }
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/World Space Handle/World")]
-        private static void WorldHandleRotation_Parent()
-        {
-            CustomRotationEditor.worldHandleRot = Space.World;
-
-            SetCheckedEnumMenuItems();
-        }
-
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/World Space Handle/Self", true)]
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/World Space Handle/World", true)]
-        private static bool WorldHandleRotation_Valid()
-        {
-            return CustomTransformHandlesWindow.activeType == typeof(CustomRotation) && ((CustomRotation)CustomTransformHandlesWindow.activeCustomTransform).space == Space.World;
-        }
-
-
-
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Use Raw Rotation")]
-        private static void OffsetHandleRaw()
-        {
-            CustomRotationEditor.offsetHandleRaw = !CustomRotationEditor.offsetHandleRaw;
-
-            SetCheckedEnumMenuItems();
-        }
-
-        [UnityEditor.MenuItem("REX Custom Transforms/Custom Rotation/Use Raw Rotation", true)]
-        private static bool OffsetHandleRaw_Valid()
-        {
-            return CustomTransformHandlesWindow.activeType == typeof(CustomRotation);
-        }
-#endif
-
         //events
 
         private void Start() { }
-
-
-        //Startup
-#if UNITY_EDITOR
-        [UnityEditor.InitializeOnLoad]
-        public static class Startup
-        {
-            static Startup()
-            {
-                UnityEditor.EditorApplication.delayCall += () =>
-                {
-                    SetCheckedEnumMenuItems();
-                };
-            }
-        }
-#endif
     }
 }

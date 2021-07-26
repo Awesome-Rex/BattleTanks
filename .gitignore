@@ -333,3 +333,5 @@ Packages/custom-transforms/Runtime/CustomParent.cs.meta
 Packages/custom-transforms/Runtime/CustomParent.cs
 Packages/custom-transforms/Editor/CustomParentEditor.cs.meta
 Packages/custom-transforms/Editor/CustomParentEditor.cs
+*.ffs_db
+*.ffs_gui

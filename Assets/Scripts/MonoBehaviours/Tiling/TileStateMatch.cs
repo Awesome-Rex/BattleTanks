@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using REXTools.REXCore;
 using REXTools.TransformTools;
 using REXTools.CustomTransforms;
 
@@ -22,86 +23,154 @@ namespace REXTools.Tiling
 
                 if (grid != null)
                 {
-                    customPosition.SetParent(new TransformObject(() => grid.finalPosition, () => grid.finalRotation, () => Vector3.one * grid.totalScale));
-                    customRotation.SetParent(new TransformObject(() => grid.finalPosition, () => grid.finalRotation, () => Vector3.one * grid.totalScale));
+                    TransformObject newParent = new TransformObject(
+                        () => grid.finalPosition,
+                        () => grid.finalRotation,
+                        () => Vector3.one * Mathf.Pow(grid.totalScale, 2)
+                    );
+
+                    customPosition.SetParent(newParent);
+                    customPosition.Switch(Space.Self, Link.Match);
+
+                    customRotation.SetParent(newParent);
+                    customRotation.Switch(Space.Self, Link.Match);
                 }
             }
         }
 
-        public override Vector3 position
+        public override Vector3 positionRaw
         {
             get
             {
                 //apply opposite offset position (with subdivisions)
-                return grid.WorldToGrid(customPosition.position - offsetPosition - tile.offsetPosition - tile.prefab.transform.position, subdivisions);
+                return grid.WorldToGrid(
+                    customPosition.position -
+                    offsetPosition,
+                    subdivisions
+                ) -
+                tile.offsetPosition -
+                tile.prefab.transform.position;
             }
             set
             {
-                customPosition.position = grid.GridToWorld(value, subdivisions) + tile.prefab.transform.position + tile.offsetPosition + offsetPosition;
+                customPosition.position = grid.GridToWorld(
+                    value + 
+                    tile.prefab.transform.position + 
+                    tile.offsetPosition, 
+                    subdivisions
+                ) +
+                offsetPosition;
             }
-        }
-        public override UnityEngine.Vector3Int rotation
+        } //grid position (factors subdivisions)
+        public override Quaternion rotationRaw
         {
             get
             {
-                //apply opposite offset rotation (and round)
+                return Linking.InverseTransformEuler(
+                    customRotation.rotation.Subtract(
+                    offsetRotation, Space.World),
 
-                return ((TransformTools.Vector3Int)UnityEngine.Vector3Int.zero.Operate((s, a) => Mathf.RoundToInt((customRotation.rotation * Quaternion.Inverse(offsetRotation) * Quaternion.Inverse(tile.offsetRotation) * Quaternion.Inverse(tile.prefab.transform.rotation)).eulerAngles.GetAxis(s) / 90f))).UValue;
+                    grid.finalRotation
+                ).Subtract(
+                tile.offsetRotation).Subtract(
+                tile.prefab.transform.rotation);
             }
             set
             {
-                customRotation.rotation = Quaternion.Euler(Vector3.zero.Operate((s, a) => value.GetAxis(s) * 90f)) * offsetRotation * tile.offsetRotation * tile.prefab.transform.rotation;
+                customRotation.rotation = Linking.TransformEuler(
+                    value.Add(
+                    tile.prefab.transform.rotation).Add(
+                    tile.offsetRotation),
+
+                    grid.finalRotation
+                ).Add(
+                offsetRotation, Space.World);
             }
         }
-        public override int subdivisions
+        public override float subdivisionsRaw
         {
             get
             {
-                //apply offset scale (use reciprocol) (and round to nearest subdivision)
-
-                return Mathf.RoundToInt(1f / transform.localScale.Divide(tile.prefab.transform.localScale).Divide(tile.offsetScale).ToList().GetAverage(AverageType.Mode));
+                return base.subdivisionsRaw;
             }
             set
             {
-                transform.localScale = offsetScale.Multiply(tile.prefab.transform.localScale.Multiply(tile.offsetScale)) / value;
+                base.subdivisionsRaw = value;
+
+                SetPrevious();
             }
         }
+
+        //variables
+        private float previousSubdivisions;
 
         //components
         private CustomPosition customPosition;
         private CustomRotation customRotation;
 
-        //public virtual void SwitchGrid(GridOrientation newGrid, bool snap = true)
-        //{
-        //    if (newGrid.grid == grid.grid)
-        //    {
-        //        Vector3 originalPosition = position;
-        //        UnityEngine.Vector3Int originalRotation = rotation;
-        //        int originalSubdivisions = subdivisions;
 
-        //        grid = newGrid;
 
-        //        //*ORDER OF OFFSETS:
-        //        //  tile.prefab.transform.position
-        //        //  tile.offsetPosition
-        //        //  offsetPosition
+        private void SetToTarget()
+        {
+            subdivisionsRaw = previousSubdivisions;
+        }
 
-        //        if (!snap)
-        //        {
-        //            position = newGrid.WorldToGrid(position, subdivisions);
+        private void SetPrevious ()
+        {
+            previousSubdivisions = subdivisionsRaw;
+        }
 
-        //        }
-        //        else if (snap)
-        //        {
 
-        //        }
-        //    }
-        //}
+
+        public override void SwitchGrid(GridOrientation newGrid, bool snapSubdivisions = true, bool snapPosition = true, bool snapRotation = true)
+        {
+            if (grid != null)
+            {
+                float originalSubdivisions = subdivisions;
+                Vector3 originalPosition = customPosition.position;
+                Quaternion originalRotation = customRotation.rotation;
+
+                grid = newGrid;
+
+                subdivisionsRaw = originalSubdivisions;
+                customPosition.position = originalPosition;
+                customRotation.rotation = originalRotation;
+
+                if (snapSubdivisions)
+                {
+                    subdivisionsRaw = Grid.SnapSubdivisions(subdivisionsRaw);
+                }
+                if (snapPosition)
+                {
+                    positionRaw = Grid.SnapPosition(positionRaw);
+                }
+                if (snapRotation)
+                {
+                    rotationRaw = Grid.SnapRotation(rotationRaw);
+                }
+            }
+        }
 
         public void Awake()
         {
             customPosition = GetComponent<CustomPosition>();
             customRotation = GetComponent<CustomRotation>();
+
+
+
+            //SetPrevious();
+        }
+
+        public void Update()
+        {
+            if (_ETERNAL.I.counter) {
+                SetToTarget();
+            }
+        }
+
+        public void LateUpdate()
+        {
+            //SetPrevious();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace REXTools.CustomTransforms
     public abstract class CustomTransform<T> : MonoBehaviour
     {
         //properties
-        public Space space = Space.Self;
+        public Space space = Space.World;
 
         //public Transform parent;
         public TransformObject parent

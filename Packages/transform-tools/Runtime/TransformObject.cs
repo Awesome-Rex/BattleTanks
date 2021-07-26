@@ -39,7 +39,7 @@ namespace REXTools.TransformTools
                         Quaternion rotation = _rotationFunction();
                         Vector3 scale = _scaleFunction();
                     }
-                    catch (System.Exception e)
+                    catch// (System.Exception e)
                     {
                         return true;
                     }

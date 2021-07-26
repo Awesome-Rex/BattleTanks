@@ -6,6 +6,8 @@ namespace REXTools.TransformTools
 {
     public static class Linking
     {
+        //WORLD
+
         //local > world
         public static Vector3 TransformPoint(Vector3 point, Vector3 position, Quaternion rotation, Vector3 scale)
         {

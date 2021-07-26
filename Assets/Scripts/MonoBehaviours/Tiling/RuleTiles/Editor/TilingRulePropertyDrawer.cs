@@ -107,17 +107,17 @@ namespace REXTools.Tiling
 
             ////horizontal
             return new Vector2(
-                (-TilingRule.signPositions[TilingRule.ruleSigns[rule]].x + 1) + //x
-                ((TilingRule.signPositions[TilingRule.ruleSigns[rule]].y + 1) * 3f) + //y
-                RMath.ClampMin(TilingRule.signPositions[TilingRule.ruleSigns[rule]].y + 1, 0), //z
+                (-TilingRule.ruleSigns[rule].direction.x + 1) + //x
+                ((TilingRule.ruleSigns[rule].direction.y + 1) * 3f) + //y
+                RMath.ClampMin(TilingRule.ruleSigns[rule].direction.y + 1, 0), //z
 
-                (TilingRule.signPositions[TilingRule.ruleSigns[rule]].z + 1)
+                (TilingRule.ruleSigns[rule].direction.z + 1)
             );
         }
 
         private string RuleTooltip(string rule)
         {
-            Vector3 position = TilingRule.signPositions[TilingRule.ruleSigns[rule]];
+            Vector3 position = TilingRule.ruleSigns[rule].direction;
 
             return position.x.ToString() + " " + position.y.ToString() + " " + position.z.ToString();
         }

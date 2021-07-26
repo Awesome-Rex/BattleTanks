@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace REXTools.Tiling
 {
+    [CreateAssetMenu(fileName = "New Rule Tile Profile", menuName = "REX/Tiling/Rule Tile Profile", order = 3)]
     public class RuleTileProfile : ScriptableObject
     {
         public Grid grid;
