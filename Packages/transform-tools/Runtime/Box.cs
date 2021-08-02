@@ -394,63 +394,75 @@ namespace REXTools.TransformTools
         }
 
 
-        public IntersectHit IntersectsCast(Vector3 point, bool trim = false, bool allowance = true)
+        public bool Intersects(Vector3 point, out IntersectHit hit, bool trim = false, bool allowance = true)
         {
-            return (new Bounds(Linking.InverseTransformPoint(center, Vector3.zero, orientation), size)).IntersectsCast(Linking.InverseTransformPoint(point, Vector3.zero, orientation), trim, allowance);
+            return (new Bounds(Linking.InverseTransformPoint(center, Vector3.zero, orientation), size)).Intersects(Linking.InverseTransformPoint(point, Vector3.zero, orientation), out hit, trim, allowance);
         }
-        public AdjacentHit AdjacentCast(Vector3 point, bool allowance = true)
+        public bool Adjacent(Vector3 point, out AdjacentHit hit, bool allowance = true)
         {
-            return (new Bounds(Linking.InverseTransformPoint(center, Vector3.zero, orientation), size)).AdjacentCast(Linking.InverseTransformPoint(point, Vector3.zero, orientation), allowance);
+            return (new Bounds(Linking.InverseTransformPoint(center, Vector3.zero, orientation), size)).Adjacent(Linking.InverseTransformPoint(point, Vector3.zero, orientation), out hit, allowance);
         }
-        public ContainHit ContainsCast(Vector3 point, bool trim = false, bool allowance = true)
+        public bool Contains(Vector3 point, out ContainHit hit, bool trim = false, bool allowance = true)
         {
-            return (new Bounds(Linking.InverseTransformPoint(center, Vector3.zero, orientation), size)).ContainsCast(Linking.InverseTransformPoint(point, Vector3.zero, orientation), trim, allowance);
+            return (new Bounds(Linking.InverseTransformPoint(center, Vector3.zero, orientation), size)).Contains(Linking.InverseTransformPoint(point, Vector3.zero, orientation), out hit, trim, allowance);
         }
 
-        public BoxIntersectHit IntersectsCast(Box box, bool trim = false, bool allowance = true)
+        public bool Intersects(Box box, out BoxIntersectHit hit, bool trim = false, bool allowance = true)
         {
             if (Intersects(box, trim, allowance))
             {
-                BoxIntersectHit hit = new BoxIntersectHit();
+                BoxIntersectHit hitData = new BoxIntersectHit();
 
                 //primary
                 //hit.intersection =
-                hit.alignment = GetAlignment(orientation, box.orientation);
+                hitData.alignment = GetAlignment(orientation, box.orientation);
 
                 //hits
-                hit.adjacentHit = AdjacentCast(box, allowance);
-                hit.containHit = ContainsCast(box, trim, allowance);
+                //hit.adjacentHit = AdjacentCast(box, allowance);
+                //hit.containHit = ContainsCast(box, trim, allowance);
 
                 //primary
-                if (hit.adjacentHit != null)
+                //if (hit.adjacentHit != null)
+                //{
+                //    hit.intersection = Intersection.Adjacent;
+                //}
+                //else if (hit.containHit != null)
+                //{
+                //    hit.intersection = Intersection.Contain;
+                //}
+                //else
+                //{
+                //    hit.intersection = Intersection.Intersect;
+                //}
+                if (Adjacent(box, allowance))
                 {
-                    hit.intersection = Intersection.Adjacent;
+                    hitData.intersection = Intersection.Adjacent;
                 }
-                else if (hit.containHit != null)
+                else if (Contains(box, trim, allowance))
                 {
-                    hit.intersection = Intersection.Contain;
+                    hitData.intersection = Intersection.Contain;
                 }
                 else
                 {
-                    hit.intersection = Intersection.Intersect;
+                    hitData.intersection = Intersection.Intersect;
                 }
 
                 //attributes
                 //hit.volume = IntersectionArea(box).volume;
-                if (hit.intersection == Intersection.Adjacent)
+                if (hitData.intersection == Intersection.Adjacent)
                 {
-                    hit.volume = 0f;
+                    hitData.volume = 0f;
                 }
-                else if (hit.intersection == Intersection.Contain)
+                else if (hitData.intersection == Intersection.Contain)
                 {
-                    hit.volume = volume;
+                    hitData.volume = volume;
                 }
-                else if (hit.intersection == Intersection.Intersect)
+                else if (hitData.intersection == Intersection.Intersect)
                 {
-                    hit.volume = box.volume * 0.5f;
+                    hitData.volume = box.volume * 0.5f;
                 }
-                hit.volumeRatio = hit.volume / box.volume;
-                hit.dominant = hit.volumeRatio > 0.5f;
+                hitData.volumeRatio = hitData.volume / box.volume;
+                hitData.dominant = hitData.volumeRatio > 0.5f;
 
 
 
@@ -464,45 +476,47 @@ namespace REXTools.TransformTools
                 }
                 if (cornerCount == 8)
                 {
-                    hit.type = BoxAdjacency.Object;
+                    hitData.type = BoxAdjacency.Object;
                 }
                 else if (cornerCount == 4)
                 {
-                    hit.type = BoxAdjacency.Face;
+                    hitData.type = BoxAdjacency.Face;
                 }
                 else if (cornerCount == 2)
                 {
-                    hit.type = BoxAdjacency.Edge;
+                    hitData.type = BoxAdjacency.Edge;
                 }
                 else if (cornerCount == 1)
                 {
-                    hit.type = BoxAdjacency.Corner;
+                    hitData.type = BoxAdjacency.Corner;
                 }
                 else if (cornerCount == 0)
                 {
-                    hit.type = BoxAdjacency.None;
+                    hitData.type = BoxAdjacency.None;
                 }
 
-                return hit;
+                hit = hitData;
+                return true;
             }
             else
             {
-                return null;
+                hit = null;
+                return false;
             }
         }
-        public BoxAdjacentHit AdjacentCast(Box box, bool allowance = true)
+        public bool Adjacent(Box box, out BoxAdjacentHit hit, bool allowance = true)
         {
             if (Adjacent(box, allowance))
             {
-                BoxAdjacentHit hit = new BoxAdjacentHit();
+                BoxAdjacentHit hitData = new BoxAdjacentHit();
 
                 //primary
-                GetAdjacency(this, box, out hit.adjacency, out hit.adjacencySign, allowance);
-                hit.alignment = GetAlignment(orientation, box.orientation);
+                GetAdjacency(this, box, out hitData.adjacency, out hitData.adjacencySign, allowance);
+                hitData.alignment = GetAlignment(orientation, box.orientation);
 
                 //attributes
                 //hit.adjacencySign = 
-                if (hit.adjacency == BoxAdjacency.Face)
+                if (hitData.adjacency == BoxAdjacency.Face)
                 {
                     BoxAdjacency boxAdjacency;
                     Vector3Sign boxAdjacencySign;
@@ -510,21 +524,21 @@ namespace REXTools.TransformTools
 
                     if (boxAdjacency == BoxAdjacency.Face)
                     {
-                        hit.surfaceArea = (box.faces[boxAdjacencySign].surfaceArea / 2f) * 0.5f;
-                        hit.surfaceAreaRatio = hit.surfaceArea / (box.faces[boxAdjacencySign].surfaceArea / 2f);
+                        hitData.surfaceArea = (box.faces[boxAdjacencySign].surfaceArea / 2f) * 0.5f;
+                        hitData.surfaceAreaRatio = hitData.surfaceArea / (box.faces[boxAdjacencySign].surfaceArea / 2f);
                     }
                     else
                     {
-                        hit.surfaceArea = 0f;
-                        hit.surfaceAreaRatio = 0f;
+                        hitData.surfaceArea = 0f;
+                        hitData.surfaceAreaRatio = 0f;
                     }
                 }
                 else
                 {
-                    hit.surfaceArea = 0f;
-                    hit.surfaceAreaRatio = 0f;
+                    hitData.surfaceArea = 0f;
+                    hitData.surfaceAreaRatio = 0f;
                 }
-                hit.dominant = hit.surfaceAreaRatio > 0.5f;
+                hitData.dominant = hitData.surfaceAreaRatio > 0.5f;
 
                 int cornerCount = 0;
                 foreach (KeyValuePair<Vector3Sign, Vector3> corner in corners)
@@ -536,43 +550,46 @@ namespace REXTools.TransformTools
                 }
                 if (cornerCount == 4)
                 {
-                    hit.type = BoxAdjacency.Face;
+                    hitData.type = BoxAdjacency.Face;
                 }
                 else if (cornerCount == 2)
                 {
-                    hit.type = BoxAdjacency.Edge;
+                    hitData.type = BoxAdjacency.Edge;
                 }
                 else if (cornerCount == 1)
                 {
-                    hit.type = BoxAdjacency.Corner;
+                    hitData.type = BoxAdjacency.Corner;
                 }
-                
-                return hit;
+
+                hit = hitData;
+                return true;
             }
             else
             {
-                return null;
+                hit = null;
+                return false;
             }
         }
-        public BoxContainHit ContainsCast(Box box, bool trim = false, bool allowance = true)
+        public bool Contains(Box box, out BoxContainHit hit, bool trim = false, bool allowance = true)
         {
             if (Contains(box, trim, allowance))
             {
-                BoxContainHit hit = new BoxContainHit();
+                BoxContainHit hitData = new BoxContainHit();
 
                 //primary
                 //hit.containment = 
-                hit.alignment = GetAlignment(orientation, box.orientation);
+                hitData.alignment = GetAlignment(orientation, box.orientation);
 
                 //hits
-                hit.adjacentHits = new Dictionary<Vector3Sign, AdjacentHit>();
+                hitData.adjacentHits = new Dictionary<Vector3Sign, AdjacentHit>();
                 foreach (KeyValuePair<Vector3Sign, Box> face in box.faces)
                 {
-                    hit.adjacentHits.Add(face.Key, AdjacentCast(face.Value, allowance));
+                    Adjacent(face.Value, out BoxAdjacentHit faceHit, allowance);
+                    hitData.adjacentHits.Add(face.Key, faceHit);
                 }
 
                 int adjacentHitsCount = 0;
-                foreach (KeyValuePair<Vector3Sign, AdjacentHit> adjacentHit in hit.adjacentHits)
+                foreach (KeyValuePair<Vector3Sign, AdjacentHit> adjacentHit in hitData.adjacentHits)
                 {
                     if (adjacentHit.Value != null)
                     {
@@ -583,22 +600,22 @@ namespace REXTools.TransformTools
                 //primary
                 if (adjacentHitsCount > 0)
                 {
-                    hit.containment = Containment.InsideAdjacent;
+                    hitData.containment = Containment.InsideAdjacent;
                 }
                 else
                 {
-                    hit.containment = Containment.Inside;
+                    hitData.containment = Containment.Inside;
                 }
 
                 //attributes
                 if (adjacentHitsCount > 0)
                 {
-                    if (hit.alignment == BoxAlignment.Parallel || hit.alignment == BoxAlignment.Tilt)
+                    if (hitData.alignment == BoxAlignment.Parallel || hitData.alignment == BoxAlignment.Tilt)
                     {
                         bool SetSign(BoxAdjacency adjacency, bool whole, List<UnityEngine.Vector3Int> offsets, List<UnityEngine.Vector3Int> sign)
                         {
                             int adjacentHitsCount = 0;
-                            foreach (KeyValuePair<Vector3Sign, AdjacentHit> adjacentHit in hit.adjacentHits)
+                            foreach (KeyValuePair<Vector3Sign, AdjacentHit> adjacentHit in hitData.adjacentHits)
                             {
                                 if (adjacentHit.Value != null)
                                 {
@@ -608,7 +625,7 @@ namespace REXTools.TransformTools
 
                             if (adjacentHitsCount == offsets.Count + 1)
                             {
-                                foreach (KeyValuePair<Vector3Sign, AdjacentHit> adjacentHit in hit.adjacentHits)
+                                foreach (KeyValuePair<Vector3Sign, AdjacentHit> adjacentHit in hitData.adjacentHits)
                                 {
                                     if (adjacentHit.Value != null)
                                     {
@@ -617,7 +634,7 @@ namespace REXTools.TransformTools
                                             bool match = true;
                                             foreach (UnityEngine.Vector3Int offset in offsets)
                                             {
-                                                if (hit.adjacentHits[adjacentHit.Key.Rotate(offset).Rotate(adjacentHit.Key.ToInt() * i, Space.World)] == null)
+                                                if (hitData.adjacentHits[adjacentHit.Key.Rotate(offset).Rotate(adjacentHit.Key.ToInt() * i, Space.World)] == null)
                                                 {
                                                     match = false;
                                                 }
@@ -625,13 +642,13 @@ namespace REXTools.TransformTools
 
                                             if (match)
                                             {
-                                                hit.adjacency = adjacency;
-                                                hit.adjacencyWhole = whole;
+                                                hitData.adjacency = adjacency;
+                                                hitData.adjacencyWhole = whole;
 
-                                                hit.adjacencySign = new Vector3Sign(adjacentHit.Key.Clone());
+                                                hitData.adjacencySign = new Vector3Sign(adjacentHit.Key.Clone());
                                                 foreach (UnityEngine.Vector3Int offset in offsets)
                                                 {
-                                                    hit.adjacencySign = (hit.adjacencySign.ToInt() + adjacentHit.Key.Rotate(offset).Rotate(adjacentHit.Key.ToInt() * i, Space.World).ToInt()).ToSign();
+                                                    hitData.adjacencySign = (hitData.adjacencySign.ToInt() + adjacentHit.Key.Rotate(offset).Rotate(adjacentHit.Key.ToInt() * i, Space.World).ToInt()).ToSign();
                                                 }
 
                                                 return true;
@@ -742,20 +759,22 @@ namespace REXTools.TransformTools
                     }
                     else
                     {
-                        hit.adjacency = BoxAdjacency.None;
+                        hitData.adjacency = BoxAdjacency.None;
                     }
                 }
 
-                hit.volume = volume;
-                hit.volumeRatio = volume / box.volume;
-                hit.dominant = hit.volumeRatio > 0.5f;
-                hit.leanSign = Linking.InverseTransformPoint(center, box.center, box.rotation).ToSign();
+                hitData.volume = volume;
+                hitData.volumeRatio = volume / box.volume;
+                hitData.dominant = hitData.volumeRatio > 0.5f;
+                hitData.leanSign = Linking.InverseTransformPoint(center, box.center, box.rotation).ToSign();
 
-                return hit;
+                hit = hitData;
+                return true;
             }
             else
             {
-                return null;
+                hit = null;
+                return false;
             }
         }
         

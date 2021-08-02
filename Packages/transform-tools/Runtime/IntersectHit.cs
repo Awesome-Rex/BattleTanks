@@ -14,8 +14,8 @@ namespace REXTools.TransformTools
         //...
 
         //hits
-        public AdjacentHit adjacentHit = null;
-        public ContainHit containHit = null;
+        //public AdjacentHit adjacentHit = null;
+        //public ContainHit containHit = null;
 
         public IntersectHit()
         {

@@ -41,23 +41,23 @@ public class BoxCollisionTest : MonoBehaviour
     [ContextMenu("Test Stuff")]
     void TestStuff() 
     {
-        boxIntersect = boxA.IntersectsCast(boxB);
-        if (boxIntersect != null)
-        {
-            Debug.Log("Intersect!");
-            if (boxIntersect.adjacentHit != null)
-            {
-                Debug.Log("Adjacent!");
-                boxAdjacentHit = boxIntersect.adjacentHit;
-            }
-            //else Debug.Log("Not adjacent");
-            if (boundsIntersect.containHit != null)
-            {
-                Debug.Log("Contains!");
-                boxContainHit = boxIntersect.containHit;
-            }
-            //else Debug.Log("Not contains");
-        }
+        boxA.Intersects(boxB, out boxIntersect);
+        //if (boxIntersect != null)
+        //{
+        //    Debug.Log("Intersect!");
+        //    if (boxIntersect.adjacentHit != null)
+        //    {
+        //        Debug.Log("Adjacent!");
+        //        boxAdjacentHit = boxIntersect.adjacentHit;
+        //    }
+        //    //else Debug.Log("Not adjacent");
+        //    if (boundsIntersect.containHit != null)
+        //    {
+        //        Debug.Log("Contains!");
+        //        boxContainHit = boxIntersect.containHit;
+        //    }
+        //    //else Debug.Log("Not contains");
+        //}
     }
 
     // Start is called before the first frame update
@@ -136,23 +136,23 @@ public class BoxCollisionTest : MonoBehaviour
                 Gizmos.matrix = Matrix4x4.TRS(boxA.faces[boxAdjacentHit.adjacencySign].center, boxA.faces[boxAdjacentHit.adjacencySign].orientation, boxA.faces[boxAdjacentHit.adjacencySign].size);
                 Gizmos.DrawCube(Vector3.zero, Vector3.one);
             }
-            boxIntersect = boxA.IntersectsCast(boxB);
-            if (boxIntersect != null)
-            {
-                Debug.Log("Intersect!");
-                if (boxIntersect.adjacentHit != null)
-                {
-                    Debug.Log("Adjacent!");
-                    boxAdjacentHit = boxIntersect.adjacentHit;
-                }
-                //else Debug.Log("Not adjacent");
-                if (boundsIntersect.containHit != null)
-                {
-                    Debug.Log("Contains!");
-                    boxContainHit = boxIntersect.containHit;
-                }
-                //else Debug.Log("Not contains");
-            }
+            boxA.Intersects(boxB, out boxIntersect);
+            //if (boxIntersect != null)
+            //{
+            //    Debug.Log("Intersect!");
+            //    if (boxIntersect.adjacentHit != null)
+            //    {
+            //        Debug.Log("Adjacent!");
+            //        boxAdjacentHit = boxIntersect.adjacentHit;
+            //    }
+            //    //else Debug.Log("Not adjacent");
+            //    if (boundsIntersect.containHit != null)
+            //    {
+            //        Debug.Log("Contains!");
+            //        boxContainHit = boxIntersect.containHit;
+            //    }
+            //    //else Debug.Log("Not contains");
+            //}
         }
     }
 }

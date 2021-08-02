@@ -16,28 +16,28 @@ namespace REXTools.TransformTools
         public BoxAdjacency type = BoxAdjacency.None; //# of corners inside b (corner = 1 corner, edge = 2 corners, face = 4 corners, object = 8 corners)
 
         //hits
-        public new BoxAdjacentHit adjacentHit
-        {
-            get
-            {
-                return base.adjacentHit as BoxAdjacentHit;
-            }
-            set
-            {
-                base.adjacentHit = value;
-            }
-        }
-        public new BoxContainHit containHit
-        {
-            get
-            {
-                return base.containHit as BoxContainHit;
-            }
-            set
-            {
-                base.containHit = value;
-            }
-        }
+        //public new BoxAdjacentHit adjacentHit
+        //{
+        //    get
+        //    {
+        //        return base.adjacentHit as BoxAdjacentHit;
+        //    }
+        //    set
+        //    {
+        //        base.adjacentHit = value;
+        //    }
+        //}
+        //public new BoxContainHit containHit
+        //{
+        //    get
+        //    {
+        //        return base.containHit as BoxContainHit;
+        //    }
+        //    set
+        //    {
+        //        base.containHit = value;
+        //    }
+        //}
 
         //public void Rotate(UnityEngine.Vector3Int eulers)
         //{

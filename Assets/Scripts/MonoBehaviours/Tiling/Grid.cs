@@ -323,65 +323,333 @@ namespace REXTools.Tiling
 
 
         //GRID TILE INTERSECTIONS (collisions)
-        //public bool IntersectsRaw(Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB)
-        //{ //factors position, size and rotation
-        //    Geometry.Box tileA = new Geometry.Box(GridToOne(positionA, subdivisionsA), rotationA, (1f / subdivisionsA) * sizeA);
-        //    Geometry.Box tileB = new Geometry.Box(GridToOne(positionB, subdivisionsB), rotationB, (1f / subdivisionsB) * sizeB);
+        #region "Intersection"
+        public bool Intersects(
+            UnityEngine.Vector3Int a, int subdivisionsA,
+            UnityEngine.Vector3Int b, int subdivisionsB,
 
-        //    return tileA.Intersects(tileB, true);
-        //}
-        //public bool IntersectsRaw(Vector3 positionA, Vector3 sizeA, int subdivisionsA, Vector3 positionB, Vector3 sizeB, int subdivisionsB)
-        //{ //factors position and size
-        //    Bounds tileA = new Bounds(GridToOne(positionA, subdivisionsA), (1f / subdivisionsA) * sizeA);
-        //    Bounds tileB = new Bounds(GridToOne(positionB, subdivisionsB), (1f / subdivisionsB) * sizeB);
+            bool trim = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(a, subdivisionsA), (1f / subdivisionsA) * Vector3.one);
+            Bounds tileB = new Bounds(GridToOne(b, subdivisionsB), (1f / subdivisionsB) * Vector3.one);
 
-        //    return tileA.IntersectsCast(tileB, true);
-        //}
-        //public bool IntersectsRaw(Vector3 a, int subdivisionsA, Vector3 b, int subdivisionsB)
-        //{ //factors position
-        //    return IntersectsRaw(a, Vector3.one, subdivisionsA, b, Vector3.one, subdivisionsB);
-        //}
-        //public bool Intersects(UnityEngine.Vector3Int a, int subdivisionsA, UnityEngine.Vector3Int b, int subdivisionsB)
-        //{ //doesnt use raw values
-        //    return Intersects(a, subdivisionsA, b, subdivisionsB);
-        //}
-        ////^^^^^^^^^NEEDS TO BE FIXED (Will cause crash)
+            return tileA.Intersects(tileB, trim);
+        }
+        public bool IntersectsRaw(
+            Vector3 a, int subdivisionsA, 
+            Vector3 b, int subdivisionsB, 
+            
+            bool trim = false, bool allowance = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(a, subdivisionsA), (1f / subdivisionsA) * Vector3.one);
+            Bounds tileB = new Bounds(GridToOne(b, subdivisionsB), (1f / subdivisionsB) * Vector3.one);
 
-        ////GRID TILE ADJACENCY
-        //public bool AdjacentRaw(Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB, bool useTilt = true, bool useShear = false, bool useEdge = false, bool useCorner = false)
-        //{
-        //    Geometry.Box tileA = new Geometry.Box(GridToOne(positionA, subdivisionsA), rotationA, (1f / subdivisionsA) * sizeA);
-        //    Geometry.Box tileB = new Geometry.Box(GridToOne(positionB, subdivisionsB), rotationB, (1f / subdivisionsB) * sizeB);
+            return tileA.Intersects(tileB, trim, allowance);
+        }
+        public bool IntersectsRaw(
+            Vector3 positionA, Vector3 sizeA, int subdivisionsA,
+            Vector3 positionB, Vector3 sizeB, int subdivisionsB,
 
-        //    return tileA.Adjacent(tileB, useTilt, useShear);
-        //}
-        //public bool AdjacentRaw(Vector3 positionA, Vector3 sizeA, int subdivisionsA, Vector3 positionB, Vector3 sizeB, int subdivisionsB, bool useEdge = false, bool useCorner = false)
-        //{
-        //    Bounds tileA = new Bounds(GridToOne(positionA, subdivisionsA), (1f / subdivisionsA) * sizeA);
-        //    Bounds tileB = new Bounds(GridToOne(positionB, subdivisionsB), (1f / subdivisionsB) * sizeB);
+            bool trim = false, bool allowance = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(positionA, subdivisionsA), (1f / subdivisionsA) * sizeA);
+            Bounds tileB = new Bounds(GridToOne(positionB, subdivisionsB), (1f / subdivisionsB) * sizeB);
 
-        //    return tileA.AdjacentCast(tileB);
-        //}
-        //public bool AdjacentRaw(Vector3 a, int subdivisionsA, Vector3 b, int subdivisionsB, bool useEdge = false, bool useCorner = false)
-        //{
-        //    return AdjacentRaw(a, Vector3.one, subdivisionsA, b, Vector3.one, subdivisionsB);
-        //}
-        //public bool Adjacent(UnityEngine.Vector3Int a, int subdivisionsA, UnityEngine.Vector3Int b, int subdivisionsB, bool useEdge = false, bool useCorner = false)
-        //{
-        //    return Adjacent(a, subdivisionsA, b, subdivisionsB);
-        //}
+            return tileA.Intersects(tileB, trim, allowance);
+        }
+        public bool IntersectsRaw(
+            Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA,
+            Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            Box tileA = new Box(GridToOne(positionA, subdivisionsA), rotationA, (1f / subdivisionsA) * sizeA);
+            Box tileB = new Box(GridToOne(positionB, subdivisionsB), rotationB, (1f / subdivisionsB) * sizeB);
+
+            return tileA.Intersects(tileB, trim, allowance);
+        }
+
+
+
+        public bool Intersects(
+            UnityEngine.Vector3Int a, int subdivisionsA,
+            UnityEngine.Vector3Int b, int subdivisionsB,
+
+            out BoxIntersectHit hit,
+
+            bool trim = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(a, subdivisionsA), (1f / subdivisionsA) * Vector3.one);
+            Bounds tileB = new Bounds(GridToOne(b, subdivisionsB), (1f / subdivisionsB) * Vector3.one);
+
+            return tileA.Intersects(tileB, out hit, trim);
+        }
+        public bool IntersectsRaw(
+            Vector3 a, int subdivisionsA,
+            Vector3 b, int subdivisionsB,
+
+            out BoxIntersectHit hit,
+
+            bool trim = false, bool allowance = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(a, subdivisionsA), (1f / subdivisionsA) * Vector3.one);
+            Bounds tileB = new Bounds(GridToOne(b, subdivisionsB), (1f / subdivisionsB) * Vector3.one);
+
+            return tileA.Intersects(tileB, out hit, trim, allowance);
+        }
+        public bool IntersectsRaw(
+            Vector3 positionA, Vector3 sizeA, int subdivisionsA,
+            Vector3 positionB, Vector3 sizeB, int subdivisionsB,
+
+            out BoxIntersectHit hit,
+
+            bool trim = false, bool allowance = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(positionA, subdivisionsA), (1f / subdivisionsA) * sizeA);
+            Bounds tileB = new Bounds(GridToOne(positionB, subdivisionsB), (1f / subdivisionsB) * sizeB);
+
+            return tileA.Intersects(tileB, out hit, trim, allowance);
+        }
+        public bool IntersectsRaw(
+            Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA,
+            Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB,
+
+            out BoxIntersectHit hit,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            Box tileA = new Box(GridToOne(positionA, subdivisionsA), rotationA, (1f / subdivisionsA) * sizeA);
+            Box tileB = new Box(GridToOne(positionB, subdivisionsB), rotationB, (1f / subdivisionsB) * sizeB);
+
+            return tileA.Intersects(tileB, out hit, trim, allowance);
+        }
+        #endregion
+        #region "Adjacency"
+        public bool Adjacent(
+            UnityEngine.Vector3Int a, int subdivisionsA,
+            UnityEngine.Vector3Int b, int subdivisionsB
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(a, subdivisionsA), (1f / subdivisionsA) * Vector3.one);
+            Bounds tileB = new Bounds(GridToOne(b, subdivisionsB), (1f / subdivisionsB) * Vector3.one);
+
+            return tileA.Adjacent(tileB);
+        }
+        public bool AdjacentRaw(
+            Vector3 a, int subdivisionsA,
+            Vector3 b, int subdivisionsB,
+
+            bool allowance = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(a, subdivisionsA), (1f / subdivisionsA) * Vector3.one);
+            Bounds tileB = new Bounds(GridToOne(b, subdivisionsB), (1f / subdivisionsB) * Vector3.one);
+
+            return tileA.Adjacent(tileB, allowance);
+        }
+        public bool AdjacentRaw(
+            Vector3 positionA, Vector3 sizeA, int subdivisionsA,
+            Vector3 positionB, Vector3 sizeB, int subdivisionsB,
+
+            bool allowance = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(positionA, subdivisionsA), (1f / subdivisionsA) * sizeA);
+            Bounds tileB = new Bounds(GridToOne(positionB, subdivisionsB), (1f / subdivisionsB) * sizeB);
+
+            return tileA.Adjacent(tileB, allowance);
+        }
+        public bool AdjacentRaw(
+            Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA,
+            Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB,
+
+            bool allowance = true
+        )
+        {
+            Box tileA = new Box(GridToOne(positionA, subdivisionsA), rotationA, (1f / subdivisionsA) * sizeA);
+            Box tileB = new Box(GridToOne(positionB, subdivisionsB), rotationB, (1f / subdivisionsB) * sizeB);
+
+            return tileA.Adjacent(tileB, allowance);
+        }
+
+
+
+        public bool Adjacent(
+            UnityEngine.Vector3Int a, int subdivisionsA,
+            UnityEngine.Vector3Int b, int subdivisionsB,
+
+            out BoxAdjacentHit hit
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(a, subdivisionsA), (1f / subdivisionsA) * Vector3.one);
+            Bounds tileB = new Bounds(GridToOne(b, subdivisionsB), (1f / subdivisionsB) * Vector3.one);
+
+            return tileA.Adjacent(tileB, out hit);
+        }
+        public bool AdjacentRaw(
+            Vector3 a, int subdivisionsA,
+            Vector3 b, int subdivisionsB,
+
+            out BoxAdjacentHit hit,
+
+            bool allowance = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(a, subdivisionsA), (1f / subdivisionsA) * Vector3.one);
+            Bounds tileB = new Bounds(GridToOne(b, subdivisionsB), (1f / subdivisionsB) * Vector3.one);
+
+            return tileA.Adjacent(tileB, out hit, allowance);
+        }
+        public bool AdjacentRaw(
+            Vector3 positionA, Vector3 sizeA, int subdivisionsA,
+            Vector3 positionB, Vector3 sizeB, int subdivisionsB,
+
+            out BoxAdjacentHit hit,
+
+            bool allowance = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(positionA, subdivisionsA), (1f / subdivisionsA) * sizeA);
+            Bounds tileB = new Bounds(GridToOne(positionB, subdivisionsB), (1f / subdivisionsB) * sizeB);
+
+            return tileA.Adjacent(tileB, out hit, allowance);
+        }
+        public bool AdjacentRaw(
+            Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA,
+            Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB,
+
+            out BoxAdjacentHit hit,
+
+            bool allowance = true
+        )
+        {
+            Box tileA = new Box(GridToOne(positionA, subdivisionsA), rotationA, (1f / subdivisionsA) * sizeA);
+            Box tileB = new Box(GridToOne(positionB, subdivisionsB), rotationB, (1f / subdivisionsB) * sizeB);
+
+            return tileA.Adjacent(tileB, out hit, allowance);
+        }
+        #endregion
+        #region "Containment"
+        public bool Contains(
+            UnityEngine.Vector3Int a, int subdivisionsA,
+            UnityEngine.Vector3Int b, int subdivisionsB,
+
+            bool trim = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(a, subdivisionsA), (1f / subdivisionsA) * Vector3.one);
+            Bounds tileB = new Bounds(GridToOne(b, subdivisionsB), (1f / subdivisionsB) * Vector3.one);
+
+            return tileA.Contains(tileB, trim);
+        }
+        public bool ContainsRaw(
+            Vector3 a, int subdivisionsA,
+            Vector3 b, int subdivisionsB,
+
+            bool trim = false, bool allowance = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(a, subdivisionsA), (1f / subdivisionsA) * Vector3.one);
+            Bounds tileB = new Bounds(GridToOne(b, subdivisionsB), (1f / subdivisionsB) * Vector3.one);
+
+            return tileA.Contains(tileB, trim, allowance);
+        }
+        public bool ContainsRaw(
+            Vector3 positionA, Vector3 sizeA, int subdivisionsA,
+            Vector3 positionB, Vector3 sizeB, int subdivisionsB,
+
+            bool trim = false, bool allowance = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(positionA, subdivisionsA), (1f / subdivisionsA) * sizeA);
+            Bounds tileB = new Bounds(GridToOne(positionB, subdivisionsB), (1f / subdivisionsB) * sizeB);
+
+            return tileA.Contains(tileB, trim, allowance);
+        }
+        public bool ContainsRaw(
+            Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA,
+            Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            Box tileA = new Box(GridToOne(positionA, subdivisionsA), rotationA, (1f / subdivisionsA) * sizeA);
+            Box tileB = new Box(GridToOne(positionB, subdivisionsB), rotationB, (1f / subdivisionsB) * sizeB);
+
+            return tileA.Contains(tileB, trim, allowance);
+        }
+
+
+
+        public bool Contains(
+            UnityEngine.Vector3Int a, int subdivisionsA,
+            UnityEngine.Vector3Int b, int subdivisionsB,
+
+            out BoxContainHit hit,
+
+            bool trim = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(a, subdivisionsA), (1f / subdivisionsA) * Vector3.one);
+            Bounds tileB = new Bounds(GridToOne(b, subdivisionsB), (1f / subdivisionsB) * Vector3.one);
+
+            return tileA.Contains(tileB, out hit, trim);
+        }
+        public bool ContainsRaw(
+            Vector3 a, int subdivisionsA,
+            Vector3 b, int subdivisionsB,
+
+            out BoxContainHit hit,
+
+            bool trim = false, bool allowance = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(a, subdivisionsA), (1f / subdivisionsA) * Vector3.one);
+            Bounds tileB = new Bounds(GridToOne(b, subdivisionsB), (1f / subdivisionsB) * Vector3.one);
+
+            return tileA.Contains(tileB, out hit, trim, allowance);
+        }
+        public bool ContainsRaw(
+            Vector3 positionA, Vector3 sizeA, int subdivisionsA,
+            Vector3 positionB, Vector3 sizeB, int subdivisionsB,
+
+            out BoxContainHit hit,
+
+            bool trim = false, bool allowance = false
+        )
+        {
+            Bounds tileA = new Bounds(GridToOne(positionA, subdivisionsA), (1f / subdivisionsA) * sizeA);
+            Bounds tileB = new Bounds(GridToOne(positionB, subdivisionsB), (1f / subdivisionsB) * sizeB);
+
+            return tileA.Contains(tileB, out hit, trim, allowance);
+        }
+        public bool ContainsRaw(
+            Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA,
+            Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB,
+
+            out BoxContainHit hit,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            Box tileA = new Box(GridToOne(positionA, subdivisionsA), rotationA, (1f / subdivisionsA) * sizeA);
+            Box tileB = new Box(GridToOne(positionB, subdivisionsB), rotationB, (1f / subdivisionsB) * sizeB);
+
+            return tileA.Contains(tileB, out hit, trim, allowance);
+        }
+        #endregion
 
 
 
         //Static methods
-        //public static Vector3 SnapPosition(Vector3 position/*, int subdivisions = 1*/) //takes grid position, returns grid position
-        //{
-        //    return position.Round();
-        //}
-        //public static UnityEngine.Vector3Int SnapPositionToInt(Vector3 position/*, int subdivisions = 1*/) //takes grid position, returns grid position
-        //{
-        //    return position.RoundToInt();
-        //}
         public static Vector3 SnapPosition(Vector3 position, int subdivisions = 1, int snapSubdivisions = 1)
         { //returns subdivided position
             return GridToGrid(position, subdivisions, snapSubdivisions).Round();

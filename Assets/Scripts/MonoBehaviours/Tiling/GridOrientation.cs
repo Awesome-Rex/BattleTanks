@@ -419,48 +419,387 @@ namespace REXTools.Tiling
 
         //STATIC METHODS
 
-        //Intersection (Tile Occupation)
-        //public static bool IntersectsRaw(GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA, GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB)
-        //{ //factors position, size and rotation
-            
-        //    Geometry.Box tileA = new Geometry.Box(orientationA.GridToWorld(positionA, subdivisionsA), Linking.TransformEuler(rotationA, orientationA.finalRotation), orientationA.grid.subdividedTileSize(subdivisionsA).Multiply(sizeA) * orientationA.totalScale);
-        //    Geometry.Box tileB = new Geometry.Box(orientationB.GridToWorld(positionB, subdivisionsB), Linking.TransformEuler(rotationB, orientationB.finalRotation), orientationB.grid.subdividedTileSize(subdivisionsB).Multiply(sizeB) * orientationB.totalScale);
+        #region "Intersection"
+        public static bool Intersects(
+            GridOrientation orientationA, UnityEngine.Vector3Int positionA, int subdivisionsA,
+            GridOrientation orientationB, UnityEngine.Vector3Int positionB, int subdivisionsB,
 
-        //    return tileA.Intersects(tileB, true);
-        //}
-        //public static bool IntersectsRaw(GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, int subdivisionsA, GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, int subdivisionsB)
-        //{ //factors position and size
-        //    return IntersectsRaw(orientationA, positionA, sizeA, Quaternion.identity, subdivisionsA, orientationB, positionB, sizeB, Quaternion.identity, subdivisionsB);
-        //}
-        //public static bool IntersectsRaw(GridOrientation orientationA, Vector3 a, int subdivisionsA, GridOrientation orientationB, Vector3 b, int subdivisionsB)
-        //{ //factors position
-        //    return IntersectsRaw(orientationA, a, Vector3.one, subdivisionsA, orientationB, b, Vector3.one, subdivisionsB);
-        //}
-        //public static bool Intersects(GridOrientation orientationA, UnityEngine.Vector3Int a, int subdivisionsA, GridOrientation orientationB, UnityEngine.Vector3Int b, int subdivisionsB)
-        //{ //doesnt use raw values
-        //    return IntersectsRaw(orientationA, a, subdivisionsA, orientationB, b, subdivisionsB);
-        //}
+            bool trim = false, bool allowance = true
+        )
+        {
+            return IntersectsRaw(
+                orientationA, positionA, Vector3.one, subdivisionsA,
+                orientationB, positionB, Vector3.one, subdivisionsB,
 
-        //public static bool AdjacentRaw(GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA, GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB)
-        //{ //factors position, size and rotation
+                trim, allowance
+            );
+        }
+        public static bool IntersectsRaw(
+            GridOrientation orientationA, Vector3 positionA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, int subdivisionsB,
 
-        //    Geometry.Box tileA = new Geometry.Box(orientationA.GridToWorld(positionA, subdivisionsA), Linking.TransformEuler(rotationA, orientationA.finalRotation), orientationA.grid.subdividedTileSize(subdivisionsA).Multiply(sizeA) * orientationA.totalScale);
-        //    Geometry.Box tileB = new Geometry.Box(orientationB.GridToWorld(positionB, subdivisionsB), Linking.TransformEuler(rotationB, orientationB.finalRotation), orientationB.grid.subdividedTileSize(subdivisionsB).Multiply(sizeB) * orientationB.totalScale);
+            bool trim = false, bool allowance = true
+        )
+        {
+            return IntersectsRaw(
+                orientationA, positionA, Vector3.one, subdivisionsA,
+                orientationB, positionB, Vector3.one, subdivisionsB,
 
-        //    return tileA.Adjacent(tileB);
-        //}
-        //public static bool AdjacentRaw(GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, int subdivisionsA, GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, int subdivisionsB)
-        //{ //factors position and size
-        //    return AdjacentRaw(orientationA, positionA, sizeA, Quaternion.identity, subdivisionsA, orientationB, positionB, sizeB, Quaternion.identity, subdivisionsB);
-        //}
-        //public static bool AdjacentRaw(GridOrientation orientationA, Vector3 a, int subdivisionsA, GridOrientation orientationB, Vector3 b, int subdivisionsB)
-        //{ //factors position
-        //    return AdjacentRaw(orientationA, a, Vector3.one, subdivisionsA, orientationB, b, Vector3.one, subdivisionsB);
-        //}
-        //public static bool Adjacent(GridOrientation orientationA, UnityEngine.Vector3Int a, int subdivisionsA, GridOrientation orientationB, UnityEngine.Vector3Int b, int subdivisionsB)
-        //{ //doesnt use raw values
-        //    return AdjacentRaw(orientationA, a, subdivisionsA, orientationB, b, subdivisionsB);
-        //}
+                trim, allowance
+            );
+        }
+        public static bool IntersectsRaw(
+            GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, int subdivisionsB,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            return IntersectsRaw(
+                orientationA, positionA, sizeA, Quaternion.identity, subdivisionsA, 
+                orientationB, positionB, sizeB, Quaternion.identity, subdivisionsB, 
+                
+                trim, allowance
+            );
+        }
+        public static bool IntersectsRaw(
+            GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            Box tileA = new Box(orientationA.GridToWorld(positionA, subdivisionsA), Linking.TransformEuler(rotationA, orientationA.finalRotation), orientationA.grid.subdividedTileSize(subdivisionsA).Multiply(sizeA) * orientationA.totalScale);
+            Box tileB = new Box(orientationB.GridToWorld(positionB, subdivisionsB), Linking.TransformEuler(rotationB, orientationB.finalRotation), orientationB.grid.subdividedTileSize(subdivisionsB).Multiply(sizeB) * orientationB.totalScale);
+
+            return tileA.Intersects(tileB, trim, allowance);
+        }
+
+
+
+        public static bool Intersects(
+            GridOrientation orientationA, UnityEngine.Vector3Int positionA, int subdivisionsA,
+            GridOrientation orientationB, UnityEngine.Vector3Int positionB, int subdivisionsB,
+
+            out BoxIntersectHit hit,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            return IntersectsRaw(
+                orientationA, positionA, Vector3.one, subdivisionsA,
+                orientationB, positionB, Vector3.one, subdivisionsB,
+
+                out hit,
+
+                trim, allowance
+            );
+        }
+        public static bool IntersectsRaw(
+            GridOrientation orientationA, Vector3 positionA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, int subdivisionsB,
+
+            out BoxIntersectHit hit,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            return IntersectsRaw(
+                orientationA, positionA, Vector3.one, subdivisionsA,
+                orientationB, positionB, Vector3.one, subdivisionsB,
+
+                out hit,
+
+                trim, allowance
+            );
+        }
+        public static bool IntersectsRaw(
+            GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, int subdivisionsB,
+
+            out BoxIntersectHit hit,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            return IntersectsRaw(
+                orientationA, positionA, sizeA, Quaternion.identity, subdivisionsA,
+                orientationB, positionB, sizeB, Quaternion.identity, subdivisionsB,
+
+                out hit,
+
+                trim, allowance
+            );
+        }
+        public static bool IntersectsRaw(
+            GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB,
+
+            out BoxIntersectHit hit,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            Box tileA = new Box(orientationA.GridToWorld(positionA, subdivisionsA), Linking.TransformEuler(rotationA, orientationA.finalRotation), orientationA.grid.subdividedTileSize(subdivisionsA).Multiply(sizeA) * orientationA.totalScale);
+            Box tileB = new Box(orientationB.GridToWorld(positionB, subdivisionsB), Linking.TransformEuler(rotationB, orientationB.finalRotation), orientationB.grid.subdividedTileSize(subdivisionsB).Multiply(sizeB) * orientationB.totalScale);
+
+            return tileA.Intersects(tileB, out hit, trim, allowance);
+        }
+        #endregion
+        #region "Adjacency"
+        public static bool Adjacent(
+            GridOrientation orientationA, UnityEngine.Vector3Int positionA, int subdivisionsA,
+            GridOrientation orientationB, UnityEngine.Vector3Int positionB, int subdivisionsB,
+
+            bool allowance = true
+        )
+        {
+            return AdjacentRaw(
+                orientationA, positionA, Vector3.one, subdivisionsA,
+                orientationB, positionB, Vector3.one, subdivisionsB,
+
+                allowance
+            );
+        }
+        public static bool AdjacentRaw(
+            GridOrientation orientationA, Vector3 positionA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, int subdivisionsB,
+
+            bool allowance = true
+        )
+        {
+            return AdjacentRaw(
+                orientationA, positionA, Vector3.one, subdivisionsA,
+                orientationB, positionB, Vector3.one, subdivisionsB,
+
+                allowance
+            );
+        }
+        public static bool AdjacentRaw(
+            GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, int subdivisionsB,
+
+            bool allowance = true
+        )
+        {
+            return AdjacentRaw(
+                orientationA, positionA, sizeA, Quaternion.identity, subdivisionsA,
+                orientationB, positionB, sizeB, Quaternion.identity, subdivisionsB,
+
+                allowance
+            );
+        }
+        public static bool AdjacentRaw(
+            GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB,
+
+            bool allowance = true
+        )
+        {
+            Box tileA = new Box(orientationA.GridToWorld(positionA, subdivisionsA), Linking.TransformEuler(rotationA, orientationA.finalRotation), orientationA.grid.subdividedTileSize(subdivisionsA).Multiply(sizeA) * orientationA.totalScale);
+            Box tileB = new Box(orientationB.GridToWorld(positionB, subdivisionsB), Linking.TransformEuler(rotationB, orientationB.finalRotation), orientationB.grid.subdividedTileSize(subdivisionsB).Multiply(sizeB) * orientationB.totalScale);
+
+            return tileA.Adjacent(tileB, allowance);
+        }
+
+
+
+        public static bool Adjacent(
+            GridOrientation orientationA, UnityEngine.Vector3Int positionA, int subdivisionsA,
+            GridOrientation orientationB, UnityEngine.Vector3Int positionB, int subdivisionsB,
+
+            out BoxAdjacentHit hit,
+
+            bool allowance = true
+        )
+        {
+            return AdjacentRaw(
+                orientationA, positionA, Vector3.one, subdivisionsA,
+                orientationB, positionB, Vector3.one, subdivisionsB,
+
+                out hit,
+
+                allowance
+            );
+        }
+        public static bool AdjacentRaw(
+            GridOrientation orientationA, Vector3 positionA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, int subdivisionsB,
+
+            out BoxAdjacentHit hit,
+
+            bool allowance = true
+        )
+        {
+            return AdjacentRaw(
+                orientationA, positionA, Vector3.one, subdivisionsA,
+                orientationB, positionB, Vector3.one, subdivisionsB,
+
+                out hit,
+
+                allowance
+            );
+        }
+        public static bool AdjacentRaw(
+            GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, int subdivisionsB,
+
+            out BoxAdjacentHit hit,
+
+            bool allowance = true
+        )
+        {
+            return AdjacentRaw(
+                orientationA, positionA, sizeA, Quaternion.identity, subdivisionsA,
+                orientationB, positionB, sizeB, Quaternion.identity, subdivisionsB,
+
+                out hit,
+
+                allowance
+            );
+        }
+        public static bool AdjacentRaw(
+            GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB,
+
+            out BoxAdjacentHit hit,
+
+            bool allowance = true
+        )
+        {
+            Box tileA = new Box(orientationA.GridToWorld(positionA, subdivisionsA), Linking.TransformEuler(rotationA, orientationA.finalRotation), orientationA.grid.subdividedTileSize(subdivisionsA).Multiply(sizeA) * orientationA.totalScale);
+            Box tileB = new Box(orientationB.GridToWorld(positionB, subdivisionsB), Linking.TransformEuler(rotationB, orientationB.finalRotation), orientationB.grid.subdividedTileSize(subdivisionsB).Multiply(sizeB) * orientationB.totalScale);
+
+            return tileA.Adjacent(tileB, out hit, allowance);
+        }
+        #endregion
+        #region "Containment"
+        public static bool Contains(
+            GridOrientation orientationA, UnityEngine.Vector3Int positionA, int subdivisionsA,
+            GridOrientation orientationB, UnityEngine.Vector3Int positionB, int subdivisionsB,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            return ContainsRaw(
+                orientationA, positionA, Vector3.one, subdivisionsA,
+                orientationB, positionB, Vector3.one, subdivisionsB,
+
+                trim, allowance
+            );
+        }
+        public static bool ContainsRaw(
+            GridOrientation orientationA, Vector3 positionA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, int subdivisionsB,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            return ContainsRaw(
+                orientationA, positionA, Vector3.one, subdivisionsA,
+                orientationB, positionB, Vector3.one, subdivisionsB,
+
+                trim, allowance
+            );
+        }
+        public static bool ContainsRaw(
+            GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, int subdivisionsB,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            return ContainsRaw(
+                orientationA, positionA, sizeA, Quaternion.identity, subdivisionsA,
+                orientationB, positionB, sizeB, Quaternion.identity, subdivisionsB,
+
+                trim, allowance
+            );
+        }
+        public static bool ContainsRaw(
+            GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            Box tileA = new Box(orientationA.GridToWorld(positionA, subdivisionsA), Linking.TransformEuler(rotationA, orientationA.finalRotation), orientationA.grid.subdividedTileSize(subdivisionsA).Multiply(sizeA) * orientationA.totalScale);
+            Box tileB = new Box(orientationB.GridToWorld(positionB, subdivisionsB), Linking.TransformEuler(rotationB, orientationB.finalRotation), orientationB.grid.subdividedTileSize(subdivisionsB).Multiply(sizeB) * orientationB.totalScale);
+
+            return tileA.Contains(tileB, trim, allowance);
+        }
+
+
+
+        public static bool Contains(
+            GridOrientation orientationA, UnityEngine.Vector3Int positionA, int subdivisionsA,
+            GridOrientation orientationB, UnityEngine.Vector3Int positionB, int subdivisionsB,
+
+            out BoxContainHit hit,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            return ContainsRaw(
+                orientationA, positionA, Vector3.one, subdivisionsA,
+                orientationB, positionB, Vector3.one, subdivisionsB,
+
+                out hit,
+
+                trim, allowance
+            );
+        }
+        public static bool ContainsRaw(
+            GridOrientation orientationA, Vector3 positionA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, int subdivisionsB,
+
+            out BoxContainHit hit,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            return ContainsRaw(
+                orientationA, positionA, Vector3.one, subdivisionsA,
+                orientationB, positionB, Vector3.one, subdivisionsB,
+
+                out hit,
+
+                trim, allowance
+            );
+        }
+        public static bool ContainsRaw(
+            GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, int subdivisionsB,
+
+            out BoxContainHit hit,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            return ContainsRaw(
+                orientationA, positionA, sizeA, Quaternion.identity, subdivisionsA,
+                orientationB, positionB, sizeB, Quaternion.identity, subdivisionsB,
+
+                out hit,
+
+                trim, allowance
+            );
+        }
+        public static bool ContainsRaw(
+            GridOrientation orientationA, Vector3 positionA, Vector3 sizeA, Quaternion rotationA, int subdivisionsA,
+            GridOrientation orientationB, Vector3 positionB, Vector3 sizeB, Quaternion rotationB, int subdivisionsB,
+
+            out BoxContainHit hit,
+
+            bool trim = false, bool allowance = true
+        )
+        {
+            Box tileA = new Box(orientationA.GridToWorld(positionA, subdivisionsA), Linking.TransformEuler(rotationA, orientationA.finalRotation), orientationA.grid.subdividedTileSize(subdivisionsA).Multiply(sizeA) * orientationA.totalScale);
+            Box tileB = new Box(orientationB.GridToWorld(positionB, subdivisionsB), Linking.TransformEuler(rotationB, orientationB.finalRotation), orientationB.grid.subdividedTileSize(subdivisionsB).Multiply(sizeB) * orientationB.totalScale);
+
+            return tileA.Contains(tileB, out hit, trim, allowance);
+        }
+        #endregion
 
 
 
